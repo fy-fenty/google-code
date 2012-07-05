@@ -1,4 +1,4 @@
-package ogr.vean.quartzs;
+package org.vean.quartzs;
 
 public class MyQuartz {
 
