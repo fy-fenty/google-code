@@ -1,4 +1,4 @@
-package ogr.vean.tests;
+package org.vean.tests;
 
 public class Test {
 
