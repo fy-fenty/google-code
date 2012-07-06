@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE quartz PUBLIC
+  "-//Quartz Enterprise Job Scheduler//DTD Job Scheduling Data 1.0//EN"
+  "http://www.quartzscheduler.org/dtd/job_scheduling_data_1_0.dtd">
+<quartz>
+<job>     
+    <job-detail>     
+     <name>ScanDirectory</name>     
+     <group>DEFAULT</group>     
+     <job-class>     
+            org.vean.quartzs.ScanDirectoryJob
+     </job-class>     
+     <volatility>false</volatility>     
+     <durability>false</durability>     
+     <recover>false</recover>     
+     <job-data-map allows-transient-data="true">     
+         <entry>     
+         <key>SCAN_DIR</key>     
+         <value>c:\quartz-book\input</value>     
+       </entry>     
+     </job-data-map>     
+    </job-detail>
+    <trigger>     
+     <simple>     
+       <name>scanTrigger</name>     
+       <group>DEFAULT</group>     
+       <job-name>ScanDirectory</job-name>     
+       <job-group>DEFAULT</job-group>     
+       <start-time>2008-09-03T15:00:20</start-time>        
+       <repeat-count>-1</repeat-count>     
+       <repeat-interval>10</repeat-interval>     
+     </simple>     
+    </trigger>     
+  </job>
+</quartz>
