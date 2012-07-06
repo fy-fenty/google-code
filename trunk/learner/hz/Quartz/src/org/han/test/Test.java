@@ -3,6 +3,7 @@ package org.han.test;
 import java.text.ParseException;
 
 import org.han.quartz.MyFirstQuartz;
+import org.quartz.CronExpression;
 import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -22,10 +23,14 @@ public class Test {
 		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
 		JobDetail jobDetail = new JobDetail("myJob",
 				Scheduler.DEFAULT_GROUP, MyFirstQuartz.class);
-		SimpleTrigger simpleTrigger = new SimpleTrigger("trigger", "tgroup");
-		simpleTrigger.setRepeatInterval(1000);
-		simpleTrigger.setRepeatCount(10);
-		scheduler.scheduleJob(jobDetail, simpleTrigger);
+//		SimpleTrigger simpleTrigger = new SimpleTrigger("trigger", "tgroup");
+//		simpleTrigger.setRepeatInterval(1000);
+//		simpleTrigger.setRepeatCount(10);
+//		scheduler.scheduleJob(jobDetail, simpleTrigger);
+		CronTrigger trigger=new CronTrigger("crontrigger","crongroup","0/5 * * * * ?");
+//		CronExpression cexp = new CronExpression("0/5 * * * * ?");
+//		trigger.setCronExpression(cexp);
+		scheduler.scheduleJob(jobDetail, trigger);
 		scheduler.start();
 	}
 
