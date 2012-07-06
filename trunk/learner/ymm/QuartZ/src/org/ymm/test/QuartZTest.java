@@ -34,7 +34,7 @@ public class QuartZTest {
 		trigger.setName("DirectoryJob" + "-Trigger");       
 	           
         trigger.setStartTime(new Date());       
-      
+        trigger.setEndTime( new Date(new Date().getTime() + 30000));
         sch.scheduleJob(jobDetail, trigger);
 		      
 	}
