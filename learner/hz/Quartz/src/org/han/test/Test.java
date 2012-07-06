@@ -9,6 +9,7 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
+import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
 public class Test {
@@ -20,18 +21,21 @@ public class Test {
 	 */
 	public static void main(String[] args) throws SchedulerException, ParseException {
 		// TODO Auto-generated method stub
-		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-		JobDetail jobDetail = new JobDetail("myJob",
-				Scheduler.DEFAULT_GROUP, MyFirstQuartz.class);
+//		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+//		DirectSchedulerFactory direct=DirectSchedulerFactory.getInstance();
+//		direct.createVolatileScheduler(10);
+//		scheduler=direct.getScheduler();
+//		JobDetail jobDetail = new JobDetail("myJob",
+//				Scheduler.DEFAULT_GROUP, MyFirstQuartz.class);
 //		SimpleTrigger simpleTrigger = new SimpleTrigger("trigger", "tgroup");
 //		simpleTrigger.setRepeatInterval(1000);
 //		simpleTrigger.setRepeatCount(10);
 //		scheduler.scheduleJob(jobDetail, simpleTrigger);
-		CronTrigger trigger=new CronTrigger("crontrigger","crongroup","0/5 * * * * ?");
+//		CronTrigger trigger=new CronTrigger("crontrigger","crongroup","0/1 * * * * ?");
 //		CronExpression cexp = new CronExpression("0/5 * * * * ?");
 //		trigger.setCronExpression(cexp);
-		scheduler.scheduleJob(jobDetail, trigger);
-		scheduler.start();
+//		scheduler.scheduleJob(jobDetail, trigger);
+//		scheduler.start();
 	}
 
 }
