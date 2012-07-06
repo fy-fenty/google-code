@@ -11,6 +11,7 @@ public class MyFirstQuartz implements Job {
 		System.out.println(arg0.getJobRunTime());
 		System.out.println(arg0.hashCode());
 		System.out.println(arg0.getTrigger().getGroup());
+		System.out.println(arg0.getTrigger().getName());
 		System.out.println("Hello world");
 
 	}
