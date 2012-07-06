@@ -2,7 +2,7 @@ package org.fengyao;
 
 import java.util.Date;
 
-import org.fengyao.queatzs.ScanDirectoryJob;
+import org.fengyao.queatzs.TestJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -33,7 +33,7 @@ public class Test {
 
 	private void schedulerJob(Scheduler scheduler, String jobDetailName, String print, int interval, int count)
 			throws SchedulerException {
-		JobDetail jobDetail = new JobDetail(jobDetailName, Scheduler.DEFAULT_GROUP, ScanDirectoryJob.class);
+		JobDetail jobDetail = new JobDetail(jobDetailName, Scheduler.DEFAULT_GROUP, TestJob.class);
 		JobDataMap dataMap = jobDetail.getJobDataMap();
 		dataMap.put("print", print);
 		dataMap.put("time", 1);
