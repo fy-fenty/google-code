@@ -1,5 +1,7 @@
 package org.han.quartz;
 
+import java.util.Date;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -14,5 +16,8 @@ public class MyFirstQuartz implements Job {
 		System.out.println(arg0.getTrigger().getName());
 		System.out.println("Hello world");
 
+	}
+	public void test(){
+		System.out.println("xxxxxxxxxxxxxxxxxxxxx"+new Date().getTime());
 	}
 }
