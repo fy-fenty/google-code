@@ -2,7 +2,7 @@ package org.fengyao;
 
 import java.util.Date;
 
-import org.fengyao.queatzs.PrintTriangleJob;
+import org.fengyao.jobs.PrintTriangleJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
