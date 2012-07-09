@@ -1,4 +1,4 @@
-package org.fengyao.queatzs;
+package org.fengyao.jobs;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
