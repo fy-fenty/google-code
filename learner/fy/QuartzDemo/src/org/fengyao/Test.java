@@ -29,26 +29,6 @@ public class Test {
 			scheduler.scheduleJob(jobDetail, trigger);
 			scheduler.start();
 		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public void testPrintTriangle() {
-		Scheduler scheduler;
-		try {
-			scheduler = this.createScheduler();
-			JobDetail jobDetail = new JobDetail(this.getClass().getName(), Scheduler.DEFAULT_GROUP,
-					PrintTriangleJob.class);
-			JobDataMap dataMap = jobDetail.getJobDataMap();
-			dataMap.put("lines", 5);
-			Trigger trigger = TriggerUtils.makeSecondlyTrigger(1, 5);
-			trigger.setName(jobDetail.getFullName() + " -Trigger");
-			trigger.setStartTime(new Date());
-			scheduler.scheduleJob(jobDetail, trigger);
-			scheduler.start();
-		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -58,7 +38,7 @@ public class Test {
 	}
 
 	public static void main(String[] args) throws SchedulerException {
-		Scheduler du = new StdSchedulerFactory("quartz.properties").getScheduler();
+		Scheduler du = StdSchedulerFactory.getDefaultScheduler();
 		du.start();
 	}
 }
