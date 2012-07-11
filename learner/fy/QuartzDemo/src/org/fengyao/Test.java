@@ -19,7 +19,8 @@ public class Test {
 		Scheduler scheduler;
 		try {
 			scheduler = this.createScheduler();
-			JobDetail jobDetail = new JobDetail(this.getClass().getName(), Scheduler.DEFAULT_GROUP, ScanDirectoryJob.class);
+			JobDetail jobDetail = new JobDetail(this.getClass().getName(), Scheduler.DEFAULT_GROUP,
+					ScanDirectoryJob.class);
 			JobDataMap dataMap = jobDetail.getJobDataMap();
 			dataMap.put("SCAN_DIR", System.getProperty("user.dir") + File.separator + "src");
 			Trigger trigger = TriggerUtils.makeSecondlyTrigger(5, 1);
@@ -37,7 +38,8 @@ public class Test {
 		Scheduler scheduler;
 		try {
 			scheduler = this.createScheduler();
-			JobDetail jobDetail = new JobDetail(this.getClass().getName(), Scheduler.DEFAULT_GROUP, PrintTriangleJob.class);
+			JobDetail jobDetail = new JobDetail(this.getClass().getName(), Scheduler.DEFAULT_GROUP,
+					PrintTriangleJob.class);
 			JobDataMap dataMap = jobDetail.getJobDataMap();
 			dataMap.put("lines", 5);
 			Trigger trigger = TriggerUtils.makeSecondlyTrigger(1, 5);
@@ -55,8 +57,8 @@ public class Test {
 		return StdSchedulerFactory.getDefaultScheduler();
 	}
 
-	public static void main(String[] args) {
-		Test test = new Test();
-		test.testScanDirectory();
+	public static void main(String[] args) throws SchedulerException {
+		Scheduler du = new StdSchedulerFactory("quartz.properties").getScheduler();
+		du.start();
 	}
 }
