@@ -1,12 +1,12 @@
 package org.fengyao.jobs;
 
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.StatefulJob;
 
-public class PrintTriangleJob implements Job {
+public class PrintTriangleJob implements StatefulJob {
 
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -28,6 +28,7 @@ public class PrintTriangleJob implements Job {
 		for (int i = 0; i < strs.length; i++) {
 			System.out.println(strs[i]);
 		}
+		dataMap.put("lines", ++lines);
 		System.out.println("------------------------------------");
 	}
 }
