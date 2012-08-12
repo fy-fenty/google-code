@@ -3,8 +3,6 @@ package org.xuliang.support;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
@@ -20,10 +18,6 @@ import org.xuliang.vo.Page;
 @SuppressWarnings("unchecked")
 public class BaseDAO<T, PK extends Serializable> extends SimpleDAO<T, PK>
 		implements IBaseDAO<T, PK> {
-	/**
-	 * Log4j日志输出
-	 */
-	protected Logger logger = Logger.getLogger(getClass());
 
 	public Query setPageParameter(final Query query, final int fisrt,
 			final int limit) {
