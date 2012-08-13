@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	
+	<bean id="data_source" class="org.logicalcobwebs.proxool.ProxoolDataSource">
+		<property name="driver" value="oracle.jdbc.OracleDriver" />
+		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.105:1522:orcl" />
+		<property name="user" value="fy" />
+		<property name="password" value="accp2009" />
+	</bean>
+	
+	<bean id="session_factory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="data_source" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate_show_sql">true</prop>
+				<prop key="hibernate_format_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="transcation_manager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="session_factory" />
+	</bean>
+	
+	<tx:advice id="tx_advice" transaction-manager="transcation_manager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED"/>
+		</tx:attributes>
+	</tx:advice>
+</beans>
