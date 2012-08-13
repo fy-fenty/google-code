@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.hibernate.Query;
+import org.xuliang.vo.BaseVO;
 import org.xuliang.vo.Page;
 
 /**

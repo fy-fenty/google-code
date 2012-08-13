@@ -1,4 +1,4 @@
-package org.xuliang.support;
+package org.xuliang.vo;
 
 /**
  * @author xuliang
