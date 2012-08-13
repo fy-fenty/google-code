@@ -1,8 +1,11 @@
 package org.xuliang.service;
 
-import java.util.List;
 import java.util.Map;
-@SuppressWarnings("unchecked")
+
+import org.xuliang.exception.MyException;
+import org.xuliang.vo.Page;
+
 public interface IEmployeeService {
-	public List<Map> findDispathList();
+	public Page findDispathList();
+	public Map<String,Object> login(String uname,String upwd) throws MyException;
 }

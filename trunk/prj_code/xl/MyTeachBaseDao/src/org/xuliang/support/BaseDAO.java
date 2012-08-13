@@ -6,6 +6,7 @@ import java.util.Map;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
+import org.xuliang.vo.BaseVO;
 import org.xuliang.vo.Page;
 
 /**

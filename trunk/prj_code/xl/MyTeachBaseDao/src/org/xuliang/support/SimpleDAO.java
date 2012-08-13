@@ -10,6 +10,8 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.xuliang.entity.MyAddress;
+import org.xuliang.entity.MyUser;
 
 /**
  * @author xuliang
@@ -27,7 +29,7 @@ public class SimpleDAO<T, PK extends Serializable> implements ISimpleDAO<T, PK> 
 	public SimpleDAO() {
 		this.entityClass = this.getSuperClassType(getClass(), 0);
 	}
-
+	
 	private Class getSuperClassType(final Class clazz, final int index) {
 		Type type = clazz.getGenericSuperclass();
 		if (type instanceof ParameterizedType == false) {
@@ -76,7 +78,7 @@ public class SimpleDAO<T, PK extends Serializable> implements ISimpleDAO<T, PK> 
 	public <X> X get(Class<X> clazz, Serializable id) {
 		return (X) getSession().get(clazz, id);
 	}
-
+	
 	public <X> List<X> find(final String hql) {
 		return createQuery(hql).list();
 	}
