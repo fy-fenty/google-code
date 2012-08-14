@@ -44,10 +44,11 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 
 		String countSql = "select count(1) from (" + sql + ")";
 		Long count = 0L;
-
+		System.out.println(countSql);
 		try {
-			count = (Long) createSQLQuery(countSql, values).uniqueResult();
+			count = ((Number)createSQLQuery(countSql, values).uniqueResult()).longValue();
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new MyException("A001");
 		}
 		return count;
