@@ -8,7 +8,9 @@
     <class name="org.han.entity.LogOperation" table="LOG_OPERATION" schema="Jston">
         <id name="loId" type="java.lang.Long">
             <column name="LO_ID" precision="22" scale="0" />
-            <generator class="assigned" />
+            <generator class="sequence" >
+            <param name="sequence">LOG_OPERATION_SEQ</param>
+            </generator>
         </id>
         <property name="ipAddr" type="java.lang.String">
             <column name="IP_ADDR" length="20" />

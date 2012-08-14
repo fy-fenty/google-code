@@ -9,7 +9,9 @@
 		schema="Jston">
 		<id name="PId" type="java.lang.Long">
 			<column name="P_ID" precision="22" scale="0" />
-			<generator class="assigned" />
+			<generator class="sequence" >
+            <param name="sequence">SYS_POSITIONS_SEQ</param>
+            </generator>
 		</id>
 		<property name="PNameCn" type="java.lang.String">
 			<column name="P_NAME_CN" length="45" />

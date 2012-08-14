@@ -8,7 +8,9 @@
     <class name="org.han.entity.DetailItem" table="DETAIL_ITEM" schema="Jston">
         <id name="deId" type="java.lang.Long">
             <column name="DE_ID" precision="22" scale="0" />
-            <generator class="assigned" />
+            <generator class="sequence" >
+            <param name="sequence">DETAIL_ITEM_SEQ</param>
+            </generator>
         </id>
         <property name="itemName" type="java.lang.String">
             <column name="ITEM_NAME" length="20" />

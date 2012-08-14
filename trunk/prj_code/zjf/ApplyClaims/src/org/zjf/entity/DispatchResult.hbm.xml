@@ -8,7 +8,9 @@
     <class name="org.han.entity.DispatchResult" table="DISPATCH_RESULT" schema="Jston">
         <id name="drId" type="java.lang.Long">
             <column name="DR_ID" precision="22" scale="0" />
-            <generator class="assigned" />
+            <generator class="sequence" >
+            <param name="sequence">DISPATCH_RESULT_SEQ</param>
+            </generator>
         </id>
         <property name="sheetId" type="java.lang.Long">
             <column name="SHEET_ID" precision="22" scale="0" />

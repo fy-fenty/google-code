@@ -8,7 +8,9 @@
     <class name="org.han.entity.SysDepartment" table="SYS_DEPARTMENT" schema="Jston">
         <id name="DId" type="java.lang.Long">
             <column name="D_ID" precision="22" scale="0" />
-            <generator class="assigned" />
+            <generator class="sequence" >
+            <param name="sequence">SYS_DEPARTMENT_SEQ</param>
+            </generator>
         </id>
         <property name="DName" type="java.lang.String">
             <column name="D_NAME" length="45" />
