@@ -21,13 +21,25 @@
 		<property name="dataSource" ref="myDataSource" />
 		<property name="mappingResources">
 			<list>
-	
+				<value>org/zjf/entity/Area.hbm.xml</value>
+				<value>org/zjf/entity/DetailItem.hbm.xml</value>
+				<value>org/zjf/entity/DispatchDetail.hbm.xml</value>
+				<value>org/zjf/entity/DispatchList.hbm.xml</value>
+				<value>org/zjf/entity/DispatchResult.hbm.xml</value>
+				<value>org/zjf/entity/DispatchStatus.hbm.xml</value>
+				<value>org/zjf/entity/LoginLog.hbm.xml</value>
+				<value>org/zjf/entity/LoginUser.hbm.xml</value>
+				<value>org/zjf/entity/LogOperation.hbm.xml</value>
+				<value>org/zjf/entity/LogPrint.hbm.xml</value>
+				<value>org/zjf/entity/SysDepartment.hbm.xml</value>
+				<value>org/zjf/entity/SysEmployee.hbm.xml</value>
+				<value>org/zjf/entity/SysPositions.hbm.xml</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
 			<value>
 				hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
-				hibernate.current_session_context_class=thread
+				hibernate.current_session_context_class=org.springframework.orm.hibernate3.SpringSessionContext
 				hibernate.show_sql=org.springframework.orm.hibernate3.SpringSessionContext
 			</value>
 			<!-- org.springframework.orm.hibernate3.SpringSessionContext -->
