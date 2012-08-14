@@ -48,7 +48,19 @@
 		
 		<property name="mappingResources">
 			<list>
-				<!-- <value>org/ymm/entity/Users.hbm.xml</value> -->
+				<value>org/ymm/entity/Area.hbm.xml</value>
+				<value>org/ymm/entity/DetailItem.hbm.xml</value>
+				<value>org/ymm/entity/DispatchDetail.hbm.xml</value>
+				<value>org/ymm/entity/DispatchList.hbm.xml</value>
+				<value>org/ymm/entity/DispatchResult.hbm.xml</value>
+				<value>org/ymm/entity/DispatchStatus.hbm.xml</value>
+				<value>org/ymm/entity/LoginLog.hbm.xml</value>
+				<value>org/ymm/entity/LoginUser.hbm.xml</value>
+				<value>org/ymm/entity/LogOperation.hbm.xml</value>
+				<value>org/ymm/entity/LogPrint.hbm.xml</value>
+				<value>org/ymm/entity/SysDepartment.hbm.xml</value>
+				<value>org/ymm/entity/SysEmployee.hbm.xml</value>
+				<value>org/ymm/entity/SysPositions.hbm.xml</value>
 			</list>
 		</property>
 	
