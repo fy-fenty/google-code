@@ -8,7 +8,9 @@
     <class name="org.han.entity.DispatchList" table="DISPATCH_LIST" schema="Jston">
         <id name="dlId" type="java.lang.Long">
             <column name="DL_ID" precision="22" scale="0" />
-            <generator class="assigned" />
+            <generator class="sequence" >
+            <param name="sequence">DISPATCH_LIST_SEQ</param>
+            </generator>
         </id>
         <property name="ESn" type="java.lang.String">
             <column name="E_SN" length="8" />
