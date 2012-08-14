@@ -101,7 +101,7 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * @throws MyException
 	 * 			A001,A002	 
 	 */
-	public Map<String, Object> findUniqueBySQL(String sql,
+	public abstract Map<String, Object> findUniqueBySQL(String sql,
 			Map<String, Object> values) throws MyException;
 	
 	/**
