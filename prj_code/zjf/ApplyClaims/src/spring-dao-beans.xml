@@ -7,11 +7,10 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
 	default-lazy-init="false">
-	
-	<import resource="spring-sessinfactory.xml"/>
+
 	
 	<bean name="SimpleDao" class="org.zjf.support.impl.SimpleDao">
-	<property name="sessionfactory" ref="sessionFactory"></property>
+		<property name="sessionfactory" ref="sessionFactory"></property>
 	</bean>
 	<bean name="BaseDao" class="org.zjf.support.impl.BaseDao" parent="SimpleDao"></bean>
 	<bean name="AreaDao" class="org.zjf.dao.impl.AreaDaoImpl" parent="BaseDao"></bean>
@@ -27,4 +26,8 @@
 	<bean name="SysDepartmentDao" class="org.zjf.dao.impl.SysDepartmentDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysEmployeeDao" class="org.zjf.dao.impl.SysEmployeeDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysPositionsDao" class="org.zjf.dao.impl.SysPositionsDaoImpl" parent="BaseDao"></bean>
+	
+	<bean name="employeeServiceDaoImpl" class="org.ymm.services.impl.EmployeeServiceDaoImpl">
+		<property name="baseDao" ref="BaseDao"></property>
+	</bean>
 </beans>
