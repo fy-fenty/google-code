@@ -28,15 +28,18 @@ public class BaseDAO<T, PK extends Serializable> extends SimpleDAO<T, PK> implem
 
 	@Override
 	public long countSqlResult(String sql, Object... values) {
-		return countSqlResults(sql, values);
+		String sqlCount = "select count(1) from (" + sql + ")";
+		Long count = 0L;
+		try {
+			count = ((Number) createSQLQuery(sqlCount, obj).uniqueResult()).longValue();
+		} catch (Exception e) {
+			throw new RuntimeException("sql can't be auto count, sql is" + sqlCount, e);
+		}
+		return count;
 	}
 
 	@Override
 	public long countSqlResult(String sql, Map<String, Object> values) {
-		return countSqlResults(sql, values);
-	}
-
-	private long countSqlResults(String sql, Object obj) {
 		String sqlCount = "select count(1) from (" + sql + ")";
 		Long count = 0L;
 		try {
@@ -49,15 +52,20 @@ public class BaseDAO<T, PK extends Serializable> extends SimpleDAO<T, PK> implem
 
 	@Override
 	public Page findPageBySql(BaseVO bv, String sql, Object... values) {
-		return findPageBySqls(bv, sql, values);
+		Page pb = new Page();
+		Long count = countSqlResult(sql, values);
+		if (count == 0) {
+			return pb;
+		}
+		SQLQuery sqlQuery = createSQLQuery(sql, values);
+		sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+		setPageParmeter(sqlQuery, bv.getStart(), bv.getLimit());
+		pb.setResult(sqlQuery.list());
+		return pb;
 	}
 
 	@Override
 	public Page findPageBySql(BaseVO bv, String sql, Map<String, Object> values) {
-		return findPageBySqls(bv, sql, values);
-	}
-
-	public Page findPageBySqls(BaseVO bv, String sql, Object values) {
 		Page pb = new Page();
 		Long count = countSqlResult(sql, values);
 		if (count == 0) {
