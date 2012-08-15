@@ -15,6 +15,5 @@ public class MyConstant {
 	
 	static{
 		map.put("A001", AppConstant.A001);
-//		map.put("A002", AppConstant.A002);
 	}
 }

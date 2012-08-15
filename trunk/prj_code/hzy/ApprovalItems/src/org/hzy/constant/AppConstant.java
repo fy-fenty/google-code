@@ -8,5 +8,5 @@ package org.hzy.constant;
  */
 public interface AppConstant {
 	String ACTION_ERROR_MSG = "操作无错误";
-	String A001 = "用户名错误";
+	String A001 = "雇员编号不能为空";
 }

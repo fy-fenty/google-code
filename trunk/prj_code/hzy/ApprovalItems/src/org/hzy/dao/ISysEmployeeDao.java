@@ -1,5 +1,7 @@
 package org.hzy.dao;
 
+import java.util.List;
+
 import org.hzy.entity.SysEmployee;
 import org.hzy.support.IBaseDAO;
 
@@ -10,6 +12,6 @@ import org.hzy.support.IBaseDAO;
  * @class ISysEmployeeDao
  * @description 雇员接口
  */
-public interface ISysEmployeeDao extends IBaseDAO<SysEmployee, Long> {
-
+public interface ISysEmployeeDao {
+	public abstract List findAllDispatch(Long dlId);
 }
