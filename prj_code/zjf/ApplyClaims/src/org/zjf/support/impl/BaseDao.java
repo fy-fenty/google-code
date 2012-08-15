@@ -25,23 +25,14 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 
 	@Override
 	public Query setPageParameter(final Query query, final int first,
-			final int limit) throws MyException {
-
-		if (query == null || first < 0 || limit < 0)
-			throw new MyException("A002");
-
+			final int limit){
 		query.setFirstResult(first);
 		query.setMaxResults(limit);
 		return query;
 	}
 
 	@Override
-	public long countSqlResult(final String sql, final Object... values)
-			throws MyException {
-
-		if (StringUtil.isEmpty(sql) == false)
-			throw new MyException("A002");
-
+	public long countSqlResult(final String sql, final Object... values) {
 		String countSql = "select count(1) from (" + sql + ")";
 		Long count = 0L;
 		System.out.println(countSql);
@@ -49,17 +40,14 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 			count = ((Number)createSQLQuery(countSql, values).uniqueResult()).longValue();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new MyException("A001");
+			
 		}
 		return count;
 	}
 
 	@Override
-	public long countSqlResult(String sql, Map<String, Object> values)
-			throws MyException {
+	public long countSqlResult(String sql, Map<String, Object> values) {
 
-		if (StringUtil.isEmpty(sql) == false)
-			throw new MyException("A002");
 
 		String countSql = "select count(1) from (" + sql + ")";
 		Long count = 0L;
@@ -67,18 +55,14 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 		try {
 			count = (Long) createSQLQuery(countSql, values).uniqueResult();
 		} catch (Exception e) {
-			throw new MyException("A001");
+			
 		}
 		return count;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Page findPageBySql(BaseVO vo, String sql, Object... values)
-			throws MyException {
-
-		if (vo == null || StringUtil.isEmpty(sql) == false)
-			throw new MyException("A002");
+	public Page findPageBySql(BaseVO vo, String sql, Object... values) {
 
 		Page page = null;
 
@@ -95,22 +79,15 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 				page.setResult(result);
 			}
 		} catch (Exception e) {
-			throw new MyException("A001");
+			e.printStackTrace();
 		}
 		return page;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Page findPageBySql(BaseVO vo, String sql, Map<String, Object> values)
-			throws MyException {
-
-		if (vo == null || StringUtil.isEmpty(sql) == false)
-			throw new MyException("A002");
-
+	public Page findPageBySql(BaseVO vo, String sql, Map<String, Object> values){
 		Page page = null;
-
-		try {
 			long totalcount = countSqlResult(sql, values);
 			if (totalcount > 0) {
 				page = new Page();
@@ -121,47 +98,34 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 				List result = query.list();
 				page.setResult(result);
 			}
-		} catch (Exception e) {
-			throw new MyException("A001");
-		}
 		return page;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> findUniqueBySQL(String sql,
-			Map<String, Object> values) throws MyException {
-
-		if (StringUtil.isEmpty(sql) == false)
-			throw new MyException("A002");
-
+			Map<String, Object> values){
 		Map<String, Object> map = null;
-
 		try {
 			SQLQuery query = createSQLQuery(sql, values);
 			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 			map = (Map<String, Object>) query.uniqueResult();
 		} catch (Exception e) {
-			throw new MyException("A001");
+			e.printStackTrace();
 		}
 		return map;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Map<String, Object> findUniqueBySQL(String sql, Object... values)
-			throws MyException {
-		if (StringUtil.isEmpty(sql) == false)
-			throw new MyException("A002");
-
+	public Map<String, Object> findUniqueBySQL(String sql, Object... values) {
 		Map<String, Object> map = null;
-
 		try {
 			SQLQuery query = createSQLQuery(sql, values);
 			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 			map = (Map<String, Object>) query.uniqueResult();
 		} catch (Exception e) {
-			throw new MyException("A001");
+			e.printStackTrace();
 		}
 		return map;
 	}
