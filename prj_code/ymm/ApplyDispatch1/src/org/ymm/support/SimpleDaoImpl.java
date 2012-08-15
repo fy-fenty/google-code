@@ -9,6 +9,8 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import sun.reflect.generics.reflectiveObjects.TypeVariableImpl;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -42,10 +44,13 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 		if(type instanceof ParameterizedType){
 			return Object.class;
 		}
+		if(type instanceof java.lang.Class)
+			return Object.class;
 		Type[] ts = ((ParameterizedType) type).getActualTypeArguments();
 		if(index<0||index>=ts.length){
 			return Object.class;
 		}
+		
 		return (Class) ts[index];
 	}
 	
