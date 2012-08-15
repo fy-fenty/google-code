@@ -28,10 +28,8 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * 			条数
 	 * @return Query
 	 * 			设置好分页参数的Query	
-	 * @throws MyException 
-	 * 			A002	
 	 */
-	public abstract Query setPageParameter(final Query query,final int first,final int limit) throws MyException;
+	public abstract Query setPageParameter(final Query query,final int first,final int limit);
 	
 	/**
 	 * 查询本次SQL所获得的记录总数
@@ -41,10 +39,8 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * 			参数	，按顺序设置
 	 * @return long
 	 * 			查询到的记录总数
-	 * @throws MyException 
-	 * 			A001
 	 */
-	public abstract long countSqlResult(final String sql,final Object...values) throws MyException;
+	public abstract long countSqlResult(final String sql,final Object...values);
 	
 	/**
 	 * 查询本次SQL所获得的记录总数
@@ -54,10 +50,8 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * 			map形式的SQL语句参数，按名称设置
 	 * @return long
 	 * 			查询到的记录总数
-	 * @throws MyException 
-	 * 			A001
 	 */
-	public abstract long countSqlResult(final String sql,final Map<String,Object> valuesO) throws MyException;
+	public abstract long countSqlResult(final String sql,final Map<String,Object> valuesO);
 	
 	/**
 	 * 通过SQL分页查询
@@ -69,10 +63,8 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * 			参数	，按顺序设置
 	 * @return Page
 	 * 			封装好了的Pahe对象
-	 * @throws MyException 
-	 * 			A001
 	 */
-	public abstract Page findPageBySql(final BaseVO vo ,final String sql,final Object...values) throws MyException;
+	public abstract Page findPageBySql(final BaseVO vo ,final String sql,final Object...values);
 	
 	/**
 	 * 通过SQL分页查询
@@ -84,10 +76,8 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * 			map形式的SQL语句参数，按名称设置
 	 * @return Page
 	 * 			封装好了的Pahe对象
-	 * @throws MyException
-	 * 			A001,A002 
 	 */
-	public abstract Page findPageBySql(final BaseVO vo ,final String sql,final Map<String,Object> values) throws MyException;
+	public abstract Page findPageBySql(final BaseVO vo ,final String sql,final Map<String,Object> values);
 	
 	/**
 	 * 根据sql查询唯一结果，返回Map对象
@@ -98,11 +88,9 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 *          命名参数,按名称绑定.
 	 * @return Map 
 	 * 			Map对象.
-	 * @throws MyException
-	 * 			A001,A002	 
 	 */
 	public abstract Map<String, Object> findUniqueBySQL(String sql,
-			Map<String, Object> values) throws MyException;
+			Map<String, Object> values);
 	
 	/**
 	 * 根据sql查询唯一结果，返回Map对象
@@ -112,10 +100,8 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * @param values
 	 *          数量可变的查询参数,按顺序绑定.
 	 * @return Map 
-	 * 			Map对象.
-	 * @throws MyException 
-	 * 			A001,A002
+	 * 			Map对象
 	 */
 	public abstract Map<String, Object> findUniqueBySQL(final String sql,
-			final Object... values) throws MyException;
+			final Object... values);
 }
