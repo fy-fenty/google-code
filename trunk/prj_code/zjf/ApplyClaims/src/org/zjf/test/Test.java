@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.zjf.support.impl.SimpleDao;
+import org.ymm.services.IEmployeeService;
 
 /**
  * @project:ApplyClaims
@@ -15,11 +15,10 @@ import org.zjf.support.impl.SimpleDao;
  * @description:测试类
  */
 public class Test{
-
 	@SuppressWarnings("rawtypes")
 	public static void main(String[] args) throws SQLException {
-		ApplicationContext con=new ClassPathXmlApplicationContext("spring-dao-beans.xml");
-		SimpleDao  dao=con.getBean("SimpleDao",SimpleDao.class);
-		System.out.println(dao.getSessionfactory().getCurrentSession());
+		ApplicationContext con=new ClassPathXmlApplicationContext(new String[]{"spring-sessinfactory.xml","spring-dao-beans.xml","spring-trans.xml"});
+		IEmployeeService  dao=con.getBean("employeeServiceDaoImpl",IEmployeeService.class);
+		System.out.println(dao.selectDis_listByE_SN("10000   ", 0, 10).getTotalCount());
 	}
 }

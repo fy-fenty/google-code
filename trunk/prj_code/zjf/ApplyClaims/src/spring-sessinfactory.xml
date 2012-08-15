@@ -12,8 +12,8 @@
 	<bean id="myDataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
 		<property name="driver" value="oracle.jdbc.OracleDriver" />
 		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.104:1521:orcl" />
-		<property name="user" value="Jston" />
-		<property name="password" value="123456" />
+		<property name="user" value="ymm" />
+		<property name="password" value="ymm123456" />
 	</bean>
 
 	<bean id="sessionFactory"
@@ -41,6 +41,7 @@
 				hibernate.dialect=org.hibernate.dialect.Oracle9Dialect
 				hibernate.current_session_context_class=org.springframework.orm.hibernate3.SpringSessionContext
 				hibernate.show_sql=org.springframework.orm.hibernate3.SpringSessionContext
+				hibernate.format_sql=true
 			</value>
 			<!-- org.springframework.orm.hibernate3.SpringSessionContext -->
 		</property>

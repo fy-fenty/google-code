@@ -6,7 +6,7 @@
 -->
 <hibernate-mapping>
 	<class name="org.zjf.entity.SysPositions" table="SYS_POSITIONS"
-		schema="Jston">
+		schema="ymm">
 		<id name="PId" type="java.lang.Long">
 			<column name="P_ID" precision="22" scale="0" />
 			<generator class="sequence" >
