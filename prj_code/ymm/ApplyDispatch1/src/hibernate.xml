@@ -81,9 +81,9 @@
 	</tx:advice>
 
 	<aop:config>
-		<!-- <aop:pointcut id="tx"
-		expression="execution(* org.ymm.dao.impl.AreaDaoImpl.*(..))" /> -->
-		<!-- <aop:advisor advice-ref="txAdvice" pointcut-ref="tx" /> -->
+		<aop:pointcut id="tx"
+		expression="execution(* org.zjf.services.impl.*.*(..))" />
+		 <aop:advisor advice-ref="txAdvice" pointcut-ref="tx" />
 	</aop:config>
 	
 
