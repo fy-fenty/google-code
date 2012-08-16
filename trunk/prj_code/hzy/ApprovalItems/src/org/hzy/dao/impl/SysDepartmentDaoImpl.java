@@ -3,7 +3,7 @@ package org.hzy.dao.impl;
 import org.hzy.dao.IAreaDao;
 import org.hzy.dao.ISysDepartmentDao;
 import org.hzy.entity.SysDepartment;
-import org.hzy.support.BaseDAO;
+import org.hzy.support.impl.BaseDAO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

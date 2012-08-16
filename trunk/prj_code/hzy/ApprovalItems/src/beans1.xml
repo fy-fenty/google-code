@@ -13,6 +13,9 @@
 	</bean>
 	
 	<bean abstract="true" id="BaseDao" class="org.hzy.support.BaseDAO" parent="SimpleDao"/>
+	
+	<bean id="SystemUtil" class="org.hzy.support.impl.SystemUtil" parent="BaseDao" />
+	
 	<bean id="AreaDao" class="org.hzy.dao.impl.AreaDaoImpl" parent="BaseDao"/>
 	<bean id="SysDepartmentDao" class="org.hzy.dao.impl.SysDepartmentDaoImpl" parent="BaseDao"/>
 	<bean id="SysEmployeeDao" class="org.hzy.dao.impl.SysEmployeeDaoImpl" parent="BaseDao"/>
@@ -28,6 +31,8 @@
 	<bean id="DispatchStatusDao" class="org.hzy.dao.impl.DispatchStatusDaoImpl" parent="BaseDao"/>
 	
 	<bean id="SysEmployeeService" class="org.hzy.service.impl.SysEmployeeService">
-		<property name="ised" ref="SysEmployeeDao" />
+		<property name="iseDao" ref="SysEmployeeDao" />
+		<property name="idlDao" ref="DispatchListDao" />
+		<property name="isu" ref="SystemUtil" />
 	</bean>
 </beans>

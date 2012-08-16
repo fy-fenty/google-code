@@ -2,8 +2,108 @@ package org.hzy.service;
 
 import java.util.List;
 
+import org.hzy.entity.DispatchDetail;
+import org.hzy.entity.DispatchList;
+import org.hzy.entity.LoginUser;
 import org.hzy.exception.MyException;
+import org.hzy.vo.Result;
 
+/**
+ * @author fy
+ * @date 2012-8-16
+ * @class ISysEmployeeService
+ * @extends Object
+ * @description 员工的业务接口
+ */
 public interface ISysEmployeeService {
-	public abstract List findAllDispatch(Long dlID) throws MyException;
+	/**
+	 * 雇员查找所有当前状态的全部报销单，字段包括 报销单号 创建人 创建时间 总金额 状态
+	 * 
+	 * @param eSn
+	 *            雇员编号
+	 * @return 返回值说明：
+	 *         <ul>
+	 *         <li>dlId 报销单 ID</li>
+	 *         <li>ESn：员工编号</li>
+	 *         <li>createTime：创建时间</li>
+	 *         <li>totalMoney：明细总金额</li>
+	 *         <li>currentStatus：当前状态</li>
+	 *         </ul>
+	 */
+	public abstract List findAllDispatchListByESn(String eSn) throws MyException;
+
+	/**
+	 * 用户保存报销单
+	 * 
+	 * @param uId
+	 *            用户 ID
+	 * @param dl
+	 *            保存的报销单
+	 * @return Result
+	 * @throws MyException
+	 */
+	public abstract Result saveDispatchList(Long uId, DispatchList dl) throws MyException;
+
+	/**
+	 * 用户修改报销单
+	 * 
+	 * @param dl
+	 *            修改的报销单
+	 * @return Result
+	 */
+	public abstract Result updateDispatchList(Long uId, DispatchList dl) throws MyException;
+
+	/**
+	 * 用户修改报销单明细
+	 * 
+	 * @param dd
+	 *            修改的报销单明细
+	 * @return Result
+	 */
+	public abstract Result updateDispatchDetail(DispatchDetail dd) throws MyException;
+
+	/**
+	 * 删除报销单
+	 * 
+	 * @param dl
+	 *            删除的报销单
+	 * @return Result
+	 */
+	public abstract Result deleteDispatchList(DispatchList dl) throws MyException;
+
+	/**
+	 * 删除报销单明细
+	 * 
+	 * @param dd
+	 *            删除的报销单明细
+	 * @return Result
+	 */
+	public abstract Result deleteDispatchDetail(DispatchDetail dd) throws MyException;
+
+	/**
+	 * 添加报销单明细
+	 * 
+	 * @param dd
+	 *            添加的报销单明细
+	 * @return Result
+	 */
+	public abstract Result addDispatchDetail(DispatchDetail dd) throws MyException;
+
+	/**
+	 * 提交报销单
+	 * 
+	 * @param dl
+	 *            提交的报销单
+	 * @return Result
+	 */
+	public abstract Result submitDispatchList(DispatchList dl) throws MyException;
+
+	/**
+	 * 用户登录
+	 * 
+	 * @param lu
+	 *            用户
+	 * @return Result
+	 */
+	public abstract Result login(LoginUser lu) throws MyException;
 }

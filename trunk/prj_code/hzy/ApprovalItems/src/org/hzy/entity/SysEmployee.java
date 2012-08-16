@@ -10,7 +10,6 @@ import java.util.Date;
 public class SysEmployee implements java.io.Serializable {
 
 	// Fields
-
 	private Long EId;
 	private String ESn;
 	private String EName;
