@@ -27,7 +27,19 @@
 	<bean name="SysEmployeeDao" class="org.zjf.dao.impl.SysEmployeeDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysPositionsDao" class="org.zjf.dao.impl.SysPositionsDaoImpl" parent="BaseDao"></bean>
 	
-	<bean name="employeeServiceDaoImpl" class="org.ymm.services.impl.EmployeeServiceDaoImpl">
-		<property name="baseDao" ref="BaseDao"></property>
+	
+	<bean name="systemServiceImpl" class="org.ymm.services.impl.SystemServiceImpl">
+		<property name="baseDao" ref="BaseDao" />
+		<property name="posdao"  ref="SysPositionsDao"/>
+		<property name="logindao" ref="LoginUserDao"></property>
 	</bean>
+	<bean name="employeeServiceImpl" class="org.ymm.services.impl.EmployeeServiceImpl">
+		<property name="baseDao" ref="BaseDao"/>
+		<property name="iSystemService" ref="systemServiceImpl"/>
+		<property name="iDispatchListDao" ref="DispatchListDao"/>
+		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
+		
+		
+	</bean>
+	
 </beans>

@@ -15,7 +15,7 @@ public class Result
     /**
      * 操作是否成功
      */
-    private Boolean success = false;
+    private Boolean success = true;
 
     /**
      * 提示消息
