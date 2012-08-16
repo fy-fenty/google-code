@@ -25,7 +25,8 @@ public class BaseVo implements java.io.Serializable{
 	}
 
 	public void setStart(int start) {
-		this.start = start;
+		if(start>0)
+			this.start = start;
 	}
 	
 	public int getLimit() {
@@ -33,6 +34,7 @@ public class BaseVo implements java.io.Serializable{
 	}
 
 	public void setLimit(int limit) {
-		this.limit = limit;
+		if(limit>0)
+			this.limit = limit;
 	}
 }
