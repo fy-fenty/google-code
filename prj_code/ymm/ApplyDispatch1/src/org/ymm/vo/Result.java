@@ -19,7 +19,7 @@ public class Result {
 	 /**
 	  * 提示消息
 	  */
-	 private String msg = AppConstant.ACTION_ERROR_MSG_A001;
+	 private String msg = AppConstant.DEFAULT_ERROR;
 	 
 	 /**
      * 异常信息
