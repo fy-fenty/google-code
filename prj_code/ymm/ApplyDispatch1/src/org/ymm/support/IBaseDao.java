@@ -36,7 +36,7 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T,PK> {
 	 * @Description: 执行count查询获得本次Sql查询所能获得的对象总数.注： 本函数只能自动处理简单的sql语句,复杂的sql查询请另行编写count语句查询.
 	 * @throws
 	 */
-	public abstract long countSqlResult(final String sql,final Object...values);
+	public abstract long countSqlResult(final String sql,final String...values);
 	
 	/**
 	 * @Title: countSqlResult 
@@ -73,7 +73,7 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T,PK> {
 	 * @throws
 	 */
 	public abstract Page findPageBySQL(final BaseVo vo, final String sql,
-			final Object...values);
+			final String...values);
 	
 	/**
 	 * @Title: findUniqueBySQL 
@@ -84,7 +84,7 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T,PK> {
 	 * @Description: 根据sql查询唯一结果，返回Map对象
 	 * @throws
 	 */
-	public Map<String,Object> findUniqueBySQL(String sql,Map<String,Object> values);
+	public Map<String,Object> findUniqueBySQL(final String sql,final Map<String,Object> values);
 	
 	/**
 	 * @Title: findUniqueBySQL 
@@ -95,5 +95,5 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T,PK> {
 	 * @Description: 根据sql查询唯一结果，返回Map对象
 	 * @throws
 	 */
-	public abstract Map<String,Object> findUniqueBySQL(final String sql,final Object...values);
+	public abstract Map<String,Object> findUniqueBySQL(final String sql,final String...values);
 }

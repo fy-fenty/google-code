@@ -39,19 +39,16 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Class getSuperClassType(final Class claz,final int index){
-		Type type=claz.getGenericSuperclass();
-		if(type instanceof ParameterizedType){
+	public Class getSuperClassType(final Class clazz,final int index){
+		Type type=clazz.getGenericSuperclass();
+		if(type instanceof ParameterizedType==false)
 			return Object.class;
-		}
-		if(type instanceof java.lang.Class)
+		Type[] types=((ParameterizedType)type).getActualTypeArguments();
+		if(types.length<0||index>=types.length)
 			return Object.class;
-		Type[] ts = ((ParameterizedType) type).getActualTypeArguments();
-		if(index<0||index>=ts.length){
+		if(types[index] instanceof TypeVariableImpl)
 			return Object.class;
-		}
-		
-		return (Class) ts[index];
+		return (Class)types[index];
 	}
 	
 	@Override
@@ -64,6 +61,7 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 		getSession().saveOrUpdate(entity);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T saveNew(final T entity) {
 		return (T)getSession().merge(entity);
@@ -71,7 +69,7 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 
 	@Override
 	public void delete(final T entity) {
-		getSession().delete(entity);
+		getSession().update(entity);
 	}
 
 	@Override
@@ -79,36 +77,44 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 		delete(get(id));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T get(final PK id) {
+		System.out.println(entityClass.getName());
 		return (T)getSession().get(entityClass, id);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> X get(Class<X> claz,Serializable id) {
 		return (X) getSession().get(claz,id);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> List<X> find(final String hql) {
 		return createQuery(hql).list();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <X> List<X> find(final String hql, Object... values) {
+	public <X> List<X> find(final String hql, final String... values) {
 		return createQuery(hql, values).list();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> List<X> find(final String hql, final Map<String, Object> values) {
 		return createQuery(hql, values).list();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <X> X findUnique(String hql, Object... values) {
+	public <X> X findUnique(final String hql, final String... values) {
 		return (X)createQuery(hql, values).uniqueResult();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <X> X findUnique(final String hql,final Map<String, Object> values) {
 		return (X)createQuery(hql, values).uniqueResult();
@@ -124,18 +130,18 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 	}
 
 	@Override
-	public SQLQuery createSQLQuery(final String sql,final Object... values) {
-		SQLQuery query = getSession().createSQLQuery(sql);
-		if (values != null) {
+	public SQLQuery createSQLQuery(final String sql,final String... values) {
+		SQLQuery query = (SQLQuery) getSession().createSQLQuery(sql);
+		if (values != null&&values.length>0) {
 			for (int i = 0; i < values.length; i++) {
-				query.setParameter(i, values[i]);
+				query.setString(i, values[i]);
 			}
 		}
 		return query;
 	}
 
 	@Override
-	public SQLQuery createSQLQuery(String hql, Map<String, Object> values) {
+	public SQLQuery createSQLQuery(final String hql,final  Map<String, Object> values) {
 		SQLQuery query = getSession().createSQLQuery(hql);
 		if (values != null) {
 			query.setProperties(values);
@@ -144,11 +150,11 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 	}
 	
 	
-	public Query createQuery(final String hql, final Object... values) {
+	public Query createQuery(final String hql, final String... values) {
 		Query query = getSession().createQuery(hql);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
-				query.setParameter(i, values[i]);
+				query.setString(i, values[i]);
 			}
 		}
 		return query;

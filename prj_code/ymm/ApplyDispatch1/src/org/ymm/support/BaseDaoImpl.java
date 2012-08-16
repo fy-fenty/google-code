@@ -27,8 +27,8 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 	}
 
 	@Override
-	public long countSqlResult(final String sql,final Object... values) {
-		String countSql="select count(1) form ("+sql+")";
+	public long countSqlResult(final String sql,final String... values) {
+		String countSql="select count(1) from ("+sql+")";
 		Long count =0L;
 		try{
 			count=((Number) createSQLQuery(countSql, values).uniqueResult()).longValue();
@@ -46,6 +46,7 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 		try {
 			count = ((Number) createSQLQuery(countSql, values).uniqueResult())
 					.longValue();
+			
 		} catch (Exception e) {
 			throw new RuntimeException("sql can't be auto count, hql is:"
 					+ countSql, e);
@@ -55,11 +56,14 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 
 	@Override
 	public Page findPageBySQL(final BaseVo vo,final String sql,final Map<String, Object> values) {
+		System.out.println(11);
 		Page page=new Page();
 		long totalCount=countSqlResult(sql,values);
 		page.setTotalCount(totalCount);
+		
 		if(totalCount>0){
 			//按分页查询结果集
+			System.out.println(values);
 			SQLQuery query=createSQLQuery(sql, values);
 			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 			setPageParameter(query, vo.getStart(), vo.getLimit());
@@ -71,8 +75,8 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 	}
 
 	@Override
-	public Page findPageBySQL(BaseVo vo, String sql, Object... values) {
-		
+	public Page findPageBySQL(final BaseVo vo, final String sql,final String... values) {
+		System.out.println(111111);
 		Page page = new Page();
 		// count查询
 		long totalCount = countSqlResult(sql, values);
@@ -91,15 +95,15 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 	}
 
 	@Override
-	public Map<String, Object> findUniqueBySQL(String sql,
-			Map<String, Object> values) {
+	public Map<String, Object> findUniqueBySQL(final String sql,
+			final Map<String, Object> values) {
 		SQLQuery query =createSQLQuery(sql,values);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		return (Map<String, Object>)query.uniqueResult();
 	}
 
 	@Override
-	public Map<String, Object> findUniqueBySQL(String sql, Object... values) {
+	public Map<String, Object> findUniqueBySQL(final String sql, final String... values) {
 		SQLQuery query = createSQLQuery(sql, values);
 		query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		return (Map<String, Object>) query.uniqueResult();
