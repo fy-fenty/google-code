@@ -27,7 +27,7 @@
         <property name="itemId" type="java.lang.Long">
             <column name="ITEM_ID" precision="22" scale="0" />
         </property>
-        <property name="accessory" type="java.lang.String">
+        <property name="accessory" type="java.sql.Blob">
             <column name="ACCESSORY" />
         </property>
     </class>

@@ -69,7 +69,7 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 
 	@Override
 	public void delete(final T entity) {
-		getSession().update(entity);
+		getSession().delete(entity);
 	}
 
 	@Override
@@ -80,7 +80,6 @@ public class SimpleDaoImpl<T,PK extends Serializable> implements ISimpleDao<T, P
 	@SuppressWarnings("unchecked")
 	@Override
 	public T get(final PK id) {
-		System.out.println(entityClass.getName());
 		return (T)getSession().get(entityClass, id);
 	}
 

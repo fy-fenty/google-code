@@ -11,4 +11,5 @@ public interface AppConstant {
 	public final String SYS_ERROR="没有权限";
 	public final String LIST_ERROR="集合为空";
 	public final String FLAG_ERROR="记录无效";
+	public final String EXSIS_ERROR="已经存在";
 }
