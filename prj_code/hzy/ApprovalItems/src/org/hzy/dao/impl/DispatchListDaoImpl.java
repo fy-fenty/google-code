@@ -2,7 +2,7 @@ package org.hzy.dao.impl;
 
 import org.hzy.dao.IDispatchListDao;
 import org.hzy.entity.DispatchList;
-import org.hzy.support.BaseDAO;
+import org.hzy.support.impl.BaseDAO;
 
 /**
  * @author hzy

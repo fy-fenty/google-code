@@ -10,8 +10,8 @@
 	<bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
 		<property name="driver" value="oracle.jdbc.OracleDriver" />
 		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.105:1522:orcl" />
-		<property name="user" value="fy" />
-		<property name="password" value="accp2009" />
+		<property name="user" value="hzy" />
+		<property name="password" value="accp" />
 	</bean>
 
 	<bean id="MySf" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -56,7 +56,7 @@
 	</tx:advice>
 
 	<aop:config>
-		<aop:pointcut id="target" expression="execution(* org.hzy.service.ISysEmployeeService.findAllDispatch(Long))" />
-		<aop:advisor advice-ref="txAdvice" pointcut-ref="target" />
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.hzy.service.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* org.hzy.support.impl.SystemUtil.*(..))"/>
 	</aop:config>
 </beans>

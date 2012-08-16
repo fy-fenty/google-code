@@ -1,4 +1,4 @@
-package org.hzy.support;
+package org.hzy.support.impl;
 
 import java.io.Serializable;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Map;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
+import org.hzy.support.IBaseDAO;
 import org.hzy.vo.BaseVo;
 import org.hzy.vo.Page;
 

@@ -2,7 +2,7 @@ package org.hzy.dao.impl;
 
 import org.hzy.dao.ILogOperationDao;
 import org.hzy.entity.LogOperation;
-import org.hzy.support.BaseDAO;
+import org.hzy.support.impl.BaseDAO;
 
 /**
  * @author hzy

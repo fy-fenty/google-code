@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.hzy.dao.IAreaDao;
 import org.hzy.entity.Area;
-import org.hzy.support.BaseDAO;
+import org.hzy.support.impl.BaseDAO;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
