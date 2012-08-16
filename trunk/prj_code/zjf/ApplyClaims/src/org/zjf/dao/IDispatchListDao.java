@@ -2,6 +2,7 @@ package org.zjf.dao;
 
 import org.zjf.entity.DispatchList;
 import org.zjf.support.IBaseDao;
+import org.zjf.vo.Result;
 
 /**
  * @project:ApplyClaims

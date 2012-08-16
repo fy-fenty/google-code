@@ -1,5 +1,7 @@
 package org.zjf.entity;
 
+import java.sql.Blob;
+
 
 /**
  * DispatchDetail entity. @author MyEclipse Persistence Tools
@@ -16,7 +18,7 @@ public class DispatchDetail implements java.io.Serializable {
 	private String costExplain;
 	private Boolean flag;
 	private Long itemId;
-	private String accessory;
+	private Blob accessory;
 
 	// Constructors
 
@@ -32,7 +34,7 @@ public class DispatchDetail implements java.io.Serializable {
 	/** full constructor */
 	public DispatchDetail(Long dsId, Long sheetId, Double money,
 			String costExplain, Boolean flag, Long itemId,
-			String accessory) {
+			Blob accessory) {
 		this.dsId = dsId;
 		this.sheetId = sheetId;
 		this.money = money;
@@ -92,11 +94,11 @@ public class DispatchDetail implements java.io.Serializable {
 		this.itemId = itemId;
 	}
 
-	public String getAccessory() {
+	public Blob getAccessory() {
 		return this.accessory;
 	}
 
-	public void setAccessory(String accessory) {
+	public void setAccessory(Blob accessory) {
 		this.accessory = accessory;
 	}
 
