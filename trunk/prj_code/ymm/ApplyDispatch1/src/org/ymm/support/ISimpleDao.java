@@ -105,7 +105,7 @@ public interface ISimpleDao<T,PK extends Serializable> {
 	 * @return List<X>     
 	 * @Description: 按HQL查询对象列表. 注：数量可变的参数，按顺序绑定
 	 */
-	public abstract <X> List<X> find(final String sql,final Object...values);
+	public abstract <X> List<X> find(final String sql,final String...values);
 	
 	/**
 	 * @Title: find 
@@ -124,7 +124,7 @@ public interface ISimpleDao<T,PK extends Serializable> {
 	 * @return X     
 	 * @Description: 按 HQL查询唯一对象,注： 数量可变的参数,按顺序绑定.
 	 */
-	public abstract <X> X findUnique(final String hql, final Object... values);
+	public abstract <X> X findUnique(final String hql, final String... values);
 	
 	/**
 	 * @Title: findUnique 
@@ -143,7 +143,7 @@ public interface ISimpleDao<T,PK extends Serializable> {
 	 * @Description: 根据查询HQL与参数列表创建Query对象.注：数量可变的参数,按顺序绑定. 
 	 * @throws
 	 */
-	public abstract Query createQuery(final String hql, final Object... values);
+	public abstract Query createQuery(final String hql, final String... values);
 	
 	/**
 	 * @Title: createQuery 
@@ -162,7 +162,7 @@ public interface ISimpleDao<T,PK extends Serializable> {
 	 * @return SQLQuery     
 	 * @Description: 根据查询SQL与参数列表创建SQLQuery对象.注： 数量可变的参数,按顺序绑定.
 	 */
-	public abstract SQLQuery createSQLQuery(final String sql,final Object... values);
+	public abstract SQLQuery createSQLQuery(final String sql,final String... values);
 	
 	/**
 	 * @Title: createSQLQuery 
