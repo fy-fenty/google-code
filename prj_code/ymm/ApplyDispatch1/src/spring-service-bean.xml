@@ -32,5 +32,6 @@
 		<property name="system" ref="SystemService"></property>
 		<property name="detaildao" ref="DispatchDetailDao"></property>
 		<property name="statusdao" ref="DispatchStatusDao"></property>
+		<property name="departdao" ref="SysDepartmentDao"></property>
 	</bean>
 </beans>

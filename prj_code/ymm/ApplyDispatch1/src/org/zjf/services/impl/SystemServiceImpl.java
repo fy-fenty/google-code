@@ -1,14 +1,11 @@
 package org.zjf.services.impl;
 
-import java.util.List;
-
 import org.hibernate.SQLQuery;
 import org.ymm.dao.IDispatchDetailDao;
 import org.ymm.dao.IDispatchListDao;
 import org.ymm.dao.IDispatchResultDao;
 import org.ymm.dao.ILoginUserDao;
 import org.ymm.dao.ISysPositionsDao;
-import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchList;
 import org.ymm.entity.DispatchResult;
 import org.ymm.entity.LoginUser;
@@ -16,6 +13,8 @@ import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
 import org.ymm.util.MD5;
 import org.ymm.util.StringUtil;
+import org.ymm.vo.BaseVo;
+import org.ymm.vo.Page;
 import org.zjf.services.ISystemService;
 
 /**
@@ -86,20 +85,26 @@ public class SystemServiceImpl implements ISystemService{
 	@Override
 	public DispatchResult findResultById(final long cid) throws MyException{
 		String sql="select r.* from(select * from dispatch_result where sheet_id=?  order by CHECK_TIME desc nulls last)r where rownum=1";
-		SQLQuery query=resultdao.createSQLQuery(sql, cid+"");
+		SQLQuery query=resultdao.createSQLQuery(sql, cid+"").addEntity(DispatchResult.class);
 		return (DispatchResult)query.uniqueResult();
 	}
 
 	@Override
-	public List<DispatchDetail> findDetailById(final long id) throws MyException {
-		String sql="from DispatchDetail where sheetId=?";
-		return detaildao.find(sql, id+"");
+	public Page findDetailById(final long id,final int start,final int limit) throws MyException {
+		String sql="select * from dispatch_detail where sheet_Id=?";
+		BaseVo vo=new BaseVo();
+		vo.setStart(start);
+		vo.setLimit(limit);
+		return detaildao.findPageBySQL(vo, sql, id+"");
 	}
 
 	@Override
-	public List<DispatchResult> findResultListById(final long id) throws MyException {
-		String sql="from DispatchResult where sheetId=?";
-		return resultdao.find(sql,id+"");
+	public Page findResultListById(final long id,final int start,final int limit) throws MyException {
+		String sql="select * from dispatch_result where sheet_Id=?";
+		BaseVo vo=new BaseVo();
+		vo.setLimit(limit);
+		vo.setStart(start);
+		return resultdao.findPageBySQL(vo, sql, id+"");
 	}
 
 	@Override
@@ -124,5 +129,4 @@ public class SystemServiceImpl implements ISystemService{
 			return false;
 		return true;
 	}
-
 }

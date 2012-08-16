@@ -1,13 +1,11 @@
 package org.zjf.services;
 
-import java.util.List;
-
-import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchList;
 import org.ymm.entity.DispatchResult;
 import org.ymm.entity.LoginUser;
 import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
+import org.ymm.vo.Page;
 
 /**
  * @project:ApplyDispatch1
@@ -59,7 +57,7 @@ public interface ISystemService {
 	 * @throws MyException
 	 * 			A005 
 	 */
-	public List<DispatchDetail> findDetailById(final long id) throws MyException;
+	public Page findDetailById(final long id,final int start,final int limit) throws MyException;
 	
 	/**
 	 * 查询指定报销单流程
@@ -70,7 +68,7 @@ public interface ISystemService {
 	 * @throws MyException 
 	 * 			A004
 	 */
-	public List<DispatchResult> findResultListById(final long id) throws MyException;
+	public Page findResultListById(final long id,final int start,final int limit) throws MyException;
 	
 	/**
 	 * 通过用户职位id查询用户职位
