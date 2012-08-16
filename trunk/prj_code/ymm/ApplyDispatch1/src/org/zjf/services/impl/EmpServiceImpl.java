@@ -20,6 +20,7 @@ import org.ymm.util.MD5;
 import org.ymm.util.StringUtil;
 import org.ymm.vo.BaseVo;
 import org.ymm.vo.Page;
+import org.ymm.vo.Result;
 import org.zjf.services.IEmpService;
 import org.zjf.services.ISystemService;
 
@@ -133,7 +134,7 @@ public class EmpServiceImpl implements IEmpService {
 	}
 
 	@Override
-	public boolean deleteClaims(final SysEmployee emp, long cid)
+	public Result deleteClaims(final SysEmployee emp, long cid)
 			throws MyException {
 		if (StringUtil.isEmpty(emp.getESn()) == false)
 			throw new MyException("A002");
@@ -156,7 +157,8 @@ public class EmpServiceImpl implements IEmpService {
 			} catch (Exception e) {
 				throw new MyException("A007");
 			}
-		return true;
+		Result result=new Result();
+		return result;
 	}
 
 	private boolean deleteDetail(List<DispatchDetail> list) throws MyException {
@@ -172,7 +174,7 @@ public class EmpServiceImpl implements IEmpService {
 	}
 
 	@Override
-	public boolean saveClaims(final SysEmployee emp, DispatchList cla)
+	public Result saveClaims(final SysEmployee emp, DispatchList cla)
 			throws MyException {
 		if (cla == null)
 			throw new MyException("A003");
@@ -188,11 +190,12 @@ public class EmpServiceImpl implements IEmpService {
 		} catch (Exception e) {
 			throw new MyException("A008");
 		}
-		return true;
+		Result result=new Result();
+		return result;
 	}
 
 	@Override
-	public boolean updateClaims(final SysEmployee emp, DispatchList cla)
+	public Result updateClaims(final SysEmployee emp, DispatchList cla)
 			throws MyException {
 		if (cla == null)
 			throw new MyException("A002");
@@ -210,11 +213,12 @@ public class EmpServiceImpl implements IEmpService {
 		} catch (Exception e) {
 			throw new MyException("A009");
 		}
-		return true;
+		Result result1=new Result();
+		return result1;
 	}
 
 	@Override
-	public boolean updateDetail(final SysEmployee emp, DispatchDetail detail)
+	public Result updateDetail(final SysEmployee emp, DispatchDetail detail)
 			throws MyException {
 		if (detail == null)
 			throw new MyException("A002");
@@ -230,11 +234,12 @@ public class EmpServiceImpl implements IEmpService {
 		} catch (Exception e) {
 			throw new MyException("A008");
 		}
-		return true;
+		Result result2=new Result();
+		return result2;
 	}
 
 	@Override
-	public boolean deleteDetail(final SysEmployee emp, DispatchDetail detail)
+	public Result deleteDetail(final SysEmployee emp, DispatchDetail detail)
 			throws MyException {
 		if (detail == null)
 			throw new MyException("A002");
@@ -256,11 +261,12 @@ public class EmpServiceImpl implements IEmpService {
 		} catch (Exception e) {
 			throw new MyException("A007");
 		}
-		return true;
+		Result result3=new Result();
+		return result3;
 	}
 
 	@Override
-	public boolean saveDetail(final SysEmployee emp, DispatchDetail detail)
+	public Result saveDetail(final SysEmployee emp, DispatchDetail detail)
 			throws MyException {
 		if (detail == null)
 			throw new MyException("A002");
@@ -272,12 +278,14 @@ public class EmpServiceImpl implements IEmpService {
 		} catch (Exception e) {
 			throw new MyException("A009");
 		}
-		return true;
+		Result result4=new Result();
+		return result4;
 	}
 
 	@Override
-	public boolean commitClaims(final SysEmployee emp, final DispatchResult cla)
+	public Result commitClaims(final SysEmployee emp, final DispatchResult cla)
 			throws Exception {
+		
 		if (cla == null)
 			throw new Exception("A002");
 		checkEmpPos(emp.getPId());
@@ -290,7 +298,8 @@ public class EmpServiceImpl implements IEmpService {
 		} catch (Exception e) {
 			throw new Exception("A008");
 		}
-		return false;
+		Result result=new Result();
+		return result;
 	}
 
 	@Override
