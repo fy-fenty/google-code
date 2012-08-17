@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+	default-lazy-init="false">
+
+	
+	<bean name="SimpleDao" class="org.zjf.support.impl.SimpleDao">
+		<property name="sessionfactory" ref="sessionFactory"></property>
+	</bean>
+	<bean name="BaseDao" class="org.zjf.support.impl.BaseDao" parent="SimpleDao"></bean>
+	<bean name="AreaDao" class="org.zjf.dao.impl.AreaDaoImpl" parent="BaseDao"></bean>
+	<bean name="DetailItemDao" class="org.zjf.dao.impl.DetailItemDaoImpl" parent="BaseDao"></bean>
+	<bean name="DispatchDetailDao" class="org.zjf.dao.impl.DispatchDetailDaoImpl" parent="BaseDao"></bean>
+	<bean name="DispatchListDao" class="org.zjf.dao.impl.DispatchListDaoImpl" parent="BaseDao"></bean>
+	<bean name="DispatchResultDao" class="org.zjf.dao.impl.DispatchResultDaoImpl" parent="BaseDao"></bean>
+	<bean name="DispatchStatusDao" class="org.zjf.dao.impl.DispatchStatusDaoImpl" parent="BaseDao"></bean>
+	<bean name="LoginLogDao" class="org.zjf.dao.impl.LoginLogDaoImpl" parent="BaseDao"></bean>
+	<bean name="LoginUserDao" class="org.zjf.dao.impl.LoginUserDaoImpl" parent="BaseDao"></bean>
+	<bean name="LogOperationDao" class="org.zjf.dao.impl.LogOperationDaoImpl" parent="BaseDao"></bean>
+	<bean name="LogPrintDao" class="org.zjf.dao.impl.LogPrintDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysDepartmentDao" class="org.zjf.dao.impl.SysDepartmentDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysEmployeeDao" class="org.zjf.dao.impl.SysEmployeeDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysPositionsDao" class="org.zjf.dao.impl.SysPositionsDaoImpl" parent="BaseDao"></bean>
+	
+	
+	<bean name="systemServiceImpl" class="org.ymm.services.impl.SystemServiceImpl">
+		<property name="baseDao" ref="BaseDao" />
+		<property name="posdao"  ref="SysPositionsDao"/>
+		<property name="logindao" ref="LoginUserDao"></property>
+	</bean>
+	<bean name="employeeServiceImpl" class="org.ymm.services.impl.EmployeeServiceImpl">
+		<property name="baseDao" ref="BaseDao"/>
+		<property name="iSystemService" ref="systemServiceImpl"/>
+		<property name="iDispatchListDao" ref="DispatchListDao"/>
+		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
+		
+		
+	</bean>
+	
+</beans>
