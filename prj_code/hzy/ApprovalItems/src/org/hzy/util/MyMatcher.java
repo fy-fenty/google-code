@@ -20,8 +20,8 @@ public class MyMatcher {
 	 *            需要验证的参数
 	 * @return 空为True，反之Fasle
 	 */
-	public static boolean isEmpty(Object input) {
-		return input == null || "".equals(input + "".trim()) ? true : false;
+	public static boolean isEmpty(String input) {
+		return input == null || "".equals(input.trim()) ? true : false;
 	}
 
 	/**
