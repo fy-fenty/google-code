@@ -2,10 +2,12 @@ package org.zjf.services;
 
 import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchList;
+import org.ymm.entity.DispatchResult;
 import org.ymm.entity.SysEmployee;
 import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
 import org.ymm.vo.Page;
+import org.ymm.vo.Result;
 
 /**
  * @project:ApplyDispatch1
@@ -47,7 +49,7 @@ public interface IEmpService {
 	 * @return Result
 	 * 			删除成功为true,删除失败为false
 	 */
-	public boolean deleteClaims(final SysEmployee emp,final long cid)throws MyException;
+	public Result deleteClaims(final SysEmployee emp,final DispatchList cid)throws MyException;
 	
 	/**
 	 * 保存报销单
@@ -57,7 +59,7 @@ public interface IEmpService {
 	 * 			True:保存成功，false:保存失败
 	 * @throws MyException 
 	 */
-	public boolean saveClaims(final SysEmployee emp,final DispatchList cla) throws MyException;
+	public Result saveClaims(final SysEmployee emp,final DispatchList cla) throws MyException;
 	
 	/**
 	 * 修改报销单
@@ -67,7 +69,7 @@ public interface IEmpService {
 	 * 			True:修改成功，false:修改失败
 	 * @throws MyException 
 	 */
-	public boolean updateClaims(final SysEmployee emp,final DispatchList cla) throws MyException;
+	public Result updateClaims(final SysEmployee emp,final DispatchList cla) throws MyException;
 	
 	/**
 	 * 修改报销单明细
@@ -80,7 +82,7 @@ public interface IEmpService {
 	 * @throws MyException 
 	 * 			
 	 */
-	public boolean updateDetail(final SysEmployee emp,final DispatchDetail detail) throws MyException;
+	public Result updateDetail(final SysEmployee emp,final DispatchDetail detail) throws MyException;
 	
 	/**
 	 * 删除报销单明细
@@ -90,7 +92,7 @@ public interface IEmpService {
 	 * 			True:删除成功，删除失败
 	 * @throws MyException 
 	 */
-	public boolean deleteDetail(final SysEmployee emp,final DispatchDetail detail) throws MyException;
+	public Result deleteDetail(final SysEmployee emp,final DispatchDetail detail) throws MyException;
 	
 	/**
 	 * 增加报销单明细
@@ -100,7 +102,7 @@ public interface IEmpService {
 	 * 			true:删除成功，false:删除失败
 	 * @throws MyException 
 	 */
-	public boolean saveDetail(final SysEmployee emp,final DispatchDetail detail) throws MyException;
+	public Result saveDetail(final SysEmployee emp,final DispatchDetail detail) throws MyException;
 	
 	/**
 	 * 提交报销单
@@ -110,7 +112,7 @@ public interface IEmpService {
 	 * 			true：提交成功，false:提交失败
 	 * @throws Exception 
 	 */
-	public boolean commitClaims(final SysEmployee emp, final DispatchList cla) throws Exception;
+	public Result commitClaims(final SysEmployee emp, final DispatchList cla) throws Exception;
 	
 	/**
 	 * 登录
@@ -122,5 +124,5 @@ public interface IEmpService {
 	 * @throws MyException 
 	 * 			
 	 */
-	public SysPositions loginUser(final String username,final String pwd) throws MyException;
+	public SysEmployee loginUser(final String username,final String pwd) throws MyException;
 }
