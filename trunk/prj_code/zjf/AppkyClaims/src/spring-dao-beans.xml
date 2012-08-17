@@ -30,16 +30,18 @@
 	
 	<bean name="systemServiceImpl" class="org.ymm.services.impl.SystemServiceImpl">
 		<property name="baseDao" ref="BaseDao" />
-		<property name="posdao"  ref="SysPositionsDao"/>
-		<property name="logindao" ref="LoginUserDao"></property>
+		<property name="iSysPositionsDao"  ref="SysPositionsDao"/>
+		<property name="iLoginUserDao" ref="LoginUserDao" />
+		<property name="iDispatchListDao" ref="DispatchListDao"/>
+		<property name="iDispatchResultDao" ref="DispatchResultDao"/>
+		<property name="iDispatchDetailDao" ref="DispatchDetailDao"></property>
 	</bean>
 	<bean name="employeeServiceImpl" class="org.ymm.services.impl.EmployeeServiceImpl">
 		<property name="baseDao" ref="BaseDao"/>
 		<property name="iSystemService" ref="systemServiceImpl"/>
 		<property name="iDispatchListDao" ref="DispatchListDao"/>
 		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
-		
-		
+		<property name="iDispatchDetailDao" ref="DispatchDetailDao"/>
 	</bean>
 	
 </beans>

@@ -21,6 +21,8 @@ public interface AppConstant {
 	public final String FLAG_ERROR="记录无效";
 	public final String EXSIS_ERROR="已经存在";
 	
+	
 	public final String INEQUALITY_ERROR="不匹配";
 	public final String OTHER_ERROR="其他错误";
+	public final String SELECT_ERROR="查询失败";
 }

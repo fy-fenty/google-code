@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.hibernate.Query;
 import org.zjf.exception.MyException;
-import org.zjf.vo.BaseVO;
+import org.zjf.vo.BaseVo;
 import org.zjf.vo.Page;
 
 /**
@@ -64,7 +64,7 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * @return Page
 	 * 			封装好了的Pahe对象
 	 */
-	public abstract Page findPageBySql(final BaseVO vo ,final String sql,final Object...values);
+	public abstract Page findPageBySql(final BaseVo vo ,final String sql,final Object...values);
 	
 	/**
 	 * 通过SQL分页查询
@@ -77,7 +77,7 @@ public interface IBaseDao<T,PK extends Serializable> extends ISimpleDao<T, PK>{
 	 * @return Page
 	 * 			封装好了的Pahe对象
 	 */
-	public abstract Page findPageBySql(final BaseVO vo ,final String sql,final Map<String,Object> values);
+	public abstract Page findPageBySql(final BaseVo vo ,final String sql,final Map<String,Object> values);
 	
 	/**
 	 * 根据sql查询唯一结果，返回Map对象

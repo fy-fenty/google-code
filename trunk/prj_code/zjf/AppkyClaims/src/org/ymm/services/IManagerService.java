@@ -1,10 +1,13 @@
 package org.ymm.services;
 
-import org.zjf.entity.DispatchResult;
 import org.zjf.entity.SysEmployee;
 import org.zjf.entity.SysPositions;
 import org.zjf.exception.MyException;
+import org.zjf.vo.BaseVo;
+import org.zjf.vo.DispatchResultVo;
 import org.zjf.vo.Page;
+import org.zjf.vo.Result;
+import org.zjf.vo.SysEmployeeVo;
 
 /**
  * @project:ApplyDispatch1
@@ -25,7 +28,7 @@ public interface IManagerService {
 	 * @return boolean
 	 * 			true:审批成功，false:审批失败
 	 */
-	public boolean applyClaims(final SysEmployee emp,final DispatchResult result)throws MyException;
+	public Result applyClaims(final SysEmployee emp,final DispatchResultVo vo)throws MyException;
 	
 	/**
 	 * 查询待我审核
@@ -39,7 +42,7 @@ public interface IManagerService {
 	 * 			 返回Page对象
 	 * @throws MyException
 	 */
-	public Page findMyApplyClaims(final SysEmployee emp,final int start,int limit)throws MyException;
+	public Page findMyApplyClaims(final SysEmployee emp,final BaseVo vo)throws MyException;
 	
 	/**
 	 * 密码重置
@@ -52,7 +55,7 @@ public interface IManagerService {
 	 * 			
 	 * @throws MyException
 	 */
-	public boolean SetPwd(final SysEmployee manager,final SysEmployee emp)throws MyException;
+	public Result SetPwd(final SysEmployee manager,final SysEmployeeVo vo)throws MyException;
 	
 	/**
 	 * 	查询部门报销单
@@ -66,7 +69,7 @@ public interface IManagerService {
 	 * 			Page对象
 	 * @throws MyException
 	 */
-	public Page findMyDepartClaims(final SysEmployee emp,final int start,int limit)throws MyException;
+	public Page findMyDepartClaims(final SysEmployee emp,final BaseVo vo)throws MyException;
 	
 	/**
 	 * 登录
