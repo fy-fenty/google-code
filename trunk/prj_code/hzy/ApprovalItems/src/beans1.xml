@@ -34,5 +34,7 @@
 		<property name="iseDao" ref="SysEmployeeDao" />
 		<property name="idlDao" ref="DispatchListDao" />
 		<property name="isu" ref="SystemUtil" />
+		<property name="iddDao" ref="DispatchDetailDao" />
+		<property name="idrDao" ref="DispatchResultDao"></property>
 	</bean>
 </beans>

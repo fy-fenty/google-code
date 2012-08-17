@@ -7,8 +7,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Test {
 	public static void main(String[] args) throws MyException {
-		Long l1 = 1L;
-		Long l2 = 1L;
-		System.out.println(l1 != l2);
+		
 	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hzy.entity.DispatchDetail;
 import org.hzy.entity.DispatchList;
+import org.hzy.entity.DispatchResult;
 import org.hzy.entity.LoginUser;
 import org.hzy.exception.MyException;
 import org.hzy.vo.Result;
@@ -42,7 +43,7 @@ public interface ISysEmployeeService {
 	 * @return Result
 	 * @throws MyException
 	 */
-	public abstract Result saveDispatchList(Long uId, DispatchList dl) throws MyException;
+	public abstract Result saveDispatchList(String eSn, DispatchList dl);
 
 	/**
 	 * 用户修改报销单
@@ -51,52 +52,63 @@ public interface ISysEmployeeService {
 	 *            修改的报销单
 	 * @return Result
 	 */
-	public abstract Result updateDispatchList(Long uId, DispatchList dl) throws MyException;
+	public abstract Result updateDispatchList(String eSn, DispatchList dl);
 
 	/**
 	 * 用户修改报销单明细
 	 * 
+	 * @param eSn
+	 *            用户编号
 	 * @param dd
 	 *            修改的报销单明细
 	 * @return Result
+	 * @throws MyException
 	 */
-	public abstract Result updateDispatchDetail(DispatchDetail dd) throws MyException;
+	public abstract Result updateDispatchDetail(String eSn, DispatchDetail dd);
 
 	/**
 	 * 删除报销单
 	 * 
+	 * @param eSn
+	 *            用户编号
 	 * @param dl
 	 *            删除的报销单
 	 * @return Result
 	 */
-	public abstract Result deleteDispatchList(DispatchList dl) throws MyException;
+	public abstract Result deleteDispatchList(String eSn, DispatchList dl);
 
 	/**
 	 * 删除报销单明细
 	 * 
+	 * @param eSn
+	 *            用户编号
 	 * @param dd
 	 *            删除的报销单明细
 	 * @return Result
 	 */
-	public abstract Result deleteDispatchDetail(DispatchDetail dd) throws MyException;
+	public abstract Result deleteDispatchDetail(String eSn, DispatchDetail dd);
 
 	/**
 	 * 添加报销单明细
 	 * 
+	 * @param eSn
+	 *            用户编号
 	 * @param dd
 	 *            添加的报销单明细
 	 * @return Result
 	 */
-	public abstract Result addDispatchDetail(DispatchDetail dd) throws MyException;
+	public abstract Result addDispatchDetail(String eSn, DispatchDetail dd);
 
 	/**
 	 * 提交报销单
 	 * 
+	 * @param eSn
+	 *            用户编号
 	 * @param dl
 	 *            提交的报销单
 	 * @return Result
 	 */
-	public abstract Result submitDispatchList(DispatchList dl) throws MyException;
+	public abstract Result submitDispatchList(String eSn, DispatchList dl, DispatchResult dr);
 
 	/**
 	 * 用户登录
@@ -105,5 +117,5 @@ public interface ISysEmployeeService {
 	 *            用户
 	 * @return Result
 	 */
-	public abstract Result login(LoginUser lu) throws MyException;
+	public abstract Result login(LoginUser lu);
 }
