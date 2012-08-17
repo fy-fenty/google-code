@@ -3,17 +3,21 @@ package org.ymm.services.impl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.ymm.services.ISystemService;
+import org.zjf.constant.AppConstant;
+import org.zjf.dao.IDispatchDetailDao;
+import org.zjf.dao.IDispatchListDao;
+import org.zjf.dao.IDispatchResultDao;
 import org.zjf.dao.ILoginUserDao;
 import org.zjf.dao.ISysPositionsDao;
 import org.zjf.entity.DispatchList;
 import org.zjf.entity.DispatchResult;
 import org.zjf.entity.LoginUser;
-import org.zjf.entity.SysEmployee;
 import org.zjf.entity.SysPositions;
 import org.zjf.exception.MyException;
 import org.zjf.support.impl.BaseDao;
 import org.zjf.util.MD5;
-import org.zjf.vo.BaseVO;
+import org.zjf.util.StringUtil;
+import org.zjf.vo.BaseVo;
 import org.zjf.vo.Page;
 import org.zjf.vo.Result;
 
@@ -26,30 +30,54 @@ import org.zjf.vo.Result;
  */
 public class SystemServiceImpl implements ISystemService {
 
-	public static void main(String[] args) throws MyException {
-		ApplicationContext ac=new ClassPathXmlApplicationContext(new String[]{"spring-sessinfactory.xml","spring-trans.xml","spring-dao-beans.xml"});
-		ISystemService iss= ac.getBean("systemServiceImpl",ISystemService.class);
-		System.out.println(iss.checkSys("xxxx1004",2).getSuccess());
-	}
+	
 	
 	private BaseDao baseDao;
-	private ISysPositionsDao posdao;
-	private ILoginUserDao logindao;
+	private ISysPositionsDao iSysPositionsDao;
+	private ILoginUserDao iLoginUserDao;
+	private IDispatchListDao iDispatchListDao;
+	private IDispatchResultDao iDispatchResultDao;
+	private IDispatchDetailDao iDispatchDetailDao;
 	
-	public ILoginUserDao getLogindao() {
-		return logindao;
+
+	public IDispatchDetailDao getiDispatchDetailDao() {
+		return iDispatchDetailDao;
 	}
 
-	public void setLogindao(ILoginUserDao logindao) {
-		this.logindao = logindao;
+	public void setiDispatchDetailDao(IDispatchDetailDao iDispatchDetailDao) {
+		this.iDispatchDetailDao = iDispatchDetailDao;
 	}
 
-	public ISysPositionsDao getPosdao() {
-		return posdao;
+	public IDispatchResultDao getiDispatchResultDao() {
+		return iDispatchResultDao;
 	}
 
-	public void setPosdao(ISysPositionsDao posdao) {
-		this.posdao = posdao;
+	public void setiDispatchResultDao(IDispatchResultDao iDispatchResultDao) {
+		this.iDispatchResultDao = iDispatchResultDao;
+	}
+
+	public IDispatchListDao getiDispatchListDao() {
+		return iDispatchListDao;
+	}
+
+	public void setiDispatchListDao(IDispatchListDao iDispatchListDao) {
+		this.iDispatchListDao = iDispatchListDao;
+	}
+
+	public ILoginUserDao getiLoginUserDao() {
+		return iLoginUserDao;
+	}
+
+	public void setiLoginUserDao(ILoginUserDao iLoginUserDao) {
+		this.iLoginUserDao = iLoginUserDao;
+	}
+
+	public ISysPositionsDao getiSysPositionsDao() {
+		return iSysPositionsDao;
+	}
+
+	public void setiSysPositionsDao(ISysPositionsDao iSysPositionsDao) {
+		this.iSysPositionsDao = iSysPositionsDao;
 	}
 
 	public BaseDao getBaseDao() {
@@ -63,7 +91,7 @@ public class SystemServiceImpl implements ISystemService {
 	@Override
 	public String getMD5(final String pwd) {
 		String MD5Pwd="";
-		if(pwd!=null&&!"".equals(pwd)){
+		if(StringUtil.isEmpty(pwd)){
 			MD5Pwd =MD5.MD5Encode(pwd);
 		}
 		return MD5Pwd;
@@ -71,59 +99,74 @@ public class SystemServiceImpl implements ISystemService {
 
 	@Override
 	public DispatchList findById(final long dl_id) {
-		String sql=" from DispatchList where dl_id=?";
-		DispatchList dispatchList= (DispatchList)baseDao.findUniqueByHQL(sql, dl_id);
-		return dispatchList;
+		//String sql=" from DispatchList where dl_id=?";
+		//DispatchList dispatchList= (DispatchList)baseDao.findUniqueByHQL(sql, dl_id);
+		return iDispatchListDao.get(dl_id);
 	}
 	
 	@Override
 	public DispatchResult findResultById(final long sheet_id) {
+		
 		String sql="select dr1.* from dispatch_result dr1 where dr1.sheet_id=? "+
 					" and check_time=(select max(check_time) from dispatch_result dr2 where dr2.sheet_id= dr1.sheet_id )";
 		
-		DispatchResult dispatchResult =  (DispatchResult) baseDao.createSQLQuery(sql, sheet_id).addEntity(DispatchResult.class).uniqueResult();
+		DispatchResult dispatchResult=(DispatchResult) iDispatchResultDao.createSQLQuery(sql, sheet_id).addEntity(DispatchResult.class).uniqueResult();
 		return dispatchResult;
 	}
+	
 
 	@Override
 	public Page findDetailById(final long sheet_id,final int start,final int limit) {
 		String sql="select * from dispatch_detail where sheet_id=?";
-		BaseVO vo=new BaseVO();
-		vo.setLimit(limit);
-		vo.setStart(start);
-		Page page= baseDao.findPageBySql(vo, sql,sheet_id);
+		BaseVo vo=new BaseVo(start,limit);
+		Page page= iDispatchDetailDao.findPageBySql(vo, sql,sheet_id);
 		return page;
 	}
-
+	
+	
 	@Override
 	public Page findResultListById(final long sheet_id,final int start,final int limit) {
 		String sql=" select * from dispatch_result where sheet_id=? order by check_time";
-		BaseVO vo=new BaseVO();
-		vo.setLimit(limit);
-		vo.setStart(start);
-		Page page=baseDao.findPageBySql(vo, sql,sheet_id);
+		BaseVo vo=new BaseVo(start,limit);
+		Page page=iDispatchListDao.findPageBySql(vo, sql,sheet_id);
 		return page;
 	}
 
+	
 	@Override
 	public SysPositions findPositionById(final long id) {
-		return posdao.get(id);
+		return iSysPositionsDao.get(id);
 	}
-
+	
+	
 	@Override
 	public LoginUser findUserBySn(String E_SN) {
 		String sql=" from LoginUser where ESn=?";
-		return logindao.findUniqueByHQL(sql, E_SN);
+		return iLoginUserDao.findUniqueByHQL(sql, E_SN);
 	}
+	
 
 	@Override
 	public Result checkSys(String E_SN, long dl_id) {
+		
+		Result result=new Result(true,AppConstant.DEFAULT_MSG,"A001");
+		
 		DispatchResult dispatchResult = this.findResultById(dl_id);
-		Result result=new Result();
+		if(dispatchResult==null){
+			return new Result(false,AppConstant.SYS_ERROR,"A003");
+		}
 		if(!dispatchResult.getCheckNext().equals(E_SN)){
-			result.setSuccess(false);
+			return new Result(false,AppConstant.SYS_ERROR,"A005");
 		}
 		return result;
 	}
+	
+	/*
+	 public static void main(String[] args) throws MyException {
+		ApplicationContext ac=new ClassPathXmlApplicationContext(new String[]{"spring-sessinfactory.xml","spring-trans.xml","spring-dao-beans.xml"});
+		ISystemService iss= ac.getBean("systemServiceImpl",ISystemService.class);
+		System.out.println(iss.checkSys("xxxx1000",3).getMsg());
+	 }
+	*/
 	
 }

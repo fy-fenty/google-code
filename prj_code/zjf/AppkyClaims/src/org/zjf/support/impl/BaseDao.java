@@ -7,10 +7,8 @@ import java.util.Map;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
-import org.zjf.exception.MyException;
 import org.zjf.support.IBaseDao;
-import org.zjf.util.StringUtil;
-import org.zjf.vo.BaseVO;
+import org.zjf.vo.BaseVo;
 import org.zjf.vo.Page;
 
 /**
@@ -62,7 +60,7 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Page findPageBySql(BaseVO vo, String sql, Object... values) {
+	public Page findPageBySql(BaseVo vo, String sql, Object... values) {
 
 		Page page = null;
 
@@ -86,7 +84,7 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Page findPageBySql(BaseVO vo, String sql, Map<String, Object> values){
+	public Page findPageBySql(BaseVo vo, String sql, Map<String, Object> values){
 		Page page = null;
 			long totalcount = countSqlResult(sql, values);
 			if (totalcount > 0) {

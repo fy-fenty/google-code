@@ -1,10 +1,12 @@
 package org.ymm.services;
 
-import org.zjf.entity.DispatchResult;
 import org.zjf.entity.SysEmployee;
 import org.zjf.entity.SysPositions;
 import org.zjf.exception.MyException;
+import org.zjf.vo.DispatchListVo;
+import org.zjf.vo.DispatchResultVo;
 import org.zjf.vo.Page;
+import org.zjf.vo.Result;
 
 /**
  * @project:ApplyDispatch1
@@ -25,7 +27,7 @@ public interface IGeneralManagerService {
 	 * @return boolean
 	 * 			true:审批成功，false:审批失败
 	 */
-	public boolean applyClaims(final SysEmployee emp,final DispatchResult result)throws MyException;
+	public Result applyClaims(final SysEmployee emp,final DispatchResultVo vo)throws MyException;
 	
 	/**
 	 * 查询待我审核
@@ -39,7 +41,7 @@ public interface IGeneralManagerService {
 	 * 			 返回Page对象
 	 * @throws MyException
 	 */
-	public Page findMyApply(final SysEmployee emp,final int start,int limit)throws MyException;
+	public Page findMyApply(final SysEmployee emp)throws MyException;
 	
 	/**
 	 * 登录
@@ -52,4 +54,15 @@ public interface IGeneralManagerService {
 	 * 			
 	 */
 	public SysPositions loginUser(final String username,final String pwd) throws MyException;
+	
+	/**
+	 * 终止报销单
+	 * @param emp
+	 * 			雇员
+	 * @param list
+	 * 			报销单
+	 * @return Result
+	 * 			Result对象
+	 */
+	public Result stopClaims(final SysEmployee emp,final DispatchListVo vo);
 }
