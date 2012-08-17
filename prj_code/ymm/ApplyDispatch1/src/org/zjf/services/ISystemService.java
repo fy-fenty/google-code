@@ -104,5 +104,4 @@ public interface ISystemService {
 	 * 			A002,A005
 	 */
 	public boolean checkSys(final String sn,final long cid) throws MyException;
-	
 }

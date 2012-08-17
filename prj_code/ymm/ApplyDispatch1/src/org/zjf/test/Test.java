@@ -1,22 +1,30 @@
 package org.zjf.test;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 import oracle.sql.BLOB;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.ymm.constant.MyConstant;
 import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchList;
 import org.ymm.entity.DispatchResult;
 import org.ymm.entity.SysEmployee;
+import org.ymm.vo.Result;
 import org.zjf.services.IEmpService;
 
 public class Test {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws SQLException{
 		ApplicationContext con = new ClassPathXmlApplicationContext("spring-service-bean.xml");
 		IEmpService source = con.getBean("EmpService", IEmpService.class);
+		Result res=commit(source);
+		System.out.println(res.getException()+res.getMsg());
+	}
+	
+	public static Result commit(IEmpService source) throws SQLException{
 		SysEmployee emp=new SysEmployee();
 		emp.setESn("xxxx1004");
 		emp.setPId(3L);
@@ -44,6 +52,16 @@ public class Test {
 		detail.setSheetId(11L);
 		detail.setFlag(true);
 		detail.setDsId(10L);
-		System.out.println(source.commitClaims(emp, list));
+		
+		Result res=new Result();
+		try {
+			source.commitClaims(emp, list);
+		} catch (Exception e) {
+			res.setException(e.getMessage());
+			res.setSuccess(false);
+			res.setMsg(MyConstant.map.get(e.getMessage()));
+		}
+		
+		return res;
 	}
 }
