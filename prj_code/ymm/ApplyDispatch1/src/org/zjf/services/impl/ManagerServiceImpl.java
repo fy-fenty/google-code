@@ -25,6 +25,14 @@ import org.ymm.vo.Result;
 import org.zjf.services.IManagerService;
 import org.zjf.services.ISystemService;
 
+/**
+ * @project:ApplyDispatch1
+ * @author:zjf
+ * @date:2012-8-18 下午4:49:47   
+ * @class:ManagerServiceImpl
+ * @extends:Object
+ * @description:总经理业务接口实现类
+ */
 public class ManagerServiceImpl implements IManagerService {
 
 	private ISysEmployeeDao empdao;
@@ -203,7 +211,6 @@ public class ManagerServiceImpl implements IManagerService {
 	@Override
 	public SysPositions loginUser(String username, String pwd)
 			throws MyException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

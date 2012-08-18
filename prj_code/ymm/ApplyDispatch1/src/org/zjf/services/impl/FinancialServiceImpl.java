@@ -23,6 +23,15 @@ import org.ymm.vo.Result;
 import org.zjf.services.IFinancialService;
 import org.zjf.services.ISystemService;
 
+/**
+ * 
+ * @project:ApplyDispatch1
+ * @author:zjf
+ * @date:2012-8-18 下午4:48:28   
+ * @class:FinancialServiceImpl
+ * @extends:Object
+ * @description:财务业务接口实现类
+ */
 public class FinancialServiceImpl implements IFinancialService {
 
 	private ISysEmployeeDao empdao;
