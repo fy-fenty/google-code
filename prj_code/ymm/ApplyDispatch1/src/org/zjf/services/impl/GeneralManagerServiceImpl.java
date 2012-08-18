@@ -9,7 +9,6 @@ import org.ymm.dao.IDispatchResultDao;
 import org.ymm.dao.IDispatchStatusDao;
 import org.ymm.dao.ISysEmployeeDao;
 import org.ymm.entity.DispatchDetail;
-import org.ymm.entity.DispatchList;
 import org.ymm.entity.DispatchResult;
 import org.ymm.entity.DispatchStatus;
 import org.ymm.entity.SysEmployee;
