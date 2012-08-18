@@ -33,7 +33,8 @@ public class TestManagerService {
 
 		DispatchResultVo vo =new DispatchResultVo();
 		vo.setCheckComment("同意");
-		vo.setSheetId(24L);
+		vo.setSheetId(25L);
+		vo.setCheckStatus(2L);
 		return source.applyClaims(emp, vo);
 	}
 	
@@ -58,6 +59,7 @@ public class TestManagerService {
 		DispatchResultVo vo =new DispatchResultVo();
 		vo.setCheckComment("同意");
 		vo.setSheetId(23L);
+		vo.setCheckStatus(2L);
 		return source.findMyDepartClaims(emp, vo);
 		
 	}

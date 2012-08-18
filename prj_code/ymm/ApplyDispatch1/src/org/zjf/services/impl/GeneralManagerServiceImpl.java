@@ -6,10 +6,12 @@ import java.util.List;
 import org.ymm.constant.MyConstant;
 import org.ymm.dao.IDispatchListDao;
 import org.ymm.dao.IDispatchResultDao;
+import org.ymm.dao.IDispatchStatusDao;
 import org.ymm.dao.ISysEmployeeDao;
 import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchList;
 import org.ymm.entity.DispatchResult;
+import org.ymm.entity.DispatchStatus;
 import org.ymm.entity.SysEmployee;
 import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
@@ -28,7 +30,16 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 	private ISystemService system;
 	private IDispatchResultDao resultdao;
 	private IDispatchListDao listdao;
-	
+	private IDispatchStatusDao statusdao;
+
+	public IDispatchStatusDao getStatusdao() {
+		return statusdao;
+	}
+
+	public void setStatusdao(IDispatchStatusDao statusdao) {
+		this.statusdao = statusdao;
+	}
+
 	public IDispatchListDao getListdao() {
 		return listdao;
 	}
@@ -71,9 +82,9 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 		if (StringUtil.isEmpty(emp.getESn()) == false)
 			return getResult("A002");
 
-		Result res=checkEmpPos(emp.getDepartmentId());
-		if(res.getSuccess()==false)
-		return res;
+		Result res = checkEmpPos(emp.getDepartmentId());
+		if (res.getSuccess() == false)
+			return res;
 
 		String sql1 = "from DispatchDetail where sheetId=?";
 		List<DispatchDetail> list = empdao.find(sql1, cla.getSheetId() + "");
@@ -81,18 +92,23 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 			return getResult("A010");
 
 		try {
-			DispatchResult result =system.findResultById(cla.getSheetId());
+			DispatchResult result = system.findResultById(cla.getSheetId());
 			if (result == null)
 				return this.getResult("A003");
-			if(result.getCheckStatus()!=1)
+			if (result.getCheckStatus() != 1)
 				return this.getResult("A005");
-			if(!(result.getCheckNext()+"").equals(emp.getESn()))
+			if (!(result.getCheckNext() + "").equals(emp.getESn()))
 				return this.getResult("A005");
-			DispatchResult rea=new DispatchResult();
-			rea.setCheckNext(emp.getESn());
-			rea.setCheckStatus(1L);
+			DispatchResult rea = new DispatchResult();
 			rea.setCheckNext(null);
-			rea.setCheckStatus(2L);
+			if (cla.getCheckStatus() == 2) {
+				rea.setCheckStatus(2L);
+			} else {
+				DispatchStatus status = statusdao.get(cla.getCheckStatus());
+				if (status == null)
+					return this.getResult("A003");
+				rea.setCheckStatus(cla.getCheckStatus());
+			}
 			rea.setCheckSn(emp.getESn());
 			rea.setCheckTime(new Date());
 			rea.setSheetId(cla.getSheetId());
@@ -105,12 +121,11 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 	}
 
 	@Override
-	public Page findMyApply(SysEmployee emp,BaseVo vo)
-			throws MyException {
-		if(emp==null||emp.getPId()==null)
+	public Page findMyApply(SysEmployee emp, BaseVo vo) throws MyException {
+		if (emp == null || emp.getPId() == null)
 			throw new MyException("A002");
-		Result re=this.checkEmpPos(emp.getPId());
-		if(re.getSuccess()==false)
+		Result re = this.checkEmpPos(emp.getPId());
+		if (re.getSuccess() == false)
 			throw new MyException("A005");
 		String sql = "select * from(select r.sheet_id,r.DR_ID,r.CHECK_STATUS,r.check_next from ( "
 				+ " select sheet_id,DR_ID,CHECK_STATUS,check_next,row_number() over (partition by e.sheet_id order by e.DR_ID desc nulls last) rn"
@@ -130,24 +145,25 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 	}
 
 	@Override
-	public Result stopClaims(SysEmployee emp, DispatchListVo list) throws MyException {
-		if(emp==null||emp.getPId()==null)
+	public Result stopClaims(SysEmployee emp, DispatchListVo list)
+			throws MyException {
+		if (emp == null || emp.getPId() == null)
 			return this.getResult("A002");
-		if(list.getDlId()==null)
+		if (list.getDlId() == null)
 			return this.getResult("A002");
-		Result result=this.checkEmpPos(emp.getPId());
-		if(result.getSuccess()==false)
+		Result result = this.checkEmpPos(emp.getPId());
+		if (result.getSuccess() == false)
 			return this.getResult("A005");
-		DispatchResult dr=system.findResultById(list.getDlId());
-		if(dr==null)
+		DispatchResult dr = system.findResultById(list.getDlId());
+		if (dr == null)
 			return this.getResult("A003");
-		if(dr.getCheckStatus()>2)
+		if (dr.getCheckStatus() > 2)
 			return this.getResult("A005");
-		if((dr.getCheckSn()+"").equals(emp.getESn()))
+		if ((dr.getCheckSn() + "").equals(emp.getESn()))
 			return this.getResult("A005");
 		dr.setCheckStatus(3L);
 		resultdao.save(dr);
-		Result res=new Result();
+		Result res = new Result();
 		return res;
 	}
 
@@ -157,11 +173,12 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 			return this.getResult("A003");
 		if (!pos.getPNameCn().equals("总经理"))
 			return this.getResult("A005");
-		Result result=new Result();
+		Result result = new Result();
 		return result;
 	}
-	private Result getResult(String str){
-		Result res=new Result();
+
+	private Result getResult(String str) {
+		Result res = new Result();
 		res.setException(str);
 		res.setSuccess(false);
 		res.setMsg(MyConstant.map.get(str));

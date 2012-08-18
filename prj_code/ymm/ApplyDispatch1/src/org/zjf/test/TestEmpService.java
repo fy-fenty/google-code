@@ -26,7 +26,7 @@ public class TestEmpService {
 //		// 增加报销单
 //		res = saveClaims(source);
 //		System.out.println(res.getException() + res.getMsg());
-		
+//		
 		// 修改报销单
 //		res = updateClaims(source);
 //		System.out.println(res.getException() + res.getMsg());
@@ -51,7 +51,8 @@ public class TestEmpService {
 //		Page page=findEmpClaims(source);
 //		System.out.println(page.getResult().size());
 		
-		commit(source);
+		System.out.println(commit(source).getMsg());
+		
 	}
 
 	// 提交报销单
@@ -66,7 +67,7 @@ public class TestEmpService {
 		list.setFlag(true);
 		list.setEventExplain("XXXX");
 		list.setESn("xxxx1004");
-		list.setDlId(24L);
+		list.setDlId(25L);
 
 		Result re = null;
 		try {
@@ -136,7 +137,7 @@ public class TestEmpService {
 		detail.setCostExplain("我勒个擦");
 		detail.setItemId(1L);
 		detail.setMoney(Double.valueOf(5000));
-		detail.setSheetId(24L);
+		detail.setSheetId(25L);
 		detail.setFlag(true);
 		detail.setDsId(10L);
 

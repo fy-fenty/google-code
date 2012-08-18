@@ -48,7 +48,8 @@ public class TestGeneralManager {
 
 		DispatchResultVo vo =new DispatchResultVo();
 		vo.setCheckComment("同意");
-		vo.setSheetId(24L);
+		vo.setSheetId(25L);
+		vo.setCheckStatus(2L);
 		return source.applyClaims(emp, vo);
 	}
 	
