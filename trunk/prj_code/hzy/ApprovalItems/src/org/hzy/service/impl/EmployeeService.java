@@ -1,7 +1,9 @@
 package org.hzy.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -18,7 +20,7 @@ import org.hzy.entity.LoginUser;
 import org.hzy.entity.SysEmployee;
 import org.hzy.entity.SysPositions;
 import org.hzy.exception.MyException;
-import org.hzy.service.ISysEmployeeService;
+import org.hzy.service.IEmployeeService;
 import org.hzy.support.ISystemUtil;
 import org.hzy.util.MyMatcher;
 import org.hzy.vo.Result;
@@ -33,7 +35,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @implements ISysEmployeeService
  * @description 员工业务的接口实现
  */
-public class SysEmployeeService implements ISysEmployeeService {
+public class EmployeeService implements IEmployeeService {
 
 	private ISysEmployeeDao iseDao;
 
@@ -82,67 +84,22 @@ public class SysEmployeeService implements ISysEmployeeService {
 	}
 
 	@Override
-	public Result updateDispatchList(String eSn, DispatchList dl) {
-		/* 一条 sql 语句完成更新 */
-		// Result rs = new Result();
-		// String hql =
-		// "update dispatch_list dl set dl = :DL where dl.flag = 1 and dl.dl_id = :dlId"
-		// + "and dl.e_sn = :ESn"
-		// +
-		// "and (select 1 from dual where (select count(1) from dispatch_result dr where dr.sheet_id = :dlId)=0 or"
-		// + "(select check_next from dispatch_result where dr_id = "
-		// +
-		// "(select max(dr_id) from dispatch_result where sheet_id = :dlId))= :ESn) = 1";
-		// Map map = new HashMap();
-		// map.put("DL", dl);
-		// map.put("dlId", dl.getDlId());
-		// map.put("ESn", eSn);
-		// try {
-		// Query query = idlDao.createQuery(hql, map);
-		// if (query.executeUpdate() > 0) {
-		// rs.setSuccess(false);
-		// rs.setMsg("修改报销单失败！");
-		// } else {
-		// rs.setSuccess(true);
-		// rs.setMsg("修改报销单成功！");
-		// }
-		// } catch (Exception e) {
-		// rs.setSuccess(false);
-		// rs.setMsg("修改报销单失败！");
-		// rs.setException(e.getMessage());
-		// }
-
+	public Result updateDispatchList(String eSn, Long dlId, String eventExplain) {
 		Result rs = new Result();
-		try {
-			if (MyMatcher.isEmpty(eSn)) {
-				throw new MyException(AppConstant.A004);
-			}
-			if (dl == null) {
-				throw new MyException(AppConstant.A005);
-			}
-			if (dl.getDlId() == null) {
-				throw new MyException(AppConstant.A002);
-			}
-			/* 调用方法更新报销单 */
-			DispatchList dl_l = isu.findDispatchListByDlId(dl.getDlId());
-			if (dl_l == null) {
-				throw new MyException(AppConstant.A007);
-			}
-			if (dl_l.getESn().equals(eSn) == false) {
-				throw new MyException(AppConstant.A008);
-			} else if (dl_l.getFlag() == false) {
-				throw new MyException(AppConstant.A009);
-			}
-			if (isu.checkPermissionsByESnAndDlId(eSn, dl.getDlId()) == false) {
-				throw new MyException(AppConstant.A0010);
-			}
-			isu.saveNew(dl);
-			rs.setSuccess(true);
-			rs.setMsg("修改报销单成功！");
-		} catch (MyException e) {
+		String hql = "update dispatch_list dl set event_explain = :ex where dl.flag = 1 and dl.dl_id = :dlId and dl.e_sn = :eSn and ("
+				+ "(select count(1) from dispatch_result dr where dr.sheet_id = :dlId)=0 or (select check_next from dispatch_result where dr_id = "
+				+ "(select max(dr_id) from dispatch_result where sheet_id = :dlId) and check_status = 4)= :eSn)";
+		Map map = new HashMap();
+		map.put("dlId", dlId);
+		map.put("ex", eventExplain);
+		map.put("eSn", eSn);
+		SQLQuery query = idlDao.createSQLQuery(hql, map);
+		if (query.executeUpdate() > 0) {
 			rs.setSuccess(false);
 			rs.setMsg("修改报销单失败！");
-			rs.setException(e.getMessage());
+		} else {
+			rs.setSuccess(true);
+			rs.setMsg("修改报销单成功！");
 		}
 		return rs;
 	}
@@ -392,12 +349,11 @@ public class SysEmployeeService implements ISysEmployeeService {
 
 	public static void main(String[] args) throws MyException {
 		String eSn = "10000000";
-
 		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml",
 				"beans1.xml" });
-		ISysEmployeeService is = actc.getBean("SysEmployeeService", ISysEmployeeService.class);
+		IEmployeeService is = actc.getBean("EmployeeService", IEmployeeService.class);
 		ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
-
+		IDispatchDetailDao idd = actc.getBean("DispatchDetailDao", IDispatchDetailDao.class);
 		/* 雇员查找所有当前状态的全部报销单 */
 		// System.out.println("雇员查找所有当前状态的全部报销单");
 		// System.out.println(is.findAllDispatchListByESn("10000000"));
@@ -411,12 +367,10 @@ public class SysEmployeeService implements ISysEmployeeService {
 		// System.out.println(rs.getMsg());
 
 		/* 用户修改报销单 */
-		// DispatchList dl = isu.findDispatchListByDlId(41L);
-		// dl.setEventExplain("asdqwwwwwwwwwwwwwwwwwwwww");
-		// Result rs = is.updateDispatchList(eSn, dl);
-		// System.out.println(rs.getSuccess());
-		// System.out.println(rs.getMsg());
-		// System.out.println(rs.getException());
+		Result rs = is.updateDispatchList(eSn, 22L, "cccccccc");
+		System.out.println(rs.getSuccess());
+		System.out.println(rs.getMsg());
+		System.out.println(rs.getException());
 
 		/* 用户修改报销单明细 */
 		// System.out.println("用户修改报销单明细");
@@ -452,33 +406,36 @@ public class SysEmployeeService implements ISysEmployeeService {
 		// System.out.println(rs.getSuccess());
 		// System.out.println(rs.getMsg());
 		// System.out.println(rs.getException());
-
+		//
 		/* 用户提交报销单 */
-		Result rs = new Result();
-		eSn = "10000000";
-		System.out.println("用户提交报销单");
-		DispatchList dl = new DispatchList(null, eSn, new Date(), "aasldhfkjashfkj", true);
-		dl = isu.findDispatchListByDlId(43L);
+		// Result rs = new Result();
+		// eSn = "10000000";
+		// System.out.println("用户提交报销单");
+		// DispatchList dl = new DispatchList(null, eSn, new Date(),
+		// "aasldhfkjashfkj", true);
+		// dl = isu.findDispatchListByDlId(22L);
 		// System.out.println("保存保存报销单");
 		// rs = is.saveDispatchList(eSn, dl);
 		// System.out.println(rs.getSuccess());
 		// System.out.println(rs.getMsg());
 		// System.out.println(rs.getException());
-		// if(rs.getSuccess() == false)return;
-		DispatchDetail dd = new DispatchDetail(null, dl.getDlId(), 43D, null, true, 3L, null);
-		System.out.println("添加保存报销单明细");
-		rs = is.addDispatchDetail(eSn, dd);
-		System.out.println(rs.getSuccess());
-		System.out.println(rs.getMsg());
-		System.out.println(rs.getException());
-		if (rs.getSuccess() == false)
-			return;
-		DispatchResult dr = new DispatchResult();
-		dr.setCheckComment("aaaaaaaaaaaaaaaa");
-		System.out.println("提交报销单");
-		rs = is.submitDispatchList(eSn, dl, dr);
-		System.out.println(rs.getSuccess());
-		System.out.println(rs.getMsg());
-		System.out.println(rs.getException());
+		// if (rs.getSuccess() == false)
+		// return;
+		// DispatchDetail dd = new DispatchDetail(null, dl.getDlId(), 43D, null,
+		// true, 3L, null);
+		// System.out.println("添加保存报销单明细");
+		// rs = is.addDispatchDetail(eSn, dd);
+		// System.out.println(rs.getSuccess());
+		// System.out.println(rs.getMsg());
+		// System.out.println(rs.getException());
+		// if (rs.getSuccess() == false)
+		// return;
+		// DispatchResult dr = new DispatchResult();
+		// dr.setCheckComment("aaaaaaaaaaaaaaaa");
+		// System.out.println("提交报销单");
+		// rs = is.submitDispatchList(eSn, dl, dr);
+		// System.out.println(rs.getSuccess());
+		// System.out.println(rs.getMsg());
+		// System.out.println(rs.getException());
 	}
 }

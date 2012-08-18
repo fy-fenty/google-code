@@ -30,7 +30,7 @@
 	<bean id="DispatchResultDao" class="org.hzy.dao.impl.DispatchResultDaoImpl" parent="BaseDao"/>
 	<bean id="DispatchStatusDao" class="org.hzy.dao.impl.DispatchStatusDaoImpl" parent="BaseDao"/>
 	
-	<bean id="SysEmployeeService" class="org.hzy.service.impl.SysEmployeeService">
+	<bean id="EmployeeService" class="org.hzy.service.impl.EmployeeService">
 		<property name="iseDao" ref="SysEmployeeDao" />
 		<property name="idlDao" ref="DispatchListDao" />
 		<property name="isu" ref="SystemUtil" />

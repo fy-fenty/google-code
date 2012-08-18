@@ -16,7 +16,7 @@ import org.hzy.vo.Result;
  * @extends Object
  * @description 员工的业务接口
  */
-public interface ISysEmployeeService {
+public interface IEmployeeService {
 	/**
 	 * 雇员查找所有当前状态的全部报销单，字段包括 报销单号 创建人 创建时间 总金额 状态
 	 * 
@@ -52,7 +52,7 @@ public interface ISysEmployeeService {
 	 *            修改的报销单
 	 * @return Result
 	 */
-	public abstract Result updateDispatchList(String eSn, DispatchList dl);
+	public abstract Result updateDispatchList(String eSn, Long dlId, String eventExplain);
 
 	/**
 	 * 用户修改报销单明细
