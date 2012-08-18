@@ -3,6 +3,7 @@ package org.zjf.services.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.ymm.constant.MyConstant;
 import org.ymm.dao.IAreaDao;
 import org.ymm.dao.IDispatchDetailDao;
 import org.ymm.dao.IDispatchListDao;
@@ -22,6 +23,8 @@ import org.ymm.exception.MyException;
 import org.ymm.util.MD5;
 import org.ymm.util.StringUtil;
 import org.ymm.vo.BaseVo;
+import org.ymm.vo.DispatchDetailVo;
+import org.ymm.vo.DispatchListVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 import org.zjf.services.IEmpService;
@@ -111,20 +114,16 @@ public class EmpServiceImpl implements IEmpService {
 	}
 
 	@Override
-	public Page findAllClaims(final SysEmployee emp, final int start,
-			final int limit) throws MyException {
+	public Page findAllClaims(final SysEmployee emp,final BaseVo vo) throws MyException {
 		if (StringUtil.isEmpty(emp.getESn()) == false)
 			throw new MyException("A002");
-		BaseVo vo = new BaseVo();
-		vo.setLimit(limit);
-		vo.setStart(start);
 		String sql = "select x.E_SN as E_SN,x.E_name as Ename,y.DL_ID as sheet_id,y.create_time as time,NVL(z.money,0) as money,NVL(j.DA_STATUS,'新建')as status"
 				+ " from sys_employee x left join"
 				+ " DisPATCH_LIST y on x.E_sn=y.E_SN left join (select sheet_id,sum(money)as money from"
 				+ " dispatch_detail group by sheet_id) z"
 				+ " on y.DL_ID=z.sheet_id left join"
 				+ " (select kk.* from(select dr.sheet_id,dr.DR_ID,s.DA_STATUS from (select r.sheet_id,r.DR_ID,r.CHECK_STATUS from ( "
-				+ "    select sheet_id,DR_ID,CHECK_STATUS,row_number() over (partition by e.sheet_id order by e.DR_ID desc) rn"
+				+ "    select sheet_id,DR_ID,CHECK_STATUS,row_number() over (partition by e.sheet_id order by e.DR_ID desc nulls last) rn"
 				+ "             from dispatch_result e    "
 				+ " ) r where rn =1) dr left join dispatch_status s on dr.CHECK_STATUS=s.DA_ID) kk) j"
 				+ " on z.sheet_id=j.sheet_id where x.E_SN=:name and y.flag=1";
@@ -145,95 +144,90 @@ public class EmpServiceImpl implements IEmpService {
 		return emp;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Result deleteClaims(final SysEmployee emp, final DispatchList cla)
+	public Result deleteClaims(final SysEmployee emp, final DispatchListVo cla)
 			throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		DispatchList dis = system.findById(cla.getDlId());
 		if (dis == null)
-			throw new MyException("A003");
+			return getResult("A003");
 		if (dis.getFlag() == false)
-			throw new MyException("A006");
+			return getResult("A006");
 		if (!dis.getESn().equals(emp.getESn()))
-			throw new MyException("A005");
+			return getResult("A005");
 
 		DispatchResult obj = system.findResultById(cla.getDlId());
-		checkStatus(obj);
-		List<DispatchDetail> list = system.findDetailById(cla.getDlId(), 0, 20)
-				.getResult();
-		if (list == null || list.size() <= 0
-				|| deleteDetail(list).getSuccess() == false)
+		Result r=checkStatus(obj);
+		if(r.getSuccess()==false)
+			return r;
 			try {
+				String sql="update dispatch_detail set FLAG=0 where sheet_ID=?";
+				detaildao.createSQLQuery(sql, cla.getDlId()+"").uniqueResult();
 				dis.setFlag(false);
 				listdao.save(dis);
 			} catch (Exception e) {
-				throw new MyException("A007");
+				return getResult("A007");
 			}
-		Result result = new Result();
-		return result;
-	}
-
-	private Result deleteDetail(List<DispatchDetail> list) throws MyException {
-		try {
-			for (DispatchDetail dispatchDetail : list) {
-				dispatchDetail.setFlag(false);
-				detaildao.save(dispatchDetail);
-			}
-		} catch (Exception e) {
-			throw new MyException("A007");
-		}
 		Result result = new Result();
 		return result;
 	}
 
 	@Override
-	public Result saveClaims(final SysEmployee emp, DispatchList cla)
+	public Result saveClaims(final SysEmployee emp, DispatchListVo cla)
 			throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (cla == null || StringUtil.isEmpty(cla.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 
 		SysEmployee emp1 = empdao.findUnique("from SysEmployee where ESn=?",
 				cla.getESn());
 		if (emp1 == null)
-			throw new MyException("A003");
+			return getResult("A003");
 		if (!emp.getESn().equals(emp1.getESn()))
-			throw new MyException("A005");
-		checkEmpPos(emp.getPId());
+			return getResult("A005");
+		Result re=checkEmpPos(emp.getPId());
+		if(re.getSuccess()==false)
+			return re;
+		DispatchList list=new DispatchList();
+		list.setCreateTime(new Date());
+		list.setESn(emp.getESn());
+		list.setEventExplain(cla.getESn());
+		list.setFlag(true);
 		try {
-			listdao.saveNew(cla);
+			listdao.saveNew(list);
 		} catch (Exception e) {
-			throw new MyException("A008");
+			return getResult("A008");
 		}
 		Result result = new Result();
 		return result;
 	}
 
 	@Override
-	public Result updateClaims(final SysEmployee emp, DispatchList cla)
+	public Result updateClaims(final SysEmployee emp, DispatchListVo cla)
 			throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (cla == null || cla.getDlId() == null)
-			throw new MyException("A002");
+			return getResult("A002");
 		DispatchList list = system.findById(cla.getDlId());
 		if (list == null)
-			throw new MyException("A010");
+			return getResult("A010");
 		if (list.getFlag() == false)
-			throw new MyException("A006");
+			return getResult("A006");
 		if (!list.getESn().equals(emp.getESn()))
-			throw new MyException("A005");
+			return getResult("A005");
 		DispatchResult result = system.findResultById(cla.getDlId());
-		checkStatus(result);
+		Result r=checkStatus(result);
+		if(r.getSuccess()==false)
+			return r;
 		try {
 			DispatchList dl = listdao.get(cla.getDlId());
 			dl.setEventExplain(cla.getEventExplain());
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new MyException("A009");
+			return getResult("A009");
 		}
 		Result res = new Result();
 		return res;
@@ -241,21 +235,23 @@ public class EmpServiceImpl implements IEmpService {
 
 	@Override
 	public Result updateDetail(final SysEmployee emp,
-			final DispatchDetail detail) throws MyException {
+			final DispatchDetailVo detail) throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (detail == null || detail.getDsId() == null
 				|| detail.getSheetId() == null)
-			throw new MyException("A002");
+			return getResult("A002");
 		DispatchList dis = system.findById(detail.getSheetId());
 		if (dis == null)
-			throw new MyException("A003");
+			return getResult("A003");
 		if (dis.getFlag() == false)
 			throw new MyException("A006");
 		if (!dis.getESn().equals(emp.getESn()))
 			throw new MyException("A005");
 		DispatchResult result = system.findResultById(detail.getSheetId());
-		checkStatus(result);
+		Result r=checkStatus(result);
+		if(r.getSuccess()==false)
+			return r;
 		try {
 			DispatchDetail de = detaildao.get(detail.getDsId());
 			de.setAccessory(detail.getAccessory());
@@ -263,7 +259,7 @@ public class EmpServiceImpl implements IEmpService {
 			de.setItemId(detail.getItemId());
 			de.setMoney(detail.getMoney());
 		} catch (Exception e) {
-			throw new MyException("A008");
+			return getResult("A008");
 		}
 		Result res = new Result();
 		return res;
@@ -271,57 +267,70 @@ public class EmpServiceImpl implements IEmpService {
 
 	@Override
 	public Result deleteDetail(final SysEmployee emp,
-			final DispatchDetail detail) throws MyException {
+			final DispatchDetailVo detail) throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (detail == null || detail.getDsId() == null
 				|| detail.getSheetId() == null)
-			throw new MyException("A002");
+			return getResult("A002");
 
 		DispatchDetail dd = detaildao.get(detail.getDsId());
 		if (dd == null)
-			throw new MyException("A003");
+			return getResult("A003");
 		if (dd.getFlag() == false)
-			throw new MyException("A006");
+			return getResult("A006");
 		DispatchList dis = system.findById(detail.getDsId());
 		if (dis.getFlag() == false)
-			throw new MyException("A006");
+			return getResult("A006");
 		if (!dis.getESn().equals(emp.getESn()))
-			throw new MyException("A005");
+			return getResult("A005");
 		DispatchResult result = system.findResultById(detail.getSheetId());
-		checkStatus(result);
+		Result r=checkStatus(result);
+		if(r.getSuccess()==false)
+			return r;
 		try {
-			detail.setFlag(false);
-			detaildao.save(detail);
+			DispatchDetail deta=detaildao.get(detail.getDsId());
+			deta.setFlag(false);
 		} catch (Exception e) {
-			throw new MyException("A007");
+			return getResult("A007");
 		}
 		Result res = new Result();
 		return res;
 	}
 
 	@Override
-	public Result saveDetail(final SysEmployee emp, DispatchDetail detail)
+	public Result saveDetail(final SysEmployee emp, DispatchDetailVo detail)
 			throws MyException {
 
 		if (emp == null || emp.getPId() == null
 				|| StringUtil.isEmpty(emp.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (detail == null || detail.getSheetId() == null)
-			throw new MyException("A002");
+			return getResult("A002");
 
-		checkEmpPos(emp.getPId());
+		Result re=checkEmpPos(emp.getPId());
+		if(re.getSuccess()==false)
+			return re;
 		DispatchList dis = system.findById(detail.getSheetId());
 		if (dis == null)
-			throw new MyException("A003");
+			return getResult("A003");
 		if (!dis.getESn().equals(emp.getESn()))
-			throw new MyException("A006");
+			return getResult("A006");
 		DispatchResult result = system.findResultById(detail.getSheetId());
-		checkStatus(result);
+		Result r=checkStatus(result);
+		if(r.getSuccess()==false)
+			return r;
+		DispatchDetail deta=new DispatchDetail();
+		deta.setAccessory(detail.getAccessory());
+		deta.setCostExplain(detail.getCostExplain());
+		deta.setFlag(true);
+		deta.setItemId(detail.getItemId());
+		deta.setMoney(detail.getMoney());
+		deta.setSheetId(detail.getSheetId());
 		try {
-			detaildao.saveNew(detail);
+			detaildao.saveNew(deta);
 		} catch (Exception e) {
-			throw new MyException("A009");
+			return getResult("A009");
 		}
 
 		Result res = new Result();
@@ -330,36 +339,43 @@ public class EmpServiceImpl implements IEmpService {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public Result commitClaims(final SysEmployee emp, final DispatchList cla)
+	public Result commitClaims(final SysEmployee emp, final DispatchListVo cla)
 			throws MyException {
 
 		if (emp == null || emp.getDepartmentId() == null
 				|| emp.getPId() == null)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (cla == null || cla.getDlId() == null || cla.getFlag() == null
 				|| cla.getFlag() == false)
-			throw new MyException("A002");
+			return getResult("A002");
 		if (StringUtil.isEmpty(emp.getESn()) == false
 				|| StringUtil.isEmpty(cla.getESn()) == false)
-			throw new MyException("A002");
+			return getResult("A002");
 
-		checkEmpPos(emp.getPId());
+		Result re=checkEmpPos(emp.getPId());
+		
+		if(re.getSuccess()==false)
+			return re;
+		DispatchList dis=listdao.get(cla.getDlId());
+		if(!dis.getESn().equals(emp.getESn()))
+			return this.getResult("A005");
 		DispatchResult r = system.findResultById(cla.getDlId());
 		if (r != null) {
 			if(!r.getCheckNext().equals(emp.getESn()))
-				throw new MyException("A006");
+				return getResult("A006");
 				
 		}
-		List<DispatchDetail> list = system.findDetailById(cla.getDlId(), 0, 999)
+		List<DispatchDetail> list = system.findDetailById(cla.getDlId(), 0, 2)
 				.getResult();
 		if (list == null || list.size() <= 0)
-			throw new MyException("A010");
-
+			return getResult("A010");
+		
+		
 		SysDepartment depa = departdao.findUnique(
 				"from SysDepartment where DId=?", emp.getDepartmentId() + "");
 		if (depa == null || StringUtil.isEmpty(depa.getManageSn()) == false)
-			throw new MyException("A006");
-
+			return getResult("A006");
+		
 		DispatchResult res = new DispatchResult();
 		res.setCheckComment(cla.getEventExplain());
 		res.setCheckNext(depa.getManageSn());
@@ -371,8 +387,10 @@ public class EmpServiceImpl implements IEmpService {
 		try {
 			resultdao.save(res);
 		} catch (Exception e) {
-			throw new MyException("A008");
+			e.printStackTrace();
+			return this.getResult("A008");
 		}
+
 		Result result = new Result();
 		return result;
 	}
@@ -394,20 +412,32 @@ public class EmpServiceImpl implements IEmpService {
 		return emp;
 	}
 
-	private void checkStatus(DispatchResult result) throws MyException {
+	private Result checkStatus(DispatchResult result) throws MyException {
 		String sql = "from DispatchStatus where daStatus='已打回'";
 		DispatchStatus status = statusdao.findUnique(sql);
 		if (result != null) {
 			if (result.getCheckStatus() != status.getDaId())
-				throw new MyException("A005");
+				return this.getResult("A005");
 		}
+		Result res=new Result();
+		return res;
 	}
 
-	private void checkEmpPos(long p_id) throws MyException {
+	private Result checkEmpPos(long p_id) throws MyException {
 		SysPositions pos = system.findPositionById(p_id);
 		if (pos == null)
-			throw new MyException("A003");
+			return this.getResult("A003");
 		if (!pos.getPNameCn().equals("雇员"))
-			throw new MyException("A005");
+			return this.getResult("A005");
+		Result res=new Result();
+		return res;
+	}
+	
+	private Result getResult(String str){
+		Result res=new Result();
+		res.setException(str);
+		res.setSuccess(false);
+		res.setMsg(MyConstant.map.get(str));
+		return res;
 	}
 }
