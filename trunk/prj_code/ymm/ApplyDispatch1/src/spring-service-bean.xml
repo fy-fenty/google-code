@@ -39,6 +39,7 @@
 		<property name="resultdao" ref="DispatchResultDao"></property>
 		<property name="system" ref="SystemService"></property>
 		<property name="departdao" ref="SysDepartmentDao"></property>
+			<property name="statusdao" ref="DispatchStatusDao"></property>
 	</bean>
 	<bean name="ManagerService" class="org.zjf.services.impl.ManagerServiceImpl">
 		<property name="empdao" ref="SysEmployeeDao"></property>
@@ -46,11 +47,13 @@
 		<property name="resultdao" ref="DispatchResultDao"></property>
 		<property name="system" ref="SystemService"></property>
 		<property name="logindao" ref="LoginUserDao"></property>
+			<property name="statusdao" ref="DispatchStatusDao"></property>
 	</bean>
 	<bean name="GeneralManagerService" class="org.zjf.services.impl.GeneralManagerServiceImpl">
 		<property name="empdao" ref="SysEmployeeDao"></property>
 		<property name="listdao" ref="DispatchListDao"></property>
 		<property name="resultdao" ref="DispatchResultDao"></property>
 		<property name="system" ref="SystemService"></property>
+		<property name="statusdao" ref="DispatchStatusDao"></property>
 	</bean>
 </beans>

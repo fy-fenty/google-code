@@ -6,10 +6,12 @@ import java.util.List;
 import org.ymm.constant.MyConstant;
 import org.ymm.dao.IDispatchListDao;
 import org.ymm.dao.IDispatchResultDao;
+import org.ymm.dao.IDispatchStatusDao;
 import org.ymm.dao.ILoginUserDao;
 import org.ymm.dao.ISysEmployeeDao;
 import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchResult;
+import org.ymm.entity.DispatchStatus;
 import org.ymm.entity.LoginUser;
 import org.ymm.entity.SysEmployee;
 import org.ymm.entity.SysPositions;
@@ -30,6 +32,16 @@ public class ManagerServiceImpl implements IManagerService {
 	private IDispatchResultDao resultdao;
 	private ISystemService system;
 	private ILoginUserDao logindao;
+	private IDispatchStatusDao statusdao;
+	
+
+	public IDispatchStatusDao getStatusdao() {
+		return statusdao;
+	}
+
+	public void setStatusdao(IDispatchStatusDao statusdao) {
+		this.statusdao = statusdao;
+	}
 
 	public ILoginUserDao getLogindao() {
 		return logindao;
@@ -97,17 +109,26 @@ public class ManagerServiceImpl implements IManagerService {
 			DispatchResult result = system.findResultById(cla.getSheetId());
 			if (result == null)
 				return this.getResult("A003");
+			if(result.getCheckStatus()!=1)
+				return this.getResult("A005");
 			if (!(result.getCheckNext() + "").equals(emp.getESn()))
 				return this.getResult("A005");
-			DispatchResult rea=new DispatchResult();
-			if (money >= 5000) {
-				String sql = "from SysEmployee where PId=1";
-				SysEmployee a = empdao.findUnique(sql);
-				rea.setCheckNext(a.getESn());
-				rea.setCheckStatus(1L);
-			} else {
-				rea.setCheckNext(null);
-				rea.setCheckStatus(2L);
+			DispatchResult rea = new DispatchResult();
+			if (cla.getCheckStatus() == 2) {
+				if (money >= 5000) {
+					String sql = "from SysEmployee where PId=1";
+					SysEmployee a = empdao.findUnique(sql);
+					rea.setCheckNext(a.getESn());
+					rea.setCheckStatus(1L);
+				} else {
+					rea.setCheckNext(null);
+					rea.setCheckStatus(2L);
+				}
+			}else{
+				DispatchStatus status=statusdao.get(cla.getCheckStatus());
+				if(status==null)
+					return this.getResult("A003");
+				rea.setCheckStatus(cla.getCheckStatus());
 			}
 			rea.setCheckSn(emp.getESn());
 			rea.setCheckTime(new Date());

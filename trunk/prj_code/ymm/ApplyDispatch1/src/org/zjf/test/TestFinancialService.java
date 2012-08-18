@@ -18,12 +18,12 @@ public class TestFinancialService {
 		IFinancialService source = con.getBean("FinancialService", IFinancialService.class);
 		Result res = null;
 //		
-//		res=applyClaims(source);
-//		System.out.println(res.getMsg());
+		res=applyClaims(source);
+		System.out.println(res.getMsg());
 //		res=payMent(source);
 //		System.out.println(res.getMsg());
-		Page page=lookClaims(source);
-		System.out.println(page.getResult().size());
+//		Page page=lookClaims(source);
+//		System.out.println(page.getResult().size());
 	}
 	
 	public static Result applyClaims(IFinancialService source) throws MyException{
@@ -34,7 +34,8 @@ public class TestFinancialService {
 
 		DispatchResultVo vo =new DispatchResultVo();
 		vo.setCheckComment("同意");
-		vo.setDrId(31L);
+		vo.setCheckStatus(5L);
+		vo.setSheetId(25L);
 		return source.applyClaims(emp, vo);
 	}
 	
@@ -48,6 +49,7 @@ public class TestFinancialService {
 		DispatchResultVo vo =new DispatchResultVo();
 		vo.setCheckComment("同意");
 		vo.setDrId(31L);
+		vo.setCheckStatus(6L);
 		return source.payMent(emp, vo);
 	}
 	

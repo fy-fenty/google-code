@@ -6,10 +6,12 @@ import java.util.List;
 import org.ymm.constant.MyConstant;
 import org.ymm.dao.IDispatchListDao;
 import org.ymm.dao.IDispatchResultDao;
+import org.ymm.dao.IDispatchStatusDao;
 import org.ymm.dao.ISysDepartmentDao;
 import org.ymm.dao.ISysEmployeeDao;
 import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchResult;
+import org.ymm.entity.DispatchStatus;
 import org.ymm.entity.SysEmployee;
 import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
@@ -28,6 +30,15 @@ public class FinancialServiceImpl implements IFinancialService {
 	private IDispatchResultDao resultdao;
 	private ISystemService system;
 	private ISysDepartmentDao departdao;
+	private IDispatchStatusDao statusdao;
+
+	public IDispatchStatusDao getStatusdao() {
+		return statusdao;
+	}
+
+	public void setStatusdao(IDispatchStatusDao statusdao) {
+		this.statusdao = statusdao;
+	}
 
 	public ISysEmployeeDao getEmpdao() {
 		return empdao;
@@ -114,15 +125,21 @@ public class FinancialServiceImpl implements IFinancialService {
 			if(result.getCheckStatus()!=2)
 				return this.getResult("A005");
 			DispatchResult rea=new DispatchResult();
-			rea.setCheckNext(emp.getESn());
-			rea.setCheckStatus(1L);
 			rea.setCheckNext(null);
-			rea.setCheckStatus(5L);
+			if (cla.getCheckStatus() == 5) {
+				rea.setCheckStatus(5L);
+			} else {
+				DispatchStatus status = statusdao.get(cla.getCheckStatus());
+				if (status == null)
+					return this.getResult("A003");
+				rea.setCheckStatus(cla.getCheckStatus());
+			}
 			rea.setCheckSn(emp.getESn());
 			rea.setCheckTime(new Date());
 			rea.setSheetId(cla.getSheetId());
 			resultdao.save(rea);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return getResult("A008");
 		}
 		Result res = new Result();
