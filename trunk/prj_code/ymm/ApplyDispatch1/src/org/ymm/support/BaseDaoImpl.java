@@ -66,6 +66,7 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 			setPageParameter(query, vo.getStart(), vo.getLimit());
 			List result=query.list();
+			
 			page.setResult(result);
 		}
 		

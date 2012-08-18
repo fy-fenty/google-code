@@ -61,7 +61,6 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 		this.system = system;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Result applyClaims(SysEmployee emp, DispatchResultVo cla)
 			throws MyException {
@@ -69,29 +68,35 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 			return getResult("A002");
 		if (cla == null || cla.getSheetId() == null)
 			return getResult("A002");
-		if (StringUtil.isEmpty(emp.getESn()) == false
-				|| StringUtil.isEmpty(cla.getCheckNext()) == false)
+		if (StringUtil.isEmpty(emp.getESn()) == false)
 			return getResult("A002");
 
 		Result res=checkEmpPos(emp.getDepartmentId());
 		if(res.getSuccess()==false)
 		return res;
 
-		List<DispatchDetail> list = system.findDetailById(cla.getSheetId(), 0,
-				999).getResult();
+		String sql1 = "from DispatchDetail where sheetId=?";
+		List<DispatchDetail> list = empdao.find(sql1, cla.getSheetId() + "");
 		if (list == null || list.size() <= 0)
 			return getResult("A010");
 
-		
 		try {
-			DispatchResult result=resultdao.get(cla.getSheetId());
-			result.setCheckNext(emp.getESn());
-			result.setCheckStatus(1L);
-			result.setCheckNext(null);
-			result.setCheckStatus(2L);
-			result.setCheckSn(emp.getESn());
-			result.setCheckTime(new Date());
-			result.setSheetId(cla.getSheetId());
+			DispatchResult result =system.findResultById(cla.getSheetId());
+			if (result == null)
+				return this.getResult("A003");
+			if(result.getCheckStatus()!=1)
+				return this.getResult("A005");
+			if(!(result.getCheckNext()+"").equals(emp.getESn()))
+				return this.getResult("A005");
+			DispatchResult rea=new DispatchResult();
+			rea.setCheckNext(emp.getESn());
+			rea.setCheckStatus(1L);
+			rea.setCheckNext(null);
+			rea.setCheckStatus(2L);
+			rea.setCheckSn(emp.getESn());
+			rea.setCheckTime(new Date());
+			rea.setSheetId(cla.getSheetId());
+			resultdao.save(rea);
 		} catch (Exception e) {
 			return getResult("A008");
 		}
@@ -102,19 +107,16 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 	@Override
 	public Page findMyApply(SysEmployee emp,BaseVo vo)
 			throws MyException {
-		
-		
-		String sql = "select x.E_SN as E_SN,x.E_name as Ename,y.DL_ID as sheet_id,y.create_time as time,NVL(z.money,0) as money,NVL(j.DA_STATUS,'新建')as status"
-				+ " from sys_employee x left join"
-				+ " DisPATCH_LIST y on x.E_sn=y.E_SN left join (select sheet_id,sum(money)as money from"
-				+ " dispatch_detail group by sheet_id) z"
-				+ " on y.DL_ID=z.sheet_id left join"
-				+ " (select kk.* from(select dr.sheet_id,dr.DR_ID,s.DA_STATUS from (select r.sheet_id,r.DR_ID,r.CHECK_STATUS from ( "
-				+ "    select sheet_id,DR_ID,CHECK_STATUS,row_number() over (partition by e.sheet_id order by e.DR_ID desc) rn"
-				+ "             from dispatch_result e    "
-				+ " ) r where rn =1) dr left join dispatch_status s on dr.CHECK_STATUS=s.DA_ID) kk) j"
-				+ " on z.sheet_id=j.sheet_id where x.E_SN=:name and y.flag=1";
-		Page page = empdao.findPageBySQL(vo, sql, emp.getESn());
+		if(emp==null||emp.getPId()==null)
+			throw new MyException("A002");
+		Result re=this.checkEmpPos(emp.getPId());
+		if(re.getSuccess()==false)
+			throw new MyException("A005");
+		String sql = "select * from(select r.sheet_id,r.DR_ID,r.CHECK_STATUS,r.check_next from ( "
+				+ " select sheet_id,DR_ID,CHECK_STATUS,check_next,row_number() over (partition by e.sheet_id order by e.DR_ID desc nulls last) rn"
+				+ "         from dispatch_result e   "
+				+ " ) r where rn =1) dr   where dr.check_status in (1,2)";
+		Page page = empdao.findPageBySQL(vo, sql);
 		if (page == null)
 			throw new MyException("A003");
 		return page;
@@ -136,8 +138,15 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 		Result result=this.checkEmpPos(emp.getPId());
 		if(result.getSuccess()==false)
 			return this.getResult("A005");
-		DispatchList dl=listdao.get(list.getDlId());
-		dl.setFlag(false);
+		DispatchResult dr=system.findResultById(list.getDlId());
+		if(dr==null)
+			return this.getResult("A003");
+		if(dr.getCheckStatus()>2)
+			return this.getResult("A005");
+		if((dr.getCheckSn()+"").equals(emp.getESn()))
+			return this.getResult("A005");
+		dr.setCheckStatus(3L);
+		resultdao.save(dr);
 		Result res=new Result();
 		return res;
 	}
