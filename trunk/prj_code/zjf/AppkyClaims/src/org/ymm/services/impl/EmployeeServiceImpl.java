@@ -1,5 +1,7 @@
 package org.ymm.services.impl;
 
+import java.util.Date;
+
 import org.hibernate.SQLQuery;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -8,13 +10,16 @@ import org.ymm.services.ISystemService;
 import org.zjf.constant.AppConstant;
 import org.zjf.dao.IDispatchDetailDao;
 import org.zjf.dao.IDispatchListDao;
+import org.zjf.dao.IDispatchResultDao;
 import org.zjf.dao.ISysEmployeeDao;
+import org.zjf.entity.DispatchDetail;
 import org.zjf.entity.DispatchList;
 import org.zjf.entity.DispatchResult;
 import org.zjf.entity.SysEmployee;
 import org.zjf.entity.SysPositions;
 import org.zjf.exception.MyException;
 import org.zjf.support.impl.BaseDao;
+import org.zjf.util.SimpleDateFormatString;
 import org.zjf.util.StringUtil;
 import org.zjf.vo.BaseVo;
 import org.zjf.vo.DispatchDetailVo;
@@ -29,6 +34,15 @@ public class EmployeeServiceImpl implements IEmpService {
 	private IDispatchListDao iDispatchListDao;
 	private ISysEmployeeDao iSysEmployeeDao;
 	private IDispatchDetailDao iDispatchDetailDao;
+	private IDispatchResultDao iDispatchResultDao;
+
+	public IDispatchResultDao getiDispatchResultDao() {
+		return iDispatchResultDao;
+	}
+
+	public void setiDispatchResultDao(IDispatchResultDao iDispatchResultDao) {
+		this.iDispatchResultDao = iDispatchResultDao;
+	}
 
 	public ISysEmployeeDao getiSysEmployeeDao() {
 		return iSysEmployeeDao;
@@ -86,15 +100,17 @@ public class EmployeeServiceImpl implements IEmpService {
 		}
 		return page;// cs
 	}
+	
+	
 
 	@Override
 	public Result saveClaims(final SysEmployee sysEmployee,
-			final DispatchListVo dispatchList) throws MyException {
+			final DispatchListVo dispatchListVo) throws MyException {
 		Result result = new Result(true, AppConstant.DEFAULT_MSG, "A001");
-		if (dispatchList == null || sysEmployee == null) {
+		if (dispatchListVo == null || sysEmployee == null) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A003");
 		}
-		if (sysEmployee.getPId() == null) {
+		if (StringUtil.isEmpty(sysEmployee.getPId().toString())==false||StringUtil.isEmpty(sysEmployee.getESn())==false) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A003");
 		}
 
@@ -104,43 +120,51 @@ public class EmployeeServiceImpl implements IEmpService {
 			return new Result(false, AppConstant.SAVE_ERROR, "A012");
 		}
 		
+		DispatchList dispatchList=getDispatchListValue(dispatchListVo,sysEmployee);
 		
-		
-		//iDispatchListDao.save(dispatchList);// cs
+		iDispatchListDao.save(dispatchList);// cs ok  注：保存报销单需要用雇员编号
 		return result;
 	}
+	
 
 	@Override
 	public Result updateClaims(final SysEmployee sysEmployee,
-			DispatchListVo dispatchList) throws MyException {
+			DispatchListVo dispatchListVo) throws MyException {
 		Result result = new Result(true, AppConstant.DEFAULT_MSG, "A001");
-		if (dispatchList == null || sysEmployee == null) {
+		if (dispatchListVo == null || sysEmployee == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(dispatchList.getDlId().toString()) == false
+		if (StringUtil.isEmpty(dispatchListVo.getDlId().toString()) == false
 				|| StringUtil.isEmpty(sysEmployee.getESn()) == false) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-		DispatchList dl = iSystemService.findById(dispatchList.getDlId());
-		if (dl == null || dl.getFlag() == false) {
+		
+		DispatchList dl = iSystemService.findById(dispatchListVo.getDlId());
+		
+		if (dl == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
+		if(dl.getFlag() == false){
+			return new Result(false, AppConstant.FLAG_ERROR, "A006");
+		}
+		
 		if (!sysEmployee.getESn().equals(dl.getESn())) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A012");
 		}
-
-		DispatchResult dr1 = iSystemService.findResultById(dispatchList.getDlId());
-		if (dr1 != null) {
-			if (dr1.getCheckStatus() == 4) {
-				return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-			}
-			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
+		
+		if(this.getDispatchResultEnd(dispatchListVo.getDlId()).getSuccess()==false){
+			return this.getDispatchResultEnd(dispatchListVo.getDlId());
 		}
 		
-		//iDispatchListDao.saveNew(dispatchList);
+		DispatchList dispatchList=getDispatchListValue(dispatchListVo,sysEmployee);
+		//设置需要修改的列
+		dl.setEventExplain(dispatchList.getEventExplain());
+		iDispatchListDao.saveNew(dl); //cs ok //注：保存查询出来的报销单
 		return result;
 	}
-
+	
+	
+	
 	@Override
 	public SysEmployee findBySn(String SN) throws MyException {
 		String sql = " from SysEmployee where E_SN=?";
@@ -176,39 +200,66 @@ public class EmployeeServiceImpl implements IEmpService {
 		
 		String sql1 = "update dispatch_list set flag=0 where dl_id=?";
 		SQLQuery sq1 = iDispatchListDao.createSQLQuery(sql,dispatchList.getDlId());
-		sq1.executeUpdate();
+		sq1.executeUpdate(); //cs ok
 		return result;
 	}
 	
-
-	
-
 	@Override
-	public Result updateDetail(SysEmployee emp, DispatchDetailVo detail)
+	public Result updateDetail(SysEmployee emp, DispatchDetailVo dispatchDetailVo)
 			throws MyException {
 		Result result = new Result(false, AppConstant.DEFAULT_MSG, "A001");
-		if (emp == null || detail == null) {
+		if (emp == null || dispatchDetailVo == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(detail.getDsId().toString()) == false) {
+		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId().toString()) == false
+				||StringUtil.isEmpty(dispatchDetailVo.getDsId().toString())==false) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-
+		DispatchList dispatchList = iSystemService.findById(dispatchDetailVo.getSheetId());
+		if (dispatchList == null) {
+			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
+		}
+		System.out.println(dispatchList.getESn()+" "+emp.getESn());
+		if (!dispatchList.getESn().equals(emp.getESn())) {
+			return new Result(false, AppConstant.UPDATE_ERROR, "A012");
+		}
+		if (dispatchList.getFlag() == false) {
+			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
+		}
+		if(this.getDispatchResultEnd(dispatchList.getDlId()).getSuccess()==false){
+			return this.getDispatchResultEnd(dispatchList.getDlId());
+		}
+		//查询报销单明细
+		DispatchDetail dispatchDetail= getDispatchDetailBydsId(dispatchDetailVo.getDsId());
+		if(dispatchDetail.getFlag()==false){
+			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
+		}
+		//设置需要修改的值
+		dispatchDetail.setMoney(dispatchDetailVo.getMoney());
+		dispatchDetail.setCostExplain(dispatchDetailVo.getCostExplain());
+		dispatchDetail.setItemId(dispatchDetailVo.getItemId());
+		dispatchDetail.setAccessory(dispatchDetailVo.getAccessory());
+		iDispatchDetailDao.save(dispatchDetail);//cs ok
 		return result;
 	}
-
+	//通过明细id查询指定报销单明细
+	public DispatchDetail getDispatchDetailBydsId(long dsid){
+		String sql=" from DispatchDetail where dsId=? ";
+		DispatchDetail dispatchDetail= iDispatchDetailDao.findUniqueByHQL(sql, dsid);
+		return dispatchDetail;
+	}
 	@Override
-	public Result deleteDetail(SysEmployee emp, DispatchDetailVo detail)
+	public Result deleteDetail(final SysEmployee emp,final DispatchDetailVo dispatchDetailVo)
 			throws MyException {
 		Result result = new Result(true, AppConstant.DEFAULT_MSG, "A001");
-		if (emp == null || detail == null) {
+		if (emp == null || dispatchDetailVo == null) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(detail.getSheetId().toString()) == false) {
+		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId().toString()) == false) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
 		// 查询报销单
-		DispatchList dl = iSystemService.findById(detail.getSheetId());
+		DispatchList dl = iSystemService.findById(dispatchDetailVo.getSheetId());
 
 		if (dl == null) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
@@ -217,55 +268,157 @@ public class EmployeeServiceImpl implements IEmpService {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
 		// 查询报销单状态
-		DispatchResult dr1 = iSystemService.findResultById(dl.getDlId());
+		if(this.getDispatchResultEnd(dl.getDlId()).getSuccess()==false){
+			return this.getDispatchResultEnd(dl.getDlId());
+		}
+
+		String sql = "update dispatch_detail set flag=0 where ds_id=?";
+		SQLQuery sq = iDispatchDetailDao.createSQLQuery(sql,dispatchDetailVo.getDsId());
+		sq.executeUpdate();
+		// System.out.println(sq.executeUpdate());
+		return result; // cs ok 
+	}
+
+	
+	@Override
+	public Result saveDetail(final SysEmployee sysEmployee, final DispatchDetailVo dispatchDetailVo)
+			throws MyException {
+		Result result = new Result(false, AppConstant.DEFAULT_MSG, "A001");
+		if (sysEmployee == null || dispatchDetailVo == null) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		
+		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId().toString())==false) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		
+		// 查询报销单
+		DispatchList dl = iSystemService.findById(dispatchDetailVo.getSheetId());
+		if (dl == null) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		
+		if (dl.getFlag() == false) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A013");
+		}
+		if (!sysEmployee.getESn().equals(dl.getESn())) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A013");
+		}
+		
+		// 查询报销单状态
+		if(this.getDispatchResultEnd(dl.getDlId()).getSuccess()==false){
+			return this.getDispatchResultEnd(dl.getDlId());
+		}
+
+		DispatchDetail dd=this.getDispatchDetailValue(sysEmployee,dispatchDetailVo);
+		dd.setDsId(null);//主键自增长
+		iDispatchDetailDao.save(dd);//cs ok
+		
+		return result;
+	}
+
+	
+	
+	@Override
+	public Result commitClaims(SysEmployee sysEmployee, DispatchListVo dispatchListVo)
+			throws Exception {
+		Result result = new Result(false, AppConstant.DEFAULT_MSG, "A001");
+		if (sysEmployee == null || dispatchListVo == null) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+
+		if (StringUtil.isEmpty(dispatchListVo.getDlId()+"") == false
+				||StringUtil.isEmpty(sysEmployee.getDepartmentId()+"") == false) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		// 查询报销单
+		DispatchList dl = iSystemService.findById(dispatchListVo.getDlId());
+		if (dl == null) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		if (dl.getFlag() == false) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A013");
+		}
+		if (!sysEmployee.getESn().equals(dl.getESn())) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A012");
+		}
+		// 查询报销单状态
+		if(this.getDispatchResultEnd(dl.getDlId()).getSuccess()==false){
+			return this.getDispatchResultEnd(dl.getDlId());
+		}
+		System.out.println(dl.getDlId());
+		Page page = iSystemService.findDetailById(dl.getDlId(), 0, 100);
+		if(page==null){
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		if (page.getResult().size() == 0) {
+			return new Result(false, AppConstant.SAVE_ERROR, "A013");
+		}
+		System.out.println(sysEmployee.getPId());
+		String sql=" from SysEmployee where department_id=? and p_id=2";
+		SysEmployee jingli = iSysEmployeeDao.findUniqueByHQL(sql,sysEmployee.getDepartmentId());
+		if(jingli==null){
+			return new Result(false, AppConstant.SAVE_ERROR, "A003");
+		}
+		
+		DispatchResult dr=new DispatchResult();
+		dr.setSheetId(dispatchListVo.getDlId());
+		dr.setCheckNext(jingli.getESn());
+		dr.setCheckTime(new Date());
+		dr.setCheckSn(sysEmployee.getESn());
+		dr.setCheckComment(dispatchListVo.getEventExplain());
+		dr.setCheckStatus((long)1);
+		
+		iDispatchResultDao.save(dr);
+
+		return result;
+	}
+
+	
+	
+	@Override
+	public SysEmployee loginUser(String username, String pwd)
+			throws MyException {
+		return null;
+	}
+	
+	
+	//查询当前审批状态是否是新建
+	public Result getDispatchResultEnd(long dl_id) throws MyException{
+		DispatchResult dr1 = iSystemService.findResultById(dl_id);
 		if (dr1 != null) {
 			if (dr1.getCheckStatus() == 4) {
 				return new Result(false, AppConstant.UPDATE_ERROR, "A013");
 			}
-			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
+			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
 		}
-
-		String sql = "update dispatch_detail set flag=0 where ds_id=?";
-		SQLQuery sq = iDispatchDetailDao.createSQLQuery(sql,detail.getDsId());
-		sq.executeUpdate();
-		// System.out.println(sq.executeUpdate());
-		return result;// cs
+		return new Result(true, AppConstant.DEFAULT_MSG, "A001");
 	}
 
-	@Override
-	public Result saveDetail(SysEmployee emp, DispatchDetailVo detail)
-			throws MyException {
-		Result result = new Result(false, AppConstant.DEFAULT_MSG, "A001");
-		if (emp == null || detail == null) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A003");
-		}
-		if (StringUtil.isEmpty(detail.getSheetId().toString())) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A003");
-		}
-		// 查询报销单
-		DispatchList dl = iSystemService.findById(detail.getSheetId());
-		if (dl == null) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A003");
-		}
-		if (dl.getFlag() == false) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A013");
-		}
-		if (emp.getESn().equals(dl.getESn())) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A013");
-		}
-		// 查询报销单状态
-		DispatchResult dr1 = iSystemService.findResultById(dl.getDlId());
-		if (dr1 != null || dr1.getCheckStatus() == 4) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A013");
-		}
-
-		
-		//iDispatchDetailDao.save(detail);
-		
-		return result;
+	public DispatchList getDispatchListValue(DispatchListVo dispatchListVo,SysEmployee SysEmployee){
+		DispatchList dispatchList=new DispatchList();
+		dispatchList.setDlId(dispatchListVo.getDlId());
+		dispatchList.setESn(SysEmployee.getESn());
+		dispatchList.setCreateTime(dispatchListVo.getCreateTime());
+		dispatchList.setEventExplain(dispatchListVo.getEventExplain());
+		dispatchList.setFlag(dispatchListVo.getFlag());
+		return dispatchList;
 	}
-
-	public static void main(String[] args) throws MyException {
+	
+	public DispatchDetail getDispatchDetailValue(SysEmployee sysEmployee,DispatchDetailVo dispatchDetailVo){
+		DispatchDetail dd=new DispatchDetail();
+		dd.setDsId(dispatchDetailVo.getDsId());
+		dd.setCostExplain(dispatchDetailVo.getCostExplain());
+		dd.setFlag(dispatchDetailVo.getFlag());
+		dd.setMoney(dispatchDetailVo.getMoney());
+		dd.setSheetId(dispatchDetailVo.getSheetId());
+		dd.setItemId(dispatchDetailVo.getItemId());
+		dd.setAccessory(dispatchDetailVo.getAccessory());
+		return dd;
+	}
+	
+	
+	public static void main(String[] args) throws Exception {
 		ApplicationContext ac = new ClassPathXmlApplicationContext(
 				new String[] { "spring-sessinfactory.xml",
 						"spring-dao-beans.xml", "spring-trans.xml" });
@@ -273,65 +426,14 @@ public class EmployeeServiceImpl implements IEmpService {
 		SysEmployee emp = new SysEmployee();
 		emp.setEId((long)20);
 		emp.setESn("xxxx1001");
+		emp.setPId((long)3);
+		emp.setDepartmentId((long)1);
 		
-		DispatchList dl = new DispatchList();
+		DispatchListVo dl = new DispatchListVo();
+		dl.setDlId((long)20);
+		dl.setEventExplain("提交一个报销单");
 		
-		//ies.deleteClaims(emp, );
-	
-		/*
-		 * SysEmployee emp =new SysEmployee(); emp.setPId((long)3);
-		 * emp.setESn("xxxx1002");
-		 * 
-		 * DispatchList dispatchList=new DispatchList();
-		 * dispatchList.setDlId((long)10);
-		 * dispatchList.setEventExplain("给钱做事1"); dispatchList.setFlag(true);
-		 * dispatchList.setESn("xxxx1001");
-		 * System.out.println(ies.updateClaims(emp,dispatchList).getMsg());
-		 * System.out.println(AppConstant.INEQUALITY_ERROR);
-		 */
+		Result result= ies.commitClaims(emp,dl);
+		System.out.println(result.getException());
 	}
-	
-	@Override
-	public Result commitClaims(SysEmployee emp, DispatchListVo cla)
-			throws Exception {
-		Result result = new Result(false, AppConstant.DEFAULT_MSG, "A001");
-		if (emp == null || cla == null) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A003");
-		}
-		if (StringUtil.isEmpty(cla.getDlId().toString()) == false) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A003");
-		}
-		// 查询报销单
-		DispatchList dl = iSystemService.findById(cla.getDlId());
-		if (dl == null) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A003");
-		}
-		if (dl.getFlag() == false) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A013");
-		}
-		if (emp.getESn().equals(dl.getESn())) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A012");
-		}
-		// 查询报销单状态
-		DispatchResult dr1 = iSystemService.findResultById(dl.getDlId());
-		if (dr1 != null || dr1.getCheckStatus() == 4) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A013");
-		}
-		Page page = iSystemService.findDetailById(dl.getDlId(), 0, 5);
-		if (page.getResult().size() == 0) {
-			return new Result(false, AppConstant.SAVE_ERROR, "A013");
-		}
-		
-			//iDispatchListDao.save(cla);
-
-		return result;
-	}
-
-	@Override
-	public SysEmployee loginUser(String username, String pwd)
-			throws MyException {
-
-		return null;
-	}
-
 }

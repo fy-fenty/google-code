@@ -42,6 +42,18 @@
 		<property name="iDispatchListDao" ref="DispatchListDao"/>
 		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
 		<property name="iDispatchDetailDao" ref="DispatchDetailDao"/>
+		<property name="iDispatchResultDao" ref="DispatchResultDao" />
+	</bean>
+	
+	<bean name="managerServiceImpl" class="org.ymm.services.impl.ManagerServiceImpl">
+		<property name="iDispatchListDao" ref="DispatchListDao"/>
+		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
+		<property name="iLoginUserDao" ref="LoginUserDao"></property>
+	</bean>
+	
+	<bean name="" class="org.ymm.services.impl.GeneralManagerServiceImpl">
+		<property name="iDispatchListDao" ref="DispatchListDao"/>
+		<property name="iSystemService" ref="SystemService"/>
 	</bean>
 	
 </beans>

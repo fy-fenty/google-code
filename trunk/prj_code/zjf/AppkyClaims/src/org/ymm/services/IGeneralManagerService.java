@@ -3,6 +3,7 @@ package org.ymm.services;
 import org.zjf.entity.SysEmployee;
 import org.zjf.entity.SysPositions;
 import org.zjf.exception.MyException;
+import org.zjf.vo.BaseVo;
 import org.zjf.vo.DispatchListVo;
 import org.zjf.vo.DispatchResultVo;
 import org.zjf.vo.Page;
@@ -41,7 +42,7 @@ public interface IGeneralManagerService {
 	 * 			 返回Page对象
 	 * @throws MyException
 	 */
-	public Page findMyApply(final SysEmployee emp)throws MyException;
+	public Page findMyApply(final SysEmployee emp,final BaseVo baseVo)throws MyException;
 	
 	/**
 	 * 登录
