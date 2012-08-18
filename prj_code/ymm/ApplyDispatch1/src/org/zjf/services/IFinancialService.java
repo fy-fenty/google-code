@@ -1,9 +1,10 @@
 package org.zjf.services;
 
-import org.ymm.entity.DispatchResult;
 import org.ymm.entity.SysEmployee;
 import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
+import org.ymm.vo.BaseVo;
+import org.ymm.vo.DispatchResultVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 
@@ -26,7 +27,7 @@ public interface IFinancialService {
 	 * @return boolean true:审批成功，false:审批失败
 	 */
 	public Result applyClaims(final SysEmployee emp,
-			final DispatchResult result) throws MyException;
+			final DispatchResultVo vo) throws MyException;
 
 	/**
 	 * 登录
@@ -53,7 +54,7 @@ public interface IFinancialService {
 	 *            条数
 	 * @return Page page对象
 	 */
-	public Page lookClaims(final SysEmployee emp, int start, int limit)throws MyException;
+	public Page lookClaims(final SysEmployee emp,final BaseVo vo)throws MyException;
 
 	/**
 	 * 付款
@@ -64,7 +65,7 @@ public interface IFinancialService {
 	 * @return boolean
 	 * 			True:审批成功，false:审批失败
 	 */
-	public Result payMent(final SysEmployee emp, final DispatchResult result)throws MyException;
+	public Result payMent(final SysEmployee emp, final DispatchResultVo vo)throws MyException;
 
 	/**
 	 * 生成报表
