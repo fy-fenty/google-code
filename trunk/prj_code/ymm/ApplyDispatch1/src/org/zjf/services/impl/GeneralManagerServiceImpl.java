@@ -23,6 +23,14 @@ import org.ymm.vo.Result;
 import org.zjf.services.IGeneralManagerService;
 import org.zjf.services.ISystemService;
 
+/**
+ * @project:ApplyDispatch1
+ * @author:zjf
+ * @date:2012-8-18 下午4:49:12   
+ * @class:GeneralManagerServiceImpl
+ * @extends:Object
+ * @description:总经理业务接口
+ */
 public class GeneralManagerServiceImpl implements IGeneralManagerService {
 
 	private ISysEmployeeDao empdao;
@@ -139,7 +147,6 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 	@Override
 	public SysPositions loginUser(String username, String pwd)
 			throws MyException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
