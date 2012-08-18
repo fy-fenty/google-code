@@ -24,8 +24,8 @@ public class TestEmpService {
 		IEmpService source = con.getBean("EmpService", IEmpService.class);
 		Result res = null;
 //		// 增加报销单
-//		res = saveClaims(source);
-//		System.out.println(res.getException() + res.getMsg());
+		res = saveClaims(source);
+		System.out.println(res.getException() + res.getMsg());
 //		
 		// 修改报销单
 //		res = updateClaims(source);
@@ -73,7 +73,6 @@ public class TestEmpService {
 		try {
 			re = source.commitClaims(emp, list);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			re = new Result();
 			re.setException(e.getMessage());
@@ -130,6 +129,7 @@ public class TestEmpService {
 	}
 
 	// 保存报销单明细
+	@SuppressWarnings("deprecation")
 	public static Result saveDetail(IEmpService source) throws SQLException,
 			MyException {
 		DispatchDetailVo detail = new DispatchDetailVo();
@@ -149,6 +149,7 @@ public class TestEmpService {
 	}
 
 	// 更新报销单明细
+	@SuppressWarnings("deprecation")
 	public static Result updateDetail(IEmpService source) throws MyException,
 			SQLException {
 		DispatchDetailVo detail = new DispatchDetailVo();
