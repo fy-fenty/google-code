@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.ymm.constant.MyConstant;
-import org.ymm.dao.IAreaDao;
 import org.ymm.dao.IDispatchDetailDao;
 import org.ymm.dao.IDispatchListDao;
 import org.ymm.dao.IDispatchResultDao;
@@ -41,7 +40,6 @@ import org.zjf.services.ISystemService;
 public class EmpServiceImpl implements IEmpService {
 
 	private ISysEmployeeDao empdao;
-	private IAreaDao areadao;
 	private IDispatchListDao listdao;
 	private IDispatchResultDao resultdao;
 	private ISystemService system;
@@ -89,14 +87,6 @@ public class EmpServiceImpl implements IEmpService {
 		this.empdao = empdao;
 	}
 
-	public IAreaDao getAreadao() {
-		return areadao;
-	}
-
-	public void setAreadao(IAreaDao areadao) {
-		this.areadao = areadao;
-	}
-
 	public IDispatchListDao getListdao() {
 		return listdao;
 	}
@@ -126,7 +116,7 @@ public class EmpServiceImpl implements IEmpService {
 				+ "    select sheet_id,DR_ID,CHECK_STATUS,row_number() over (partition by e.sheet_id order by e.DR_ID desc nulls last) rn"
 				+ "             from dispatch_result e    "
 				+ " ) r where rn =1) dr left join dispatch_status s on dr.CHECK_STATUS=s.DA_ID) kk) j"
-				+ " on z.sheet_id=j.sheet_id where x.E_SN=:name and y.flag=1";
+				+ " on z.sheet_id=j.sheet_id where x.E_SN=? and y.flag=1";
 		Page page = empdao.findPageBySQL(vo, sql, emp.getESn());
 		if (page == null)
 			throw new MyException("A003");
@@ -149,12 +139,12 @@ public class EmpServiceImpl implements IEmpService {
 			throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
 			return getResult("A002");
-		DispatchList dis = system.findById(cla.getDlId());
+		DispatchList dis = listdao.get(cla.getDlId());
 		if (dis == null)
 			return getResult("A003");
 		if (dis.getFlag() == false)
 			return getResult("A006");
-		if (!dis.getESn().equals(emp.getESn()))
+		if (!(dis.getESn()+"").equals(emp.getESn()))
 			return getResult("A005");
 
 		DispatchResult obj = system.findResultById(cla.getDlId());
@@ -163,10 +153,10 @@ public class EmpServiceImpl implements IEmpService {
 			return r;
 			try {
 				String sql="update dispatch_detail set FLAG=0 where sheet_ID=?";
-				detaildao.createSQLQuery(sql, cla.getDlId()+"").uniqueResult();
+				detaildao.createSQLQuery(sql, dis.getDlId()+"").executeUpdate();
 				dis.setFlag(false);
-				listdao.save(dis);
 			} catch (Exception e) {
+				e.printStackTrace();
 				return getResult("A007");
 			}
 		Result result = new Result();
@@ -178,11 +168,11 @@ public class EmpServiceImpl implements IEmpService {
 			throws MyException {
 		if (emp == null || StringUtil.isEmpty(emp.getESn()) == false)
 			return getResult("A002");
-		if (cla == null || StringUtil.isEmpty(cla.getESn()) == false)
+		if (cla == null)
 			return getResult("A002");
 
 		SysEmployee emp1 = empdao.findUnique("from SysEmployee where ESn=?",
-				cla.getESn());
+				emp.getESn());
 		if (emp1 == null)
 			return getResult("A003");
 		if (!emp.getESn().equals(emp1.getESn()))
@@ -191,9 +181,9 @@ public class EmpServiceImpl implements IEmpService {
 		if(re.getSuccess()==false)
 			return re;
 		DispatchList list=new DispatchList();
+		list.setEventExplain(cla.getEventExplain());
 		list.setCreateTime(new Date());
 		list.setESn(emp.getESn());
-		list.setEventExplain(cla.getESn());
 		list.setFlag(true);
 		try {
 			listdao.saveNew(list);
@@ -216,7 +206,7 @@ public class EmpServiceImpl implements IEmpService {
 			return getResult("A010");
 		if (list.getFlag() == false)
 			return getResult("A006");
-		if (!list.getESn().equals(emp.getESn()))
+		if (!(list.getESn()+"").equals(emp.getESn()))
 			return getResult("A005");
 		DispatchResult result = system.findResultById(cla.getDlId());
 		Result r=checkStatus(result);
@@ -246,7 +236,7 @@ public class EmpServiceImpl implements IEmpService {
 			return getResult("A003");
 		if (dis.getFlag() == false)
 			throw new MyException("A006");
-		if (!dis.getESn().equals(emp.getESn()))
+		if (!(dis.getESn()+"").equals(emp.getESn()))
 			throw new MyException("A005");
 		DispatchResult result = system.findResultById(detail.getSheetId());
 		Result r=checkStatus(result);
@@ -277,12 +267,10 @@ public class EmpServiceImpl implements IEmpService {
 		DispatchDetail dd = detaildao.get(detail.getDsId());
 		if (dd == null)
 			return getResult("A003");
-		if (dd.getFlag() == false)
-			return getResult("A006");
-		DispatchList dis = system.findById(detail.getDsId());
-		if (dis.getFlag() == false)
-			return getResult("A006");
-		if (!dis.getESn().equals(emp.getESn()))
+		DispatchList dis = system.findById(detail.getSheetId());
+		if(dis==null)
+			return this.getResult("A003");
+		if (!(dis.getESn()+"").equals(emp.getESn()))
 			return getResult("A005");
 		DispatchResult result = system.findResultById(detail.getSheetId());
 		Result r=checkStatus(result);
@@ -314,7 +302,7 @@ public class EmpServiceImpl implements IEmpService {
 		DispatchList dis = system.findById(detail.getSheetId());
 		if (dis == null)
 			return getResult("A003");
-		if (!dis.getESn().equals(emp.getESn()))
+		if (!(dis.getESn()+"").equals(emp.getESn()))
 			return getResult("A006");
 		DispatchResult result = system.findResultById(detail.getSheetId());
 		Result r=checkStatus(result);
@@ -357,11 +345,11 @@ public class EmpServiceImpl implements IEmpService {
 		if(re.getSuccess()==false)
 			return re;
 		DispatchList dis=listdao.get(cla.getDlId());
-		if(!dis.getESn().equals(emp.getESn()))
+		if(!(dis.getESn()+"").equals(emp.getESn()))
 			return this.getResult("A005");
 		DispatchResult r = system.findResultById(cla.getDlId());
 		if (r != null) {
-			if(!r.getCheckNext().equals(emp.getESn()))
+			if(!(r.getCheckNext()+"").equals(emp.getESn()))
 				return getResult("A006");
 				
 		}
@@ -383,7 +371,6 @@ public class EmpServiceImpl implements IEmpService {
 		res.setCheckTime(new Date());
 		res.setSheetId(cla.getDlId());
 		res.setCheckStatus(1L);
-
 		try {
 			resultdao.save(res);
 		} catch (Exception e) {
