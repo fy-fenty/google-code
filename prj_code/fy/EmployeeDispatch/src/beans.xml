@@ -51,6 +51,21 @@
 		<property name="isys_department" ref="SysDepartmentDao" />
 	</bean>
 	
+	<bean id="sys_departManage_service" class="org.fy.service.impl.SysDepartManagerService">
+		<property name="idispatch_list" ref="DispatchListDao" />
+		<property name="idispatch_result" ref="DispatchResultDao" />
+		<property name="ilog_user" ref="LoginUser" />
+	</bean>
+	
+	<bean id="sys_ZManage_service" class="org.fy.service.impl.SysManagerService">
+		<property name="idispatch_list" ref="DispatchListDao" />
+		<property name="idispatch_result" ref="DispatchResultDao" />
+		<property name="idispatch_detail" ref="DispatchDetailDao" />
+	</bean>
+	
+	<bean id="sys_Finance_service" class="org.fy.service.impl.SysFinanceService">
+		<property name="idispatch_result" ref="DispatchResultDao" />
+	</bean>
 	<!-- Service Beans -->
 	
 	
