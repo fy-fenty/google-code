@@ -35,6 +35,15 @@
 		<property name="idlDao" ref="DispatchListDao" />
 		<property name="isu" ref="SystemUtil" />
 		<property name="iddDao" ref="DispatchDetailDao" />
-		<property name="idrDao" ref="DispatchResultDao"></property>
+		<property name="idrDao" ref="DispatchResultDao" />
+	</bean>
+	
+	<bean id="DManagerService" class="org.hzy.service.impl.DManagerService">
+		<property name="isu" ref="SystemUtil" />
+	</bean>
+	
+	<bean id="GManagerService" class="org.hzy.service.impl.GManagerService">
+		<property name="isu" ref="SystemUtil" />
+		<property name="idrDao" ref="DispatchResultDao" />
 	</bean>
 </beans>

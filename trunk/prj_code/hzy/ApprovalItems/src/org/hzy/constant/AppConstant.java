@@ -27,6 +27,7 @@ public interface AppConstant {
 	String A0016 = "该报销单明细已被删除";
 	String A0017 = "不允许提交没有明细的报销单";
 	String A0018 = "您不属于任何部门";
+	String A0019 = "参数无效";
 	/*
 	 * 总经理
 	 */
@@ -39,4 +40,5 @@ public interface AppConstant {
 	 * 员工
 	 */
 	Long EMPLOYEE = 3L;
+	
 }
