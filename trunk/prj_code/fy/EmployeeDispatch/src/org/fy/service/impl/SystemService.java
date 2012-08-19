@@ -98,7 +98,7 @@ public class SystemService implements ISystemService{
 	}
 
 	public List findDetailById(final Long id) {
-		return idispatch_detail.find("From DispatchDetail where sheetId=?", id);
+		return idispatch_detail.find("From DispatchDetail where sheetId=? and flag=1", id);
 	}
 
 	public List findDlistResultById(final Long id) {

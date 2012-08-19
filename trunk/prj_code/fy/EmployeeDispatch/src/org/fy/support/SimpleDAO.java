@@ -53,12 +53,12 @@ public class SimpleDAO<T, PK extends Serializable> implements ISimpleDAO<T, PK> 
 	}
 
 	public void save(final T entity) {
+//		getSession().clear();
 		getSession().saveOrUpdate(entity);
 	}
 
 	public T saveNew(final T entity) {
 		return (T) getSession().merge(entity);
-
 	}
 
 	public void delete(final T entity) {

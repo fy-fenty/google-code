@@ -1,6 +1,5 @@
 package org.fy.util;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -21,14 +20,14 @@ public class MyMatcher {
 	 * @return 空为True，反之False
 	 */
 	public static boolean isEmpty(Object input) {
-		return input == null || "".equals(input + "".trim()) ? true : false;
+		return input == null || "".equals(String.valueOf(input).trim()) ? true : false;
 	}
 
 	/**
 	 * 验证是否非数字
 	 * 
 	 * @param input
-	 *            需要验证的参数
+	 *            需要验证的参数`
 	 * @return 数字为True，反之False
 	 */
 	public static boolean isNaN(String input) {

@@ -8,6 +8,8 @@ import org.fy.entity.LoginUser;
 import org.fy.entity.SysEmployee;
 import org.fy.exception.MyExecption;
 import org.fy.vo.BaseVO;
+import org.fy.vo.DispatchDetailVO;
+import org.fy.vo.DispatchListVO;
 import org.fy.vo.Page;
 import org.fy.vo.Result;
 
@@ -24,35 +26,35 @@ public interface ISysEmployeeService {
 	 * @param dlist
 	 * @return Result
 	 */
-	public Result saveDispathList(final DispatchList dlist) throws MyExecption;
+	public Result saveDispathList(final String sn,final DispatchList dlist);
 	
 	/**
 	 * 雇员增加报销单明细
 	 * @param detail
 	 * @return Result
 	 */
-	public Result saveDispathDetail(final SysEmployee sys_emp,final DispatchDetail detail) throws MyExecption;
+	public Result saveDispathDetail(final String sn,final DispatchDetail detail);
 	
 	/**
 	 * 雇员修改报销单
 	 * @param dlist
 	 * @return Result
 	 */
-	public Result updateDispathList(final String sn,final DispatchList dlist) throws MyExecption;
+	public Result updateDispathList(final DispatchListVO dlistvo);
 	
 	/**
 	 * 雇员修改报销单明细
 	 * @param detail
 	 * @return Result
 	 */
-	public Result updateDispathDetail(final String sn,final DispatchDetail detail) throws MyExecption;
+	public Result updateDispathDetail(final DispatchDetailVO detailvo);
 	
 	/**
 	 * 雇员提交报销单
 	 * @param dlist
 	 * @return Result
 	 */
-	public Result commitDispathList(final String sn,final DispatchList dlist) throws MyExecption;
+	public Result commitDispathList(final DispatchListVO dlistvo);
 	
 	/**
 	 * 雇员查询报销单
@@ -66,14 +68,14 @@ public interface ISysEmployeeService {
 	 * @param id
 	 * @return Result
 	 */
-	public Result deleteDispathList(final String sn,final Long id) throws MyExecption;
+	public Result deleteDispathList(final String sn,final Long id);
 	
 	/**
 	 * 雇员删除报销单明细
 	 * @param id
 	 * @return Result
 	 */
-	public Result deleteDispathDetail(final String sn,final Long id) throws MyExecption;	
+	public Result deleteDispathDetail(final DispatchDetailVO detailvo);	
 	
 	/**
 	 * 登录
