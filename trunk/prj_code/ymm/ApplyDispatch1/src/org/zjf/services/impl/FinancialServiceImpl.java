@@ -137,7 +137,11 @@ public class FinancialServiceImpl implements IFinancialService {
 			rea.setCheckNext(null);
 			if (cla.getCheckStatus() == 5) {
 				rea.setCheckStatus(5L);
-			} else {
+			} else if(cla.getCheckStatus()==4){
+				rea.setCheckNext(result.getCheckSn());
+				rea.setCheckStatus(cla.getCheckStatus());
+			}
+			else{
 				DispatchStatus status = statusdao.get(cla.getCheckStatus());
 				if (status == null)
 					return this.getResult("A003");

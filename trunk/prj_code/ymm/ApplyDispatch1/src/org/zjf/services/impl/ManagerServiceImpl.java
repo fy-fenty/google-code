@@ -128,6 +128,9 @@ public class ManagerServiceImpl implements IManagerService {
 					SysEmployee a = empdao.findUnique(sql);
 					rea.setCheckNext(a.getESn());
 					rea.setCheckStatus(1L);
+				}else if(cla.getCheckStatus()==4){
+					rea.setCheckNext(result.getCheckSn());
+					rea.setCheckStatus(cla.getCheckStatus());
 				} else {
 					rea.setCheckNext(null);
 					rea.setCheckStatus(2L);
