@@ -65,5 +65,5 @@ public interface IGeneralManagerService {
 	 * @return Result
 	 * 			Result对象
 	 */
-	public Result stopClaims(final SysEmployee emp,final DispatchListVo vo);
+	public Result stopClaims(final SysEmployee emp,final DispatchListVo vo)  throws MyException;
 }
