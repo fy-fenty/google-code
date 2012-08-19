@@ -48,12 +48,22 @@
 	<bean name="managerServiceImpl" class="org.ymm.services.impl.ManagerServiceImpl">
 		<property name="iDispatchListDao" ref="DispatchListDao"/>
 		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
-		<property name="iLoginUserDao" ref="LoginUserDao"></property>
+		<property name="iLoginUserDao" ref="LoginUserDao"/>
+		<property name="iSystemService" ref="systemServiceImpl"/>
+		<property name="iDispatchDetailDao" ref="DispatchDetailDao"/>
+		<property name="iDispatchResultDao" ref="DispatchResultDao"/>
 	</bean>
 	
-	<bean name="" class="org.ymm.services.impl.GeneralManagerServiceImpl">
+	<bean name="generalManagerServiceImpl" class="org.ymm.services.impl.GeneralManagerServiceImpl">
 		<property name="iDispatchListDao" ref="DispatchListDao"/>
-		<property name="iSystemService" ref="SystemService"/>
+		<property name="iSystemService" ref="systemServiceImpl"/>
+		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
+		<property name="iDispatchDetailDao" ref="DispatchDetailDao"/>
+		<property name="iDispatchResultDao" ref="DispatchResultDao"/>
 	</bean>
 	
+	<bean name="financialServiceImpl" class="org.ymm.services.impl.FinancialServiceImpl">
+		<property name="iSystemService" ref="systemServiceImpl"/>
+		<property name="iDispatchResultDao" ref="DispatchResultDao"/>
+	</bean>
 </beans>
