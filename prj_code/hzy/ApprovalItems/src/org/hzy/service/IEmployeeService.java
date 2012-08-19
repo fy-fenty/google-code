@@ -1,6 +1,7 @@
 package org.hzy.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.hzy.entity.DispatchDetail;
 import org.hzy.entity.DispatchList;
@@ -22,16 +23,16 @@ public interface IEmployeeService {
 	 * 
 	 * @param eSn
 	 *            雇员编号
-	 * @return 返回值说明：
+	 * @return {@link List}<<{@link Map}>>
 	 *         <ul>
-	 *         <li>dlId 报销单 ID</li>
-	 *         <li>ESn：员工编号</li>
-	 *         <li>createTime：创建时间</li>
-	 *         <li>totalMoney：明细总金额</li>
-	 *         <li>currentStatus：当前状态</li>
+	 *         <li>DLID：报销单编号</li>
+	 *         <li>CREATETIME：报销单创建时间</li>
+	 *         <li>ESN：创建人编号</li>
+	 *         <li>CURRENTSTATUS：报销单当前状态</li>
+	 *         <li>TOTALMONEY：报销单明细总金额</li>
 	 *         </ul>
 	 */
-	public abstract List findAllDispatchListByESn(String eSn) throws MyException;
+	public abstract List<Map<String, Object>> findAllDispatchListByESn(String eSn) throws MyException;
 
 	/**
 	 * 用户保存报销单
@@ -40,7 +41,7 @@ public interface IEmployeeService {
 	 *            用户 ID
 	 * @param dl
 	 *            保存的报销单
-	 * @return Result
+	 * @return {@link Result}
 	 * @throws MyException
 	 */
 	public abstract Result saveDispatchList(String eSn, DispatchList dl);

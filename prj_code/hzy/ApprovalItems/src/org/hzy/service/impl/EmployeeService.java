@@ -24,8 +24,6 @@ import org.hzy.service.IEmployeeService;
 import org.hzy.support.ISystemUtil;
 import org.hzy.util.MyMatcher;
 import org.hzy.vo.Result;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author fy
@@ -35,6 +33,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @implements ISysEmployeeService
  * @description 员工业务的接口实现
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class EmployeeService implements IEmployeeService {
 
 	private ISysEmployeeDao iseDao;
@@ -48,7 +47,7 @@ public class EmployeeService implements IEmployeeService {
 	private ISystemUtil isu;
 
 	@Override
-	public List findAllDispatchListByESn(String eSn) throws MyException {
+	public List<Map<String, Object>> findAllDispatchListByESn(String eSn) throws MyException {
 		if (MyMatcher.isEmpty(eSn)) {
 			throw new MyException(AppConstant.A001);
 		}
@@ -86,9 +85,7 @@ public class EmployeeService implements IEmployeeService {
 	@Override
 	public Result updateDispatchList(String eSn, Long dlId, String eventExplain) {
 		Result rs = new Result();
-		String hql = "update dispatch_list dl set event_explain = :ex where dl.flag = 1 and dl.dl_id = :dlId and dl.e_sn = :eSn and ("
-				+ "(select count(1) from dispatch_result dr where dr.sheet_id = :dlId)=0 or (select check_next from dispatch_result where dr_id = "
-				+ "(select max(dr_id) from dispatch_result where sheet_id = :dlId) and check_status = 4)= :eSn)";
+		String hql = "update dispatch_list dl set event_explain = :ex where dl.flag = 1 and dl.dl_id = :dlId and dl.e_sn = :eSn and ((select count(1) from dispatch_result dr where dr.sheet_id = :dlId)=0 or (select check_next from dispatch_result where dr_id = (select max(dr_id) from dispatch_result where sheet_id = :dlId) and check_status = 4)= :eSn)";
 		Map map = new HashMap();
 		map.put("dlId", dlId);
 		map.put("ex", eventExplain);
@@ -348,12 +345,15 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	public static void main(String[] args) throws MyException {
-		String eSn = "10000000";
-		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml",
-				"beans1.xml" });
-		IEmployeeService is = actc.getBean("EmployeeService", IEmployeeService.class);
-		ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
-		IDispatchDetailDao idd = actc.getBean("DispatchDetailDao", IDispatchDetailDao.class);
+		// String eSn = "10000000";
+		// ApplicationContext actc = new ClassPathXmlApplicationContext(new
+		// String[] { "hibernate-spring.xml",
+		// "beans1.xml" });
+		// IEmployeeService is = actc.getBean("EmployeeService",
+		// IEmployeeService.class);
+		// ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
+		// IDispatchDetailDao idd = actc.getBean("DispatchDetailDao",
+		// IDispatchDetailDao.class);
 		/* 雇员查找所有当前状态的全部报销单 */
 		// System.out.println("雇员查找所有当前状态的全部报销单");
 		// System.out.println(is.findAllDispatchListByESn("10000000"));
@@ -367,10 +367,10 @@ public class EmployeeService implements IEmployeeService {
 		// System.out.println(rs.getMsg());
 
 		/* 用户修改报销单 */
-		Result rs = is.updateDispatchList(eSn, 22L, "cccccccc");
-		System.out.println(rs.getSuccess());
-		System.out.println(rs.getMsg());
-		System.out.println(rs.getException());
+		// Result rs = is.updateDispatchList(eSn, 22L, "cccccccc");
+		// System.out.println(rs.getSuccess());
+		// System.out.println(rs.getMsg());
+		// System.out.println(rs.getException());
 
 		/* 用户修改报销单明细 */
 		// System.out.println("用户修改报销单明细");
