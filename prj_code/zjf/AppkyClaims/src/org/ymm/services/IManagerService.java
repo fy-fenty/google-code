@@ -55,7 +55,7 @@ public interface IManagerService {
 	 * 			
 	 * @throws MyException
 	 */
-	public Result SetPwd(final SysEmployee manager,final SysEmployeeVo vo)throws MyException;
+	public Result SetPwd(final SysEmployee manager,final SysEmployeeVo vo,final String pwd)throws MyException;
 	
 	/**
 	 * 	查询部门报销单
