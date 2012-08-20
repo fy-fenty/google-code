@@ -112,11 +112,7 @@ public class ManagerServiceImpl implements IManagerService {
 		if (dr1 == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
 		}
-		
-		if (dr1.getCheckStatus() == 4) {
-			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-		}
-		
+
 		if(StringUtil.isEmpty(sysEmployee.getESn())==false){
 			return new Result(true, AppConstant.OTHER_ERROR, "A003");
 		}
@@ -135,7 +131,7 @@ public class ManagerServiceImpl implements IManagerService {
 		saveDr2.setCheckComment(vo.getCheckComment());
 		saveDr2.setCheckSn(sysEmployee.getESn());
 		//已审批 设置下一个审批人
-		if(vo.getCheckStatus()==2){
+		if(vo.getCheckStatus()==2){//同意
 			String sql="select sum(money) from dispatch_detail where sheet_id=?";
 			double  money=Double.parseDouble(iDispatchDetailDao.createSQLQuery(sql, dr1.getSheetId()).uniqueResult().toString());
 			if(money>5000){
@@ -151,11 +147,16 @@ public class ManagerServiceImpl implements IManagerService {
 		}else if(vo.getCheckStatus()==4){//打回
 			saveDr2.setCheckNext(dr1.getCheckSn());
 			saveDr2.setCheckStatus((long)4);
+		}else if(vo.getCheckStatus()==3){
+			saveDr2.setCheckStatus((long)3);
+		}
+		else {
+			return new Result(true, AppConstant.OTHER_ERROR, "A013");
 		}
 		
 		iDispatchResultDao.save(saveDr2);//cs ok
 		return result;
-	}
+	}	
 	
 	public static void main(String[] args) throws Exception {
 		ApplicationContext ac = new ClassPathXmlApplicationContext(
@@ -163,14 +164,16 @@ public class ManagerServiceImpl implements IManagerService {
 						"spring-dao-beans.xml", "spring-trans.xml" });
 		IManagerService ies = ac.getBean("managerServiceImpl", IManagerService.class);
 		SysEmployee se=new SysEmployee();
-		se.setDepartmentId((long)1);
+		se.setDepartmentId((long)2);
 		se.setPId((long)2);
-		se.setESn("xxxx1004");
+		se.setESn("xxxx1003");
+		
 		DispatchResultVo vo=new DispatchResultVo();
-		vo.setDrId((long)3);
-		vo.setSheetId((long)2);
-		vo.setCheckStatus((long)2);//审批状态
-		System.out.println(ies.applyClaims(se,vo).getException());
+		vo.setDrId((long)81);
+		vo.setCheckStatus((long)2);
+		vo.setSheetId((long)19);
+		ies.applyClaims(se,vo);
+		
 		
 		/*SysEmployee sysEmployee=new SysEmployee();
 		sysEmployee.setDepartmentId((long)1);
@@ -195,9 +198,6 @@ public class ManagerServiceImpl implements IManagerService {
 		if (dr1 != null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
 		}
-		if (dr1.getCheckStatus() == 4) {
-			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-		}
 		return new Result(true, AppConstant.DEFAULT_MSG, "A001");
 	}
 	
@@ -207,6 +207,7 @@ public class ManagerServiceImpl implements IManagerService {
 		if(sysEmployee==null||baseVo==null){
 			throw new MyException("A003");
 		}
+		
 		String sql="select tt2.* from " 
 				+"  (select * from dispatch_list where dl_id in  "
 				+"  (select sheet_id from  dispatch_result dr1 where check_time =(select max(check_time) from dispatch_result dr2 where dr1.sheet_id=dr2.sheet_id ) "
@@ -220,17 +221,18 @@ public class ManagerServiceImpl implements IManagerService {
 				+"  left join "
 				+"  (select d1.sheet_id,(select ds1.da_status from dispatch_status ds1 where ds1.da_id=d1.check_status) as cs from dispatch_result d1 where check_time =(select max(check_time) from dispatch_result d where d.sheet_id=d1.sheet_id)) t3 "
 				+"  on t3.sheet_id=t2.sheet_id ) tt2 "
-				+"  on  tt1.dl_id=tt2.dl_id where   tt2.money<=5000 ";     
+				+"  on  tt1.dl_id=tt2.dl_id ";     
          
 		if(StringUtil.isEmpty(sysEmployee.getDepartmentId()+"")==false){
 			throw new MyException("A003");
 		}
 		Page page = iDispatchListDao.findPageBySql(baseVo, sql,new String[]{sysEmployee.getESn(),sysEmployee.getDepartmentId()+""});
-		return page;
+		return page; //cs ok
 	}
 
+	
 	@Override
-	public Result SetPwd(SysEmployee manger, SysEmployeeVo vo)
+	public Result SetPwd(SysEmployee manger, SysEmployeeVo vo,String pwd)
 			throws MyException {
 		Result result = new Result(true, AppConstant.UPDATE_ERROR, "A001");
 		if(manger==null||vo==null){
@@ -245,14 +247,14 @@ public class ManagerServiceImpl implements IManagerService {
 		if(manger1.getPId()!=2){
 			return new Result(true, AppConstant.UPDATE_ERROR, "A005");
 		}
-		if(manger1.getPId().equals(vo.getPId())){
+		if(!manger1.getPId().equals(vo.getPId())){
 			return new Result(true, AppConstant.UPDATE_ERROR, "A012");
 		}
 
 		String sql="update login_user set u_pwd=? where E_SN=?";
 		
-		iLoginUserDao.createSQLQuery(sql, new String[]{vo.getESn(),MD5.MD5Encode("123456")});
-		return null;
+		iLoginUserDao.createSQLQuery(sql, new String[]{vo.getESn(),MD5.MD5Encode(pwd)});
+		return result;
 	}
 
 	@Override
@@ -285,9 +287,7 @@ public class ManagerServiceImpl implements IManagerService {
 	@Override
 	public SysPositions loginUser(String username, String pwd)
 			throws MyException {
-		String sql="select sum(money) from dispatch_detail where sheet_id=?";
-		double  money=Double.parseDouble(iDispatchDetailDao.createSQLQuery(sql, 10).uniqueResult().toString());
-		System.out.println(money);
+		
 		return null;
 	}
 }

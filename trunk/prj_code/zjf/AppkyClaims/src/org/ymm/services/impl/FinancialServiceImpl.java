@@ -109,7 +109,7 @@ public class FinancialServiceImpl implements IFinancialService{
 	@Override
 	public SysPositions loginUser(String username, String pwd)
 			throws MyException {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -156,7 +156,6 @@ public class FinancialServiceImpl implements IFinancialService{
 	
 	@Override
 	public void GeneralExcel(SysEmployee emp) throws MyException {
-		// TODO Auto-generated method stub
 		
 	}
 	
@@ -164,9 +163,6 @@ public class FinancialServiceImpl implements IFinancialService{
 	public Result getDispatchResultEnd(long dl_id) throws MyException{
 		DispatchResult dr1 = iSystemService.findResultById(dl_id);
 		if (dr1 != null) {
-			if (dr1.getCheckStatus() == 4) {
-				return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-			}
 			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
 		}
 		return new Result(true, AppConstant.DEFAULT_MSG, "A001");

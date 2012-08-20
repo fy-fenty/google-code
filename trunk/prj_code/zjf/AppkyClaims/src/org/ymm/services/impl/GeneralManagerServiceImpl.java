@@ -112,10 +112,6 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService{
 			return new Result(true, AppConstant.OTHER_ERROR, "A003");
 		}
 		
-//		if(!dr1.getCheckNext().equals(sysEmployee.getESn())){
-//			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-//		}
-		
 		DispatchResult saveDr2=new DispatchResult();
 		saveDr2.setSheetId(dr1.getSheetId());
 		saveDr2.setCheckTime(new Date());
@@ -164,7 +160,7 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService{
 				+"  left join "
 				+"  (select d1.sheet_id,(select ds1.da_status from dispatch_status ds1 where ds1.da_id=d1.check_status) as cs from dispatch_result d1 where check_time =(select max(check_time) from dispatch_result d where d.sheet_id=d1.sheet_id)) t3 "
 				+"  on t3.sheet_id=t2.sheet_id ) tt2 "
-				+"  on  tt1.dl_id=tt2.dl_id tt2.money>=5000 ";     
+				+"  on  tt1.dl_id=tt2.dl_id where tt2.money>=5000 ";     
          
 		if(StringUtil.isEmpty(sysEmployee.getDepartmentId()+"")==false){
 			throw new MyException("A003");
@@ -202,7 +198,7 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService{
 		if(!"总经理".equals(sysPositions.getPNameCn())){
 			return new Result(true, AppConstant.OTHER_ERROR, "A005");
 		}
-		if(dr1.getCheckSn().equals(sysEmployee.getESn())){
+		if(!dr1.getCheckSn().equals(sysEmployee.getESn())){
 			return new Result(true, AppConstant.OTHER_ERROR, "A005");
 		}
 		
@@ -243,9 +239,6 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService{
 	public Result getDispatchResultEnd(long dl_id) throws MyException{
 		DispatchResult dr1 = iSystemService.findResultById(dl_id);
 		if (dr1 != null) {
-			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-		}
-		if (dr1.getCheckStatus() == 4) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
 		}
 		return new Result(true, AppConstant.DEFAULT_MSG, "A001");

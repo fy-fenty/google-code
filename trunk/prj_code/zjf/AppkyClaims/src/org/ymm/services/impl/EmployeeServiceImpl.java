@@ -98,9 +98,8 @@ public class EmployeeServiceImpl implements IEmpService {
 					+ "  on t3.sheet_id=t2.sheet_id where t1.e_sn=?";
 			page = baseDao.findPageBySql(vo, sql, emp.getESn());
 		}
-		return page;// cs
+		return page;// cs ok
 	}
-	
 	
 
 	@Override
@@ -110,21 +109,22 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (dispatchListVo == null || sysEmployee == null) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(sysEmployee.getPId().toString())==false||StringUtil.isEmpty(sysEmployee.getESn())==false) {
+		//System.out.println(String.valueOf(sysEmployee.getPId()+""));
+		if (StringUtil.isEmpty(sysEmployee.getPId()+"")==false||StringUtil.isEmpty(sysEmployee.getESn())==false) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A003");
 		}
 
-		SysPositions sysPositions = iSystemService.findPositionById(sysEmployee
-				.getPId());
+		SysPositions sysPositions = iSystemService.findPositionById(sysEmployee.getPId());
 		if (!"雇员".equals(sysPositions.getPNameCn())) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A012");
 		}
 		
 		DispatchList dispatchList=getDispatchListValue(dispatchListVo,sysEmployee);
 		
-		iDispatchListDao.save(dispatchList);// cs ok  注：保存报销单需要用雇员编号
+		iDispatchListDao.save(dispatchList);// cs ok 
 		return result;
 	}
+	
 	
 
 	@Override
@@ -134,7 +134,7 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (dispatchListVo == null || sysEmployee == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(dispatchListVo.getDlId().toString()) == false
+		if (StringUtil.isEmpty(dispatchListVo.getDlId()+"") == false
 				|| StringUtil.isEmpty(sysEmployee.getESn()) == false) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
@@ -147,7 +147,6 @@ public class EmployeeServiceImpl implements IEmpService {
 		if(dl.getFlag() == false){
 			return new Result(false, AppConstant.FLAG_ERROR, "A006");
 		}
-		
 		if (!sysEmployee.getESn().equals(dl.getESn())) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A012");
 		}
@@ -159,7 +158,7 @@ public class EmployeeServiceImpl implements IEmpService {
 		DispatchList dispatchList=getDispatchListValue(dispatchListVo,sysEmployee);
 		//设置需要修改的列
 		dl.setEventExplain(dispatchList.getEventExplain());
-		iDispatchListDao.saveNew(dl); //cs ok //注：保存查询出来的报销单
+		iDispatchListDao.save(dl); //cs ok 
 		return result;
 	}
 	
@@ -178,9 +177,9 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (emp == null || cid == null){
 			return new Result(false,AppConstant.DELETE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(emp.getEId().toString())
-				|| StringUtil.isEmpty(cid.getDlId() + "")
-				|| StringUtil.isEmpty(emp.getESn())) {
+		if (StringUtil.isEmpty(emp.getEId()+"")==false
+				|| StringUtil.isEmpty(cid.getDlId() + "")==false
+				|| StringUtil.isEmpty(emp.getESn())==false) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
 		// 查询报销单
@@ -188,21 +187,22 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (dispatchList == null) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
-		if (dispatchList.getESn() != emp.getESn()) {
+		if (!dispatchList.getESn().equals(emp.getESn())) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A012");
 		}
 		if (dispatchList.getFlag() == false) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A013");
 		}
-		String sql = "update dispatch_detail set flag=1 where sheet_id=?";
+		String sql = "update dispatch_detail set flag=0 where sheet_id=?";
 		SQLQuery sq = iDispatchDetailDao.createSQLQuery(sql,dispatchList.getDlId());
 		sq.executeUpdate();
 		
 		String sql1 = "update dispatch_list set flag=0 where dl_id=?";
-		SQLQuery sq1 = iDispatchListDao.createSQLQuery(sql,dispatchList.getDlId());
+		SQLQuery sq1 = iDispatchListDao.createSQLQuery(sql1,dispatchList.getDlId());
 		sq1.executeUpdate(); //cs ok
 		return result;
 	}
+	
 	
 	@Override
 	public Result updateDetail(SysEmployee emp, DispatchDetailVo dispatchDetailVo)
@@ -211,15 +211,15 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (emp == null || dispatchDetailVo == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId().toString()) == false
-				||StringUtil.isEmpty(dispatchDetailVo.getDsId().toString())==false) {
+		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId()+"") == false
+				||StringUtil.isEmpty(dispatchDetailVo.getDsId()+"")==false) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
 		DispatchList dispatchList = iSystemService.findById(dispatchDetailVo.getSheetId());
 		if (dispatchList == null) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
-		System.out.println(dispatchList.getESn()+" "+emp.getESn());
+		
 		if (!dispatchList.getESn().equals(emp.getESn())) {
 			return new Result(false, AppConstant.UPDATE_ERROR, "A012");
 		}
@@ -239,9 +239,10 @@ public class EmployeeServiceImpl implements IEmpService {
 		dispatchDetail.setCostExplain(dispatchDetailVo.getCostExplain());
 		dispatchDetail.setItemId(dispatchDetailVo.getItemId());
 		dispatchDetail.setAccessory(dispatchDetailVo.getAccessory());
-		iDispatchDetailDao.save(dispatchDetail);//cs ok
-		return result;
+		iDispatchDetailDao.save(dispatchDetail);
+		return result;//cs ok
 	}
+
 	//通过明细id查询指定报销单明细
 	public DispatchDetail getDispatchDetailBydsId(long dsid){
 		String sql=" from DispatchDetail where dsId=? ";
@@ -255,7 +256,7 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (emp == null || dispatchDetailVo == null) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
-		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId().toString()) == false) {
+		if (StringUtil.isEmpty(dispatchDetailVo.getSheetId()+"") == false) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A003");
 		}
 		// 查询报销单
@@ -275,10 +276,10 @@ public class EmployeeServiceImpl implements IEmpService {
 		String sql = "update dispatch_detail set flag=0 where ds_id=?";
 		SQLQuery sq = iDispatchDetailDao.createSQLQuery(sql,dispatchDetailVo.getDsId());
 		sq.executeUpdate();
-		// System.out.println(sq.executeUpdate());
+		
 		return result; // cs ok 
 	}
-
+	
 	
 	@Override
 	public Result saveDetail(final SysEmployee sysEmployee, final DispatchDetailVo dispatchDetailVo)
@@ -346,7 +347,7 @@ public class EmployeeServiceImpl implements IEmpService {
 		if(this.getDispatchResultEnd(dl.getDlId()).getSuccess()==false){
 			return this.getDispatchResultEnd(dl.getDlId());
 		}
-		System.out.println(dl.getDlId());
+		
 		Page page = iSystemService.findDetailById(dl.getDlId(), 0, 100);
 		if(page==null){
 			return new Result(false, AppConstant.SAVE_ERROR, "A003");
@@ -354,7 +355,7 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (page.getResult().size() == 0) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A013");
 		}
-		System.out.println(sysEmployee.getPId());
+		
 		String sql=" from SysEmployee where department_id=? and p_id=2";
 		SysEmployee jingli = iSysEmployeeDao.findUniqueByHQL(sql,sysEmployee.getDepartmentId());
 		if(jingli==null){
@@ -369,13 +370,29 @@ public class EmployeeServiceImpl implements IEmpService {
 		dr.setCheckComment(dispatchListVo.getEventExplain());
 		dr.setCheckStatus((long)1);
 		
-		iDispatchResultDao.save(dr);
+		iDispatchResultDao.save(dr);//cs ok
 
 		return result;
 	}
+	
+	public static void main(String[] args) throws Exception {
+		ApplicationContext ac = new ClassPathXmlApplicationContext(
+				new String[] { "spring-sessinfactory.xml",
+						"spring-dao-beans.xml", "spring-trans.xml" });
+		IEmpService ies = ac.getBean("employeeServiceImpl", IEmpService.class);
+		SysEmployee se=new SysEmployee();
+		se.setESn("xxxx1001");
+		se.setPId((long)3);
+		se.setEId((long)20);
+		se.setDepartmentId((long)2);
+		DispatchListVo vo=new DispatchListVo();
+		vo.setDlId((long)19);
+		vo.setESn("xxxx1001");
+		Result reslt= ies.commitClaims(se, vo);
+		System.out.println(reslt.getException());
+		
+	}
 
-	
-	
 	@Override
 	public SysEmployee loginUser(String username, String pwd)
 			throws MyException {
@@ -387,10 +404,7 @@ public class EmployeeServiceImpl implements IEmpService {
 	public Result getDispatchResultEnd(long dl_id) throws MyException{
 		DispatchResult dr1 = iSystemService.findResultById(dl_id);
 		if (dr1 != null) {
-			if (dr1.getCheckStatus() == 4) {
-				return new Result(false, AppConstant.UPDATE_ERROR, "A013");
-			}
-			return new Result(false, AppConstant.UPDATE_ERROR, "A013");
+			return new Result(false, AppConstant.UPDATE_ERROR, "A003");
 		}
 		return new Result(true, AppConstant.DEFAULT_MSG, "A001");
 	}
@@ -399,7 +413,7 @@ public class EmployeeServiceImpl implements IEmpService {
 		DispatchList dispatchList=new DispatchList();
 		dispatchList.setDlId(dispatchListVo.getDlId());
 		dispatchList.setESn(SysEmployee.getESn());
-		dispatchList.setCreateTime(dispatchListVo.getCreateTime());
+		dispatchList.setCreateTime(new Date());
 		dispatchList.setEventExplain(dispatchListVo.getEventExplain());
 		dispatchList.setFlag(dispatchListVo.getFlag());
 		return dispatchList;
@@ -418,22 +432,5 @@ public class EmployeeServiceImpl implements IEmpService {
 	}
 	
 	
-	public static void main(String[] args) throws Exception {
-		ApplicationContext ac = new ClassPathXmlApplicationContext(
-				new String[] { "spring-sessinfactory.xml",
-						"spring-dao-beans.xml", "spring-trans.xml" });
-		IEmpService ies = ac.getBean("employeeServiceImpl", IEmpService.class);
-		SysEmployee emp = new SysEmployee();
-		emp.setEId((long)20);
-		emp.setESn("xxxx1001");
-		emp.setPId((long)3);
-		emp.setDepartmentId((long)1);
-		
-		DispatchListVo dl = new DispatchListVo();
-		dl.setDlId((long)20);
-		dl.setEventExplain("提交一个报销单");
-		
-		Result result= ies.commitClaims(emp,dl);
-		System.out.println(result.getException());
-	}
+	
 }
