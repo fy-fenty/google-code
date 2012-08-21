@@ -1,0 +1,13 @@
+body,html {
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+
+#container {
+	width: 310px;
+	height: 190px;
+	margin: 0px auto; 
+	margin-top:50px;
+}
