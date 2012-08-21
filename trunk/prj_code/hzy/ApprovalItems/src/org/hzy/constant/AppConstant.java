@@ -28,6 +28,11 @@ public interface AppConstant {
 	String A0017 = "不允许提交没有明细的报销单";
 	String A0018 = "您不属于任何部门";
 	String A0019 = "参数无效";
+	String A0020 = "不存在的用户";
+	String A0021 = "空的值对象";
+	String A0022 = "用户密码不能为空";
+	String A0023 = "错误的用户密码";
+	String A0024 = "错误码无效";
 	/*
 	 * 总经理
 	 */

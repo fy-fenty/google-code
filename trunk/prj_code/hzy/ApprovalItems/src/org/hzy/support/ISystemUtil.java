@@ -77,7 +77,7 @@ public interface ISystemUtil extends IBaseDAO<Object, Long> {
 	 * 
 	 * @param eSn
 	 *            用户编号
-	 * @return
+	 * @return a {@link LoginUser} 没找到则返回 null
 	 */
 	public abstract LoginUser findLoginUserByESn(String eSn) throws MyException;
 

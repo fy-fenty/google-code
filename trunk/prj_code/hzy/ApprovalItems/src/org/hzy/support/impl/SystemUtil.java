@@ -160,9 +160,9 @@ public class SystemUtil extends BaseDAO<Object, Long> implements ISystemUtil {
 		// System.out.println(sp.getPId());
 		//
 		// /* 通过用户 ID 查找用户 */
-		// System.out.println("通过用户 ID 查找用户");
-		// LoginUser lu = is.findLoginUserByESn(eSn);
-		// System.out.println(lu.getESn());
+		 System.out.println("通过用户 ID 查找用户");
+		 LoginUser lu = is.findLoginUserByESn("aa");
+		 System.out.println(lu);
 		//
 		// /* 通过用户 ID 查询雇员 */
 		// System.out.println("通过用户 ID 查询雇员");
