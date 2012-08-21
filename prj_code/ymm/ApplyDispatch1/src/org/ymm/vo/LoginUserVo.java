@@ -5,6 +5,13 @@ public class LoginUserVo extends BaseVo {
 	private Long UId;
 	private String ESn;
 	private String UPwd;
+	private String core;
+	public String getCore() {
+		return core;
+	}
+	public void setCore(String core) {
+		this.core = core;
+	}
 	public Long getUId() {
 		return UId;
 	}
