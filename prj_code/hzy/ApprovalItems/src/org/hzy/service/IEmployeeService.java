@@ -8,6 +8,7 @@ import org.hzy.entity.DispatchList;
 import org.hzy.entity.DispatchResult;
 import org.hzy.entity.LoginUser;
 import org.hzy.exception.MyException;
+import org.hzy.vo.LoginVo;
 import org.hzy.vo.Result;
 
 /**
@@ -118,5 +119,5 @@ public interface IEmployeeService {
 	 *            用户
 	 * @return Result
 	 */
-	public abstract Result login(LoginUser lu);
+	public abstract LoginUser login(LoginVo lgVo) throws MyException;
 }

@@ -23,7 +23,10 @@ import org.hzy.exception.MyException;
 import org.hzy.service.IEmployeeService;
 import org.hzy.support.ISystemUtil;
 import org.hzy.util.MyMatcher;
+import org.hzy.vo.LoginVo;
 import org.hzy.vo.Result;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author fy
@@ -299,9 +302,27 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public Result login(LoginUser lu) {
-		// TODO Auto-generated method stub
-		return null;
+	public LoginUser login(LoginVo lgVo) throws MyException {
+		if (lgVo == null) {
+			throw new MyException(AppConstant.A0021);
+		}
+		if (MyMatcher.isEmpty(lgVo.getEsn())) {
+			throw new MyException(AppConstant.A004);
+		}
+		if (MyMatcher.isEmpty(lgVo.getPwd())) {
+			throw new MyException(AppConstant.A0022);
+		}
+		System.out.println(lgVo.getEsn());
+		System.out.println(lgVo.getPwd());
+		LoginUser lgUser = isu.findLoginUserByESn(lgVo.getEsn());
+		if (lgUser == null) {
+			throw new MyException(AppConstant.A0020);
+		}
+		String newPwd = isu.getMD5(lgVo.getPwd());
+		if (newPwd.equals(lgUser.getUPwd()) == false) {
+			throw new MyException(AppConstant.A0023);
+		} 
+		return lgUser;
 	}
 
 	public ISysEmployeeDao getIseDao() {
@@ -345,13 +366,11 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	public static void main(String[] args) throws MyException {
-		// String eSn = "10000000";
-		// ApplicationContext actc = new ClassPathXmlApplicationContext(new
-		// String[] { "hibernate-spring.xml",
-		// "beans1.xml" });
-		// IEmployeeService is = actc.getBean("EmployeeService",
-		// IEmployeeService.class);
-		// ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
+		String eSn = "10000000";
+		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml",
+				"beans1.xml" });
+		IEmployeeService is = actc.getBean("EmployeeService", IEmployeeService.class);
+		ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
 		// IDispatchDetailDao idd = actc.getBean("DispatchDetailDao",
 		// IDispatchDetailDao.class);
 		/* 雇员查找所有当前状态的全部报销单 */
@@ -437,5 +456,7 @@ public class EmployeeService implements IEmployeeService {
 		// System.out.println(rs.getSuccess());
 		// System.out.println(rs.getMsg());
 		// System.out.println(rs.getException());
+		LoginVo lg = new LoginVo("10000000", "000000");
+		is.login(lg);
 	}
 }

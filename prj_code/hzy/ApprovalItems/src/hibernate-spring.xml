@@ -9,7 +9,7 @@
 
 	<bean id="dataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
 		<property name="driver" value="oracle.jdbc.OracleDriver" />
-		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.105:1522:orcl" />
+		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.101:1522:orcl" />
 		<property name="user" value="hzy" />
 		<property name="password" value="accp" />
 	</bean>
