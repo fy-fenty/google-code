@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<bean id="simpleDao" class="org.han.support.impl.SimpleDaoImpl"
+		abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="baseDao" class="org.han.support.impl.BaseDaoImpl"
+		abstract="true" parent="simpleDao" />
+
+	<bean id="areadao" class="org.han.dao.impl.AreaDaoImpl" parent="baseDao" />
+	<bean id="detailItemdao" class="org.han.dao.impl.DetailItemDaoImpl"
+		parent="baseDao" />
+	<bean id="dispatchlistdao" class="org.han.dao.impl.DispatchListDaoImpl"
+		parent="baseDao" />
+	<bean id="dispatchresultdao" class="org.han.dao.impl.DispatchResultDaoImpl"
+		parent="baseDao" />
+	<bean id="dispatchstatusdao" class="org.han.dao.impl.DispatchStatusDaoImpl"
+		parent="baseDao" />
+	<bean id="loginlogdao" class="org.han.dao.impl.LoginLogDaoImpl"
+		parent="baseDao" />
+	<bean id="loginuserdao" class="org.han.dao.impl.LoginUserDaoImpl"
+		parent="baseDao" />
+	<bean id="logoperationdao" class="org.han.dao.impl.LogOperationDaoImpl"
+		parent="baseDao" />
+	<bean id="logprintdao" class="org.han.dao.impl.LogPrintDaoImpl"
+		parent="baseDao" />
+	<bean id="sysdepartmentdao" class="org.han.dao.impl.SysDepartmentDaoImpl"
+		parent="baseDao" />
+	<bean id="empdao" class="org.han.dao.impl.SysEmployeeDaoImpl"
+		parent="baseDao" />
+	<bean id="syspositionsdao" class="org.han.dao.impl.SysPositionsDaoImpl"
+		parent="baseDao" />
+	<bean id="sysdetail" class="org.han.dao.impl.DispatchDetailDaoImpl" parent="baseDao"></bean>
+	<bean id="sysconfig" class="org.han.dao.impl.SysConfigDaoImpl" parent="baseDao"></bean>
+	<bean id="sysmenu" class="org.han.dao.impl.SysMenuDaoImpl" parent="baseDao"></bean>
+	<bean id="sysrole" class="org.han.dao.impl.SysRoleDaoImpl" parent="baseDao"></bean>
+		
+		
+	<bean id="sysservices" class="org.tender.services.impl.SysServiceImpl">
+		<property name="idl" ref="dispatchlistdao"></property>
+		<property name="detaildao" ref="sysdetail"></property>
+		<property name="empdao" ref="empdao"></property>
+		<property name="positiondao" ref="syspositionsdao"></property>
+		<property name="resultdao" ref="dispatchresultdao"></property>
+		<property name="statusdao" ref="dispatchstatusdao"></property>
+		
+		
+	</bean>
+	<bean id="empservices" class="org.tender.services.impl.EmpServicesImpl">
+		<property name="idd" ref="dispatchlistdao"></property>
+		
+		
+		<property name="detaildao" ref="sysdetail"></property>
+		<property name="empdao" ref="empdao"></property>
+		<property name="positiondao" ref="syspositionsdao"></property>
+		<property name="resultdao" ref="dispatchresultdao"></property>
+		<property name="statusdao" ref="dispatchstatusdao"></property>
+		<property name="iss" ref="sysservices"></property>
+	</bean>
+	
+	<bean id="managerservice" class="org.tender.services.impl.ManagerServiceImpl">
+		<property name="iss" ref="sysservices"></property>
+		<property name="empdao" ref="empdao"></property>
+		<property name="listdao" ref="dispatchlistdao"></property>
+		<property name="userdao" ref="loginuserdao"></property>
+	</bean>
+	
+	<bean id="generalservice" class="org.tender.services.impl.GeneralManagerServiceImpl">
+		<property name="iss" ref="sysservices"></property>
+		<property name="resultdao" ref="dispatchresultdao"></property>
+		<property name="listdao" ref="dispatchlistdao"></property>
+		
+	</bean>
+	<bean id="financialservice" class="org.tender.services.impl.FinancialServiceImpl">
+		<property name="iss" ref="sysservices"></property>
+		<property name="empdao" ref="empdao"></property>
+		<property name="resultdao" ref="dispatchresultdao"></property>
+		<property name="listdao" ref="dispatchlistdao"></property>
+	</bean>
+</beans>
