@@ -1,5 +1,6 @@
 package org.fy.service;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.fy.entity.DispatchDetail;
@@ -21,7 +22,7 @@ public interface ISystemService {
 	 * @param pwd
 	 * @return 加密后的字符串
 	 */
-	public String getMd5(final String pwd);
+	public String getMd5(final String pwd) throws NoSuchAlgorithmException;
 	
 	/**
 	 * 查询指定报销单

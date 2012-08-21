@@ -72,9 +72,10 @@ public class SysDepartManagerService implements ISysDepartManagerService{
 					+"(select max(check_time) from hzy.dispatch_result where sheet_id=(select dl_id from hzy.dispatch_list where dl_id=? and flag=1))"
 					+"and check_status=1) ddr left join (select sum(money) sm,sheet_id from hzy.dispatch_detail where flag=1 group by sheet_id) de"
 					+" on ddr.sheet_id=de.sheet_id";
-		SQLQuery sqlQuery=idispatch_result.createSQLQuery(sql,
+		SQLQuery sqlQuery=idispatch_result.createSQLQuery(sql,drsvo.getEsn(),drsvo.getSheetId());
+/*		SQLQuery sqlQuery=idispatch_result.createSQLQuery(sql,
 							drsvo.getEsn(),drsvo.getSheetId()).addScalar("check_sn",Hibernate.STRING).addScalar("check_next",Hibernate.STRING).addScalar("ma",Hibernate.STRING)
-							.addScalar("cai",Hibernate.STRING).addScalar("zm");
+							.addScalar("cai",Hibernate.STRING).addScalar("zm");*/
 		sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 		Map map=(Map)sqlQuery.uniqueResult();
 //		Map map=idispatch_result.findUniqueBySQL(sql, drsvo.getEsn(),drsvo.getSheetId());

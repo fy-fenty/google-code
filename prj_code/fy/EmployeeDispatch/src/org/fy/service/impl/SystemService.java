@@ -1,5 +1,6 @@
 package org.fy.service.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.fy.dao.IDispatchDetailDao;
@@ -14,7 +15,7 @@ import org.fy.entity.LoginUser;
 import org.fy.entity.SysEmployee;
 import org.fy.entity.SysPositions;
 import org.fy.service.ISystemService;
-import org.fy.util.MD5;
+import org.fy.utils.AppUtils;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
 
@@ -83,8 +84,8 @@ public class SystemService implements ISystemService{
 		this.isys_employee = isys_employee;
 	}
 
-	public String getMd5(final String pwd) {
-		return MD5.getMD5(pwd);
+	public String getMd5(final String pwd) throws NoSuchAlgorithmException {
+		return AppUtils.encodeByMD5(pwd);
 	}
 
 	public DispatchList findByDlistId(final Long id) {

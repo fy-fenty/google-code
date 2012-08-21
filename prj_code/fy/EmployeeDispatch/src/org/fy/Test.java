@@ -1,6 +1,8 @@
 package org.fy;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.fy.entity.DispatchDetail;
@@ -12,10 +14,12 @@ import org.fy.service.ISysEmployeeService;
 import org.fy.service.ISysFinanceService;
 import org.fy.service.ISysManagerService;
 import org.fy.service.ISystemService;
+import org.fy.util.JsonUtil;
 import org.fy.vo.BaseVO;
 import org.fy.vo.DispatchDetailVO;
 import org.fy.vo.DispatchListVO;
 import org.fy.vo.DispatchResultVO;
+import org.fy.vo.Page;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -23,19 +27,31 @@ public class Test {
 	public static void main(String[] args){
 		ApplicationContext apc = new ClassPathXmlApplicationContext(
 				new String[] { "hibernate-spring.xml", "beans.xml" });
-//		ISysEmployeeService sf = apc.getBean("sys_employee_service", ISysEmployeeService.class);	
+		ISysEmployeeService sf = apc.getBean("sys_employee_service", ISysEmployeeService.class);
+		String str="this is project";
+		System.out.println(str.length());
+		String[] s=new String[str.length()];
+		for (int i = 0; i < str.length(); i++) {
+						
+		}
+		
+		
 //		ISysDepartManagerService sf = apc.getBean("sys_departManage_service", ISysDepartManagerService.class);
 		
 //		ISysManagerService sf = apc.getBean("sys_ZManage_service", ISysManagerService.class);
 		
-		ISysFinanceService sf = apc.getBean("sys_Finance_service", ISysFinanceService.class);
+//		ISysFinanceService sf = apc.getBean("sys_Finance_service", ISysFinanceService.class);
 		
-//		ISystemService is=apc.getBean("system_service", ISystemService.class);
+//		ISystemService is=apc.getBean("system_service", ISystemStotalCountervice.class);
 /*		BaseVO bv=new BaseVO();
-		bv.setStart(0);
-		bv.setLimit(7);
+		bv.setStart(2);
+		bv.setLimit(2);
 		try {
-			System.out.println(sf.findDispathList(bv,"10000000").getResult().size());
+			Page page=sf.findDispathList(bv,"10000000");
+			System.out.println(page.getResult().size());
+			System.out.println(JsonUtil.PageJson(page).toString());
+//			Map map=(Map) sf.findDispathList(bv,"10000000").getResult().get(0);
+//			System.out.println(map.get("E_SN"));
 		} catch (MyExecption e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,7 +89,7 @@ public class Test {
 //		System.out.println(sf.deleteDispathList("10000000", 61L).getMsg());
 		
 /*		DispatchDetailVO detail=new DispatchDetailVO();
-		detail.setDsId(62L);
+//		detail.setDsId(62L);
 		detail.setSheetId(61L);
 		detail.setSn("10000000");
 		System.out.println(sf.deleteDispathDetail(detail).getMsg());*/
@@ -93,9 +109,9 @@ public class Test {
 		
 		//部门经理测试
 //		System.out.println(sf.pwdReset("10000003", "10000000").getMsg());
-		BaseVO bv=new BaseVO();
-		bv.setStart(0);
-		bv.setLimit(5);
+//		BaseVO bv=new BaseVO();
+//		bv.setStart(0);
+//		bv.setLimit(5);
 		
 	/*	DispatchResultVO drsvo=new DispatchResultVO();
 		drsvo.setCheckComment("同意");
@@ -104,8 +120,8 @@ public class Test {
 		drsvo.setStatus(1);
 		System.out.println(sf.checkDispatchResult(drsvo).getMsg());*/
 /*		try {
-			System.out.println(sf.findDepartDisList(bv, "10000003").getResult().size());
-//			System.out.println(sf.findWaitCheckDisList(bv, "10000003").getResult().size());	
+//			System.out.println(sf.findDepartDisList(bv, "10000003").getResult().get(0));
+			System.out.println(sf.findWaitCheckDisList(bv, "10000003").getResult().get(0));	
 		} catch (MyExecption e) {
 				System.out.println(e.getMessage());
 		}*/
