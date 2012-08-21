@@ -1,5 +1,6 @@
 package org.fy.service;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.fy.entity.DispatchDetail;
@@ -12,6 +13,7 @@ import org.fy.vo.DispatchDetailVO;
 import org.fy.vo.DispatchListVO;
 import org.fy.vo.Page;
 import org.fy.vo.Result;
+import org.fy.vo.UserVO;
 
 /**
  * @author hzy
@@ -82,5 +84,5 @@ public interface ISysEmployeeService {
 	 * @param sn去32
 	 * @return LoginUser
 	 */
-	public LoginUser login_user(final String sn) throws MyExecption;
+	public LoginUser login_user(final UserVO uvo) throws MyExecption,NoSuchAlgorithmException;
 }

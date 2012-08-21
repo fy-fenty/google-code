@@ -12,7 +12,7 @@
 	
 	<bean id="data_source" class="org.logicalcobwebs.proxool.ProxoolDataSource">
 		<property name="driver" value="oracle.jdbc.OracleDriver" />
-		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.105:1522:orcl" />
+		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.101:1522:orcl" />
 		<property name="user" value="hzy" />
 		<property name="password" value="accp" />
 	</bean>
@@ -26,7 +26,7 @@
 		<property name="dataSource" ref="data_source" />
 		<property name="hibernateProperties">
 			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle9Dialect</prop>  
+				<prop key="hibernate.dialect">org.fy.util.RegisterType</prop>  
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 				<prop key="hibernate.current_session_context_class">

@@ -5,7 +5,8 @@
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
-
+	
+<!-- 	<import resource="hibernate-spring.xml"/> -->
 	<!-- Support Beans -->
 	<bean abstract="true" id="simple_dao" class="org.fy.support.SimpleDAO">
 		<property name="sessionFactory" ref="session_factory" />
@@ -68,7 +69,11 @@
 	</bean>
 	<!-- Service Beans -->
 	
-	
+	<!-- Action Beans -->
+	<bean id="sys_employee_action" class="org.fy.actions.SysEmployeeAction">
+		<property name="isysemp_service" ref="sys_employee_service" />
+	</bean>
+	<!-- Action Beans -->
 	
 	<!-- AOP Beans -->
  	<aop:config>

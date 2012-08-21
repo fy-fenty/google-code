@@ -56,8 +56,9 @@ public class SysFinanceService implements ISysFinanceService{
 					+"select e_sn from hzy.sys_employee where e_sn=? and p_id=2 and department_id=3) and check_time="
 					+"(select max(check_time) from hzy.dispatch_result where sheet_id=(select dl_id from hzy.dispatch_list where dl_id=? and flag=1))"
 					+" and check_status=2)";
-			SQLQuery sqlQuery=idispatch_result.createSQLQuery(sql,
-					drsvo.getEsn(),drsvo.getSheetId()).addScalar("check_sn",Hibernate.STRING);
+			SQLQuery sqlQuery=idispatch_result.createSQLQuery(sql,drsvo.getEsn(),drsvo.getSheetId());
+			/*SQLQuery sqlQuery=idispatch_result.createSQLQuery(sql,
+					drsvo.getEsn(),drsvo.getSheetId()).addScalar("check_sn",Hibernate.STRING);*/
 				sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 				Map map=(Map)sqlQuery.uniqueResult();
 			//Map map=idispatch_result.findUniqueBySQL(sql, drsvo.getEsn(),drsvo.getSheetId());

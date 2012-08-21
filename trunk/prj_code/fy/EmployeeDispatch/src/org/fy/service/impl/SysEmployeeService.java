@@ -1,5 +1,6 @@
 package org.fy.service.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.fy.constant.MyConstant;
 import org.fy.dao.IDispatchDetailDao;
 import org.fy.dao.IDispatchListDao;
 import org.fy.dao.IDispatchResultDao;
+import org.fy.dao.ILoginUserDao;
 import org.fy.dao.ISysDepartmentDao;
 import org.fy.dao.ISysEmployeeDao;
 import org.fy.entity.DispatchDetail;
@@ -22,11 +24,14 @@ import org.fy.exception.MyExecption;
 import org.fy.service.ISysEmployeeService;
 import org.fy.service.ISystemService;
 import org.fy.util.MyMatcher;
+import org.fy.utils.AppUtils;
+import org.fy.utils.SessionListener;
 import org.fy.vo.BaseVO;
 import org.fy.vo.DispatchDetailVO;
 import org.fy.vo.DispatchListVO;
 import org.fy.vo.Page;
 import org.fy.vo.Result;
+import org.fy.vo.UserVO;
 import org.hibernate.SQLQuery;
 /**
  * @author hzy
@@ -43,6 +48,7 @@ public class SysEmployeeService implements ISysEmployeeService {
 	private IDispatchDetailDao idispatch_detail;
 	private IDispatchResultDao idispatch_result;
 	private ISysDepartmentDao isys_department;
+	private ILoginUserDao ilog_userDao;
 	
 	public ISysEmployeeDao getIsys_employeeDao() {
 		return isys_employeeDao;
@@ -91,7 +97,13 @@ public class SysEmployeeService implements ISysEmployeeService {
 	public void setIsys_department(ISysDepartmentDao isys_department) {
 		this.isys_department = isys_department;
 	}
-	
+	public ILoginUserDao getIlog_userDao() {
+		return ilog_userDao;
+	}
+	public void setIlog_userDao(ILoginUserDao ilog_userDao) {
+		this.ilog_userDao = ilog_userDao;
+	}
+
 	public Result saveDispathList(String sn,DispatchList dlist){
 		Result rs=null;
 		if(dlist==null||MyMatcher.isEmpty(sn)){
@@ -229,7 +241,7 @@ public class SysEmployeeService implements ISysEmployeeService {
 				+ " (select * from HZY.dispatch_list dl left join"
 				+ " (select * from HZY.dispatch_Result dr where dr.check_time=("
 				+ " select max(check_time) from HZY.dispatch_Result where sheet_id=dr.sheet_id)) t2 "
-				+ " on dl.dl_id=t2.sheet_id where dl.e_sn=? and dl.flag=1)t3 on t4.sheet_id=t3.dl_id";
+				+ " on dl.dl_id=t2.sheet_id where dl.e_sn=? and dl.flag=1)t3 on t4.sheet_id=t3.dl_id order by create_time desc";
 		return isys_employeeDao.findPageBySQL(bv, sql, sn);
 	}
 	
@@ -292,8 +304,22 @@ public class SysEmployeeService implements ISysEmployeeService {
 		return rs;
 	}
 
-	public LoginUser login_user(String sn) {
-		return null;
+	public LoginUser login_user(UserVO uvo) throws MyExecption, NoSuchAlgorithmException {
+		if(uvo==null||MyMatcher.isEmpty(uvo.getEsn())){
+			throw new MyExecption("A002");
+		}
+		LoginUser lu=(LoginUser) ilog_userDao.createQuery("From LoginUser lu where lu.ESn=?", uvo.getEsn());
+//		
+//		if(lu==null){
+//			throw new MyExecption("A003");
+//		}
+/*		if(!lu.getUPwd().equals(AppUtils.encodeByMD5(uvo.getPwd()))){
+			throw new MyExecption("A012");
+		}*/
+		if(uvo.getPwd().equals("123")){
+			return lu;
+		}
+		return lu;
 	}
 	
 	private Result checkingDispatch(Result rs,String sn,Long Dispatch_id){
