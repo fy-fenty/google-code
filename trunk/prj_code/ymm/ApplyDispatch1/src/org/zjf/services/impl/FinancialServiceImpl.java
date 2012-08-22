@@ -13,11 +13,11 @@ import org.ymm.entity.DispatchDetail;
 import org.ymm.entity.DispatchResult;
 import org.ymm.entity.DispatchStatus;
 import org.ymm.entity.SysEmployee;
-import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
 import org.ymm.util.StringUtil;
 import org.ymm.vo.BaseVo;
 import org.ymm.vo.DispatchResultVo;
+import org.ymm.vo.LoginUserVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 import org.zjf.services.IFinancialService;
@@ -90,7 +90,7 @@ public class FinancialServiceImpl implements IFinancialService {
 	}
 
 	@Override
-	public SysPositions loginUser(String username, String pwd)
+	public Result loginUser(final LoginUserVo vo)
 			throws MyException {
 		return null;
 	}

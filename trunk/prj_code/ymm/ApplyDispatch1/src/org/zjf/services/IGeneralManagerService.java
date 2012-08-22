@@ -6,6 +6,7 @@ import org.ymm.exception.MyException;
 import org.ymm.vo.BaseVo;
 import org.ymm.vo.DispatchListVo;
 import org.ymm.vo.DispatchResultVo;
+import org.ymm.vo.LoginUserVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 
@@ -54,7 +55,7 @@ public interface IGeneralManagerService {
 	 * @throws MyException 
 	 * 			
 	 */
-	public SysPositions loginUser(final String username,final String pwd) throws MyException;
+	public Result loginUser(final LoginUserVo vo) throws MyException;
 	
 	/**
 	 * 终止报销单

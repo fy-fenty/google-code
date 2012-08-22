@@ -212,8 +212,9 @@ public class ManagerServiceImpl implements IManagerService {
 	}
 
 	@Override
-	public SysPositions loginUser(String username, String pwd)
+	public Result loginUser(final LoginUserVo vo)
 			throws MyException {
+		
 		return null;
 	}
 

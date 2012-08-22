@@ -81,5 +81,5 @@ public interface IManagerService {
 	 * @throws MyException 
 	 * 			
 	 */
-	public SysPositions loginUser(final String username,final String pwd) throws MyException;
+	public Result loginUser(final LoginUserVo vo) throws MyException;
 }

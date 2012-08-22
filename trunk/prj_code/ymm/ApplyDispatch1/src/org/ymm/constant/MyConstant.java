@@ -21,5 +21,10 @@ public class MyConstant {
 		
 		map.put("A010", AppConstant.LIST_ERROR);
 		map.put("A011", AppConstant.EXSIS_ERROR);
+		map.put("A012", AppConstant.ERROR_USERNAME);
+		map.put("A013", AppConstant.IP_ERROR);
+		map.put("A014", AppConstant.PWD_ERROR);
+		map.put("A015", AppConstant.CORE_ERROR);
+		map.put("A016", AppConstant.TIME_OUT);
 	}
 }
