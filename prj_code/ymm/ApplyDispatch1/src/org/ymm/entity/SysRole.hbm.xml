@@ -6,8 +6,8 @@
 -->
 <hibernate-mapping>
     <class name="org.ymm.entity.SysRole" table="SYS_ROLE" schema="ymm">
- 		<id name="EId" type="java.lang.Long">
-            <column name="E_ID" precision="22" scale="0" />
+ 		<id name="RId" type="java.lang.Long">
+            <column name="R_ID" precision="22" scale="0" />
                 <generator class="sequence">
             		<param name="sequence">SEQ_SYS_ROLE</param>
            	 	</generator>

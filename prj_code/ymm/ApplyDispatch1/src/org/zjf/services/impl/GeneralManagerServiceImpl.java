@@ -18,6 +18,7 @@ import org.ymm.util.StringUtil;
 import org.ymm.vo.BaseVo;
 import org.ymm.vo.DispatchListVo;
 import org.ymm.vo.DispatchResultVo;
+import org.ymm.vo.LoginUserVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 import org.zjf.services.IGeneralManagerService;
@@ -148,7 +149,7 @@ public class GeneralManagerServiceImpl implements IGeneralManagerService {
 	}
 
 	@Override
-	public SysPositions loginUser(String username, String pwd)
+	public Result loginUser(final LoginUserVo vo)
 			throws MyException {
 		return null;
 	}

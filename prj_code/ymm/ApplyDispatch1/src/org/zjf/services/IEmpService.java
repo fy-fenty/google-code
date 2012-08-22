@@ -5,6 +5,7 @@ import org.ymm.exception.MyException;
 import org.ymm.vo.BaseVo;
 import org.ymm.vo.DispatchDetailVo;
 import org.ymm.vo.DispatchListVo;
+import org.ymm.vo.LoginUserVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 
@@ -123,5 +124,5 @@ public interface IEmpService {
 	 * @throws MyException 
 	 * 			
 	 */
-	public SysEmployee loginUser(final String username,final String pwd) throws MyException;
+	public Result loginUser(final LoginUserVo vo);
 }

@@ -2,7 +2,13 @@ package org.zjf.services.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
+import org.ymm.constant.AppConstant;
 import org.ymm.constant.MyConstant;
 import org.ymm.dao.IDispatchDetailDao;
 import org.ymm.dao.IDispatchListDao;
@@ -15,15 +21,21 @@ import org.ymm.entity.DispatchList;
 import org.ymm.entity.DispatchResult;
 import org.ymm.entity.DispatchStatus;
 import org.ymm.entity.LoginUser;
+import org.ymm.entity.SysConfig;
 import org.ymm.entity.SysDepartment;
 import org.ymm.entity.SysEmployee;
+import org.ymm.entity.SysMenu;
 import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
+import org.ymm.util.AppUtils;
 import org.ymm.util.MD5;
+import org.ymm.util.SessionListener;
 import org.ymm.util.StringUtil;
 import org.ymm.vo.BaseVo;
+import org.ymm.vo.CurrentUser;
 import org.ymm.vo.DispatchDetailVo;
 import org.ymm.vo.DispatchListVo;
+import org.ymm.vo.LoginUserVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 import org.zjf.services.IEmpService;
@@ -46,6 +58,24 @@ public class EmpServiceImpl implements IEmpService {
 	private IDispatchDetailDao detaildao;
 	private IDispatchStatusDao statusdao;
 	private ISysDepartmentDao departdao;
+	private SysConfigServiceImpl configservice;
+	private SysMenuServiceImpl menuservice;
+
+	public SysMenuServiceImpl getMenuservice() {
+		return menuservice;
+	}
+
+	public void setMenuservice(SysMenuServiceImpl menuservice) {
+		this.menuservice = menuservice;
+	}
+
+	public SysConfigServiceImpl getConfigservice() {
+		return configservice;
+	}
+
+	public void setConfigservice(SysConfigServiceImpl configservice) {
+		this.configservice = configservice;
+	}
 
 	public ISysDepartmentDao getDepartdao() {
 		return departdao;
@@ -104,7 +134,8 @@ public class EmpServiceImpl implements IEmpService {
 	}
 
 	@Override
-	public Page findAllClaims(final SysEmployee emp,final BaseVo vo) throws MyException {
+	public Page findAllClaims(final SysEmployee emp, final BaseVo vo)
+			throws MyException {
 		if (StringUtil.isEmpty(emp.getESn()) == false)
 			throw new MyException("A002");
 		String sql = "select x.E_SN as E_SN,x.E_name as Ename,y.DL_ID as sheet_id,y.create_time as time,NVL(z.money,0) as money,NVL(j.DA_STATUS,'新建')as status"
@@ -144,21 +175,21 @@ public class EmpServiceImpl implements IEmpService {
 			return getResult("A003");
 		if (dis.getFlag() == false)
 			return getResult("A006");
-		if (!(dis.getESn()+"").equals(emp.getESn()))
+		if (!(dis.getESn() + "").equals(emp.getESn()))
 			return getResult("A005");
 
 		DispatchResult obj = system.findResultById(cla.getDlId());
-		Result r=checkStatus(obj);
-		if(r.getSuccess()==false)
+		Result r = checkStatus(obj);
+		if (r.getSuccess() == false)
 			return r;
-			try {
-				String sql="update dispatch_detail set FLAG=0 where sheet_ID=?";
-				detaildao.createSQLQuery(sql, dis.getDlId()+"").executeUpdate();
-				dis.setFlag(false);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return getResult("A007");
-			}
+		try {
+			String sql = "update dispatch_detail set FLAG=0 where sheet_ID=?";
+			detaildao.createSQLQuery(sql, dis.getDlId() + "").executeUpdate();
+			dis.setFlag(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return getResult("A007");
+		}
 		Result result = new Result();
 		return result;
 	}
@@ -177,10 +208,10 @@ public class EmpServiceImpl implements IEmpService {
 			return getResult("A003");
 		if (!emp.getESn().equals(emp1.getESn()))
 			return getResult("A005");
-		Result re=checkEmpPos(emp.getPId());
-		if(re.getSuccess()==false)
+		Result re = checkEmpPos(emp.getPId());
+		if (re.getSuccess() == false)
 			return re;
-		DispatchList list=new DispatchList();
+		DispatchList list = new DispatchList();
 		list.setEventExplain(cla.getEventExplain());
 		list.setCreateTime(new Date());
 		list.setESn(emp.getESn());
@@ -206,11 +237,11 @@ public class EmpServiceImpl implements IEmpService {
 			return getResult("A010");
 		if (list.getFlag() == false)
 			return getResult("A006");
-		if (!(list.getESn()+"").equals(emp.getESn()))
+		if (!(list.getESn() + "").equals(emp.getESn()))
 			return getResult("A005");
 		DispatchResult result = system.findResultById(cla.getDlId());
-		Result r=checkStatus(result);
-		if(r.getSuccess()==false)
+		Result r = checkStatus(result);
+		if (r.getSuccess() == false)
 			return r;
 		try {
 			DispatchList dl = listdao.get(cla.getDlId());
@@ -236,11 +267,11 @@ public class EmpServiceImpl implements IEmpService {
 			return getResult("A003");
 		if (dis.getFlag() == false)
 			throw new MyException("A006");
-		if (!(dis.getESn()+"").equals(emp.getESn()))
+		if (!(dis.getESn() + "").equals(emp.getESn()))
 			throw new MyException("A005");
 		DispatchResult result = system.findResultById(detail.getSheetId());
-		Result r=checkStatus(result);
-		if(r.getSuccess()==false)
+		Result r = checkStatus(result);
+		if (r.getSuccess() == false)
 			return r;
 		try {
 			DispatchDetail de = detaildao.get(detail.getDsId());
@@ -268,16 +299,16 @@ public class EmpServiceImpl implements IEmpService {
 		if (dd == null)
 			return getResult("A003");
 		DispatchList dis = system.findById(detail.getSheetId());
-		if(dis==null)
+		if (dis == null)
 			return this.getResult("A003");
-		if (!(dis.getESn()+"").equals(emp.getESn()))
+		if (!(dis.getESn() + "").equals(emp.getESn()))
 			return getResult("A005");
 		DispatchResult result = system.findResultById(detail.getSheetId());
-		Result r=checkStatus(result);
-		if(r.getSuccess()==false)
+		Result r = checkStatus(result);
+		if (r.getSuccess() == false)
 			return r;
 		try {
-			DispatchDetail deta=detaildao.get(detail.getDsId());
+			DispatchDetail deta = detaildao.get(detail.getDsId());
 			deta.setFlag(false);
 		} catch (Exception e) {
 			return getResult("A007");
@@ -296,19 +327,19 @@ public class EmpServiceImpl implements IEmpService {
 		if (detail == null || detail.getSheetId() == null)
 			return getResult("A002");
 
-		Result re=checkEmpPos(emp.getPId());
-		if(re.getSuccess()==false)
+		Result re = checkEmpPos(emp.getPId());
+		if (re.getSuccess() == false)
 			return re;
 		DispatchList dis = system.findById(detail.getSheetId());
 		if (dis == null)
 			return getResult("A003");
-		if (!(dis.getESn()+"").equals(emp.getESn()))
+		if (!(dis.getESn() + "").equals(emp.getESn()))
 			return getResult("A006");
 		DispatchResult result = system.findResultById(detail.getSheetId());
-		Result r=checkStatus(result);
-		if(r.getSuccess()==false)
+		Result r = checkStatus(result);
+		if (r.getSuccess() == false)
 			return r;
-		DispatchDetail deta=new DispatchDetail();
+		DispatchDetail deta = new DispatchDetail();
 		deta.setAccessory(detail.getAccessory());
 		deta.setCostExplain(detail.getCostExplain());
 		deta.setFlag(true);
@@ -340,30 +371,29 @@ public class EmpServiceImpl implements IEmpService {
 				|| StringUtil.isEmpty(cla.getESn()) == false)
 			return getResult("A002");
 
-		Result re=checkEmpPos(emp.getPId());
-		
-		if(re.getSuccess()==false)
+		Result re = checkEmpPos(emp.getPId());
+
+		if (re.getSuccess() == false)
 			return re;
-		DispatchList dis=listdao.get(cla.getDlId());
-		if(!(dis.getESn()+"").equals(emp.getESn()))
+		DispatchList dis = listdao.get(cla.getDlId());
+		if (!(dis.getESn() + "").equals(emp.getESn()))
 			return this.getResult("A005");
 		DispatchResult r = system.findResultById(cla.getDlId());
 		if (r != null) {
-			if(!(r.getCheckNext()+"").equals(emp.getESn()))
+			if (!(r.getCheckNext() + "").equals(emp.getESn()))
 				return getResult("A006");
-				
+
 		}
 		List<DispatchDetail> list = system.findDetailById(cla.getDlId(), 0, 2)
 				.getResult();
 		if (list == null || list.size() <= 0)
 			return getResult("A010");
-		
-		
+
 		SysDepartment depa = departdao.findUnique(
 				"from SysDepartment where DId=?", emp.getDepartmentId() + "");
 		if (depa == null || StringUtil.isEmpty(depa.getManageSn()) == false)
 			return getResult("A006");
-		
+
 		DispatchResult res = new DispatchResult();
 		res.setCheckComment(cla.getEventExplain());
 		res.setCheckNext(depa.getManageSn());
@@ -383,20 +413,82 @@ public class EmpServiceImpl implements IEmpService {
 	}
 
 	@Override
-	public SysEmployee loginUser(String username, String pwd)
-			throws MyException {
-		if (!StringUtil.isEmpty(username) == false
-				|| !StringUtil.isEmpty(pwd) == false)
-			throw new MyException("A002");
-		LoginUser user = system.findUserBySn(username);
+	public Result loginUser(LoginUserVo lv) {
+		System.out.println(lv.getESn()+lv.getUPwd());
+		if (!StringUtil.isEmpty(lv.getESn()) == false
+				|| !StringUtil.isEmpty(lv.getUPwd()) == false)
+			return this.getResult("A002");
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpSession se = ServletActionContext.getRequest().getSession();
+		// 把用户名放进request
+		request.setAttribute(AppConstant.CURRENT_UNAME, lv.getESn());
+
+		// 清除Session
+		se.setAttribute(AppConstant.CURRENT_USER, null);
+		SessionListener.removeSession(se.getId());
+		// 效验验证码
+		if (!(se.getAttribute("rand") + "").equals(lv.getCore()))
+			return this.getResult("A015");
+		// 效验Ip地址
+//		if (AppUtils.isIpAddress(request.getLocalAddr()) == false)
+//			return this.getResult("A013");
+		// 效验Ip地址
+//		if (AppUtils.getMacAddress(request.getLocalAddr()) == null)
+//			return this.getResult("A013");
+		// 根据用户名取得用户对象
+		LoginUser user = null;
+		try {
+			user = system.findUserBySn(lv.getESn());
+		} catch (Exception e) {
+			return this.getResult(e.getMessage());
+		}
 		if (user == null)
-			throw new MyException("A003");
-		if (!user.getUPwd().equals(MD5.ecodeByMD5(pwd)))
-			throw new MyException("A005");
-		SysEmployee emp = findBySn(user.getESn());
-		if (emp == null)
-			throw new MyException("A003");
-		return emp;
+			return this.getResult("A012");
+		// 比较密码
+		if ((user.getUPwd() + "").equals(MD5.ecodeByMD5(lv.getUPwd())))
+			return this.getResult("A014");
+		SysConfig config = configservice.findSysConfig(lv.getUId());
+		if(config!=null){
+		if (config.getBegintime().before(new Date()))
+			return this.getResult("A016");
+		if (config.getEndtime().after(new Date()))
+			return this.getResult("A016");
+		}
+		SysEmployee emp;
+		try {
+			emp = this.findBySn(lv.getESn());
+		} catch (MyException e) {
+			return this.getResult(e.getMessage());
+		}
+		List<SysMenu> list = menuservice.findMenuByPID(emp.getPId());
+		se.setAttribute("menu", list);
+		Map<String, HttpSession> map = SessionListener.getSessionMaps();
+
+		for (String s : map.keySet()) {
+			HttpSession se1 = map.get(s);
+			CurrentUser cu = (CurrentUser) se1
+					.getAttribute(AppConstant.CURRENT_USER);
+			if (s.equals(se.getId())) {
+				continue;
+			}
+
+			if (lv.getESn().equals(cu.getUser().getESn())) {
+				se1.setAttribute(AppConstant.CURRENT_USER, null);
+				SessionListener.removeSession(se1.getId());
+				break;
+			}
+		}
+
+		CurrentUser curre = new CurrentUser();
+		curre.setEmp(emp);
+		curre.setUser(user);
+		// 设置若干属性
+		se.setAttribute(AppConstant.CURRENT_USER, curre);
+		SessionListener.addSession(se.getId(), se);
+		Result re = new Result();
+		re.setSuccess(true);
+		re.setMsg("success");
+		return re;
 	}
 
 	private Result checkStatus(DispatchResult result) throws MyException {
@@ -406,7 +498,7 @@ public class EmpServiceImpl implements IEmpService {
 			if (result.getCheckStatus() != status.getDaId())
 				return this.getResult("A005");
 		}
-		Result res=new Result();
+		Result res = new Result();
 		return res;
 	}
 
@@ -416,12 +508,12 @@ public class EmpServiceImpl implements IEmpService {
 			return this.getResult("A003");
 		if (!pos.getPNameCn().equals("雇员"))
 			return this.getResult("A005");
-		Result res=new Result();
+		Result res = new Result();
 		return res;
 	}
-	
-	private Result getResult(String str){
-		Result res=new Result();
+
+	private Result getResult(String str) {
+		Result res = new Result();
 		res.setException(str);
 		res.setSuccess(false);
 		res.setMsg(MyConstant.map.get(str));

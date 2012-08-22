@@ -1,10 +1,10 @@
 package org.zjf.services;
 
 import org.ymm.entity.SysEmployee;
-import org.ymm.entity.SysPositions;
 import org.ymm.exception.MyException;
 import org.ymm.vo.BaseVo;
 import org.ymm.vo.DispatchResultVo;
+import org.ymm.vo.LoginUserVo;
 import org.ymm.vo.Page;
 import org.ymm.vo.Result;
 
@@ -40,7 +40,7 @@ public interface IFinancialService {
 	 * @throws MyException
 	 * 
 	 */
-	public SysPositions loginUser(final String username, final String pwd)
+	public Result loginUser(final LoginUserVo vo)
 			throws MyException;
 
 	/**
