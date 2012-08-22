@@ -56,4 +56,11 @@
 		<property name="system" ref="SystemService"></property>
 		<property name="statusdao" ref="DispatchStatusDao"></property>
 	</bean>
+	<bean name="SysMenuService" class="org.zjf.services.impl.SysMenuServiceImpl">
+		<property name="menudao" ref="SysMenuDao"></property>
+		<property name="roledao" ref="SysRoleDao"></property>
+	</bean>
+	<bean name="SysConfigService" class="org.zjf.services.impl.SysConfigServiceImpl">
+		<property name="configdao" ref="SysConfigDao"></property>
+	</bean>
 </beans>
