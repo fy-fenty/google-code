@@ -414,9 +414,10 @@ public class EmpServiceImpl implements IEmpService {
 
 	@Override
 	public Result loginUser(LoginUserVo lv) {
+		System.out.println("!!1111");
 		System.out.println(lv.getESn()+lv.getUPwd());
-		if (!StringUtil.isEmpty(lv.getESn()) == false
-				|| !StringUtil.isEmpty(lv.getUPwd()) == false)
+		if (StringUtil.isEmpty(lv.getESn()) == false
+				|| StringUtil.isEmpty(lv.getUPwd()) == false)
 			return this.getResult("A002");
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpSession se = ServletActionContext.getRequest().getSession();
@@ -440,6 +441,7 @@ public class EmpServiceImpl implements IEmpService {
 		try {
 			user = system.findUserBySn(lv.getESn());
 		} catch (Exception e) {
+			e.printStackTrace();
 			return this.getResult(e.getMessage());
 		}
 		if (user == null)

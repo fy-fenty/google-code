@@ -18,7 +18,7 @@
 	<!-- 配置数据连接类 -->  
 	<bean id="dSource"  class="org.logicalcobwebs.proxool.ProxoolDataSource">  
         <property name="driver"  value="oracle.jdbc.OracleDriver"></property>  
-        <property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.104:1521:orcl"></property>  
+        <property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.102:1521:orcl"></property>  
         <property name="user" value="ymm" />
         <property name="password" value="ymm123456" /> 
        <!-- 

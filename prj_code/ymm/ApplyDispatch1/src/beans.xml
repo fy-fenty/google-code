@@ -35,5 +35,8 @@
 	<bean name="SysDepartmentDao" class="org.ymm.dao.impl.SysDepartmentDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysEmployeeDao" class="org.ymm.dao.impl.SysEmployeeDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysPositionsDao" class="org.ymm.dao.impl.SysPositionsDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysRoleDao" class="org.ymm.dao.impl.SysRoleDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysMenuDao" class="org.ymm.dao.impl.SysMenuDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysConfigDao" class="org.ymm.dao.impl.SysConfigDaoImpl" parent="BaseDao"></bean>
 </beans>
 

@@ -34,6 +34,7 @@ public class LoginAction {
 
 	public String login() throws IOException {
 		HttpServletResponse response=ServletActionContext.getResponse();
+		response.setCharacterEncoding("UTF-8");
 		PrintWriter out=response.getWriter();
 		Result result = emp.loginUser(uservo);
 		String json=Json.JSON_Object(result);
