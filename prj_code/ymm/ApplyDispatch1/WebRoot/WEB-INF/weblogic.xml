@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wls:weblogic-web-app
+	xmlns:wls="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd http://xmlns.oracle.com/weblogic/weblogic-web-app http://xmlns.oracle.com/weblogic/weblogic-web-app/1.3/weblogic-web-app.xsd">
+	<wls:weblogic-version>10.3.6</wls:weblogic-version>
+	<wls:session-descriptor>
+		<wls:timeout-secs>3600</wls:timeout-secs>
+		<wls:invalidation-interval-secs>60</wls:invalidation-interval-secs>
+		<wls:cookie-name>ADMINCONSOLESESSION</wls:cookie-name>
+		<wls:cookie-max-age-secs>-1</wls:cookie-max-age-secs>
+		<wls:cookie-http-only>false</wls:cookie-http-only>
+		<wls:url-rewriting-enabled>false</wls:url-rewriting-enabled>
+	</wls:session-descriptor>
+	<wls:context-root>WebContent</wls:context-root>
+	<wls:charset-params>
+        <wls:input-charset>
+            <wls:resource-path>/*</wls:resource-path>
+            <wls:java-charset-name>utf-8</wls:java-charset-name>
+        </wls:input-charset>
+    </wls:charset-params>
+</wls:weblogic-web-app>
