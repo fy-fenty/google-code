@@ -11,7 +11,7 @@
 	
 	<bean id="myDataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
 		<property name="driver" value="oracle.jdbc.OracleDriver" />
-		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.104:1521:orcl" />
+		<property name="driverUrl" value="jdbc:oracle:thin:@localhost:1521:orcl" />
 		<property name="user" value="ymm" />
 		<property name="password" value="ymm123456" />
 	</bean>

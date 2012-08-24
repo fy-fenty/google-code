@@ -1,5 +1,6 @@
 package org.zjf.entity;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -56,8 +57,9 @@ public class DispatchList implements java.io.Serializable {
 		this.ESn = ESn;
 	}
 
+	
 	public Date getCreateTime() {
-		return this.createTime;
+		return createTime;
 	}
 
 	public void setCreateTime(Date createTime) {

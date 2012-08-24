@@ -27,7 +27,9 @@
 	<bean name="SysDepartmentDao" class="org.zjf.dao.impl.SysDepartmentDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysEmployeeDao" class="org.zjf.dao.impl.SysEmployeeDaoImpl" parent="BaseDao"></bean>
 	<bean name="SysPositionsDao" class="org.zjf.dao.impl.SysPositionsDaoImpl" parent="BaseDao"></bean>
-	
+	<bean name="SysConfigDaoImpl" class="org.zjf.dao.impl.SysConfigDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysMenuDaoImpl" class="org.zjf.dao.impl.SysMenuDaoImpl" parent="BaseDao"></bean>
+	<bean name="SysRoleDaoImpl" class="org.zjf.dao.impl.SysRoleDaoImpl" parent="BaseDao"></bean>
 	
 	<bean name="systemServiceImpl" class="org.ymm.services.impl.SystemServiceImpl">
 		<property name="baseDao" ref="BaseDao" />
@@ -44,6 +46,7 @@
 		<property name="iSysEmployeeDao" ref="SysEmployeeDao"/>
 		<property name="iDispatchDetailDao" ref="DispatchDetailDao"/>
 		<property name="iDispatchResultDao" ref="DispatchResultDao" />
+		<property name="iLoginUserDao" ref="LoginUserDao"></property>
 	</bean>
 	
 	<bean name="managerServiceImpl" class="org.ymm.services.impl.ManagerServiceImpl">
@@ -68,7 +71,16 @@
 		<property name="iDispatchResultDao" ref="DispatchResultDao"/>
 	</bean>
 	
-	<bean name="org.ymm.actions.LoginAction" class="org.ymm.actions.LoginAction">
-		
+	<bean name="showMenuServiceImpl" class="org.ymm.services.impl.ShowMenuServiceImpl">
+		<property name="iSysRoleDao" ref="SysRoleDaoImpl"></property>
+		<property name="iSysMenuDao" ref="SysMenuDaoImpl"></property>
 	</bean>
+	
+	<bean name="org.ymm.actions.LoginAction" class="org.ymm.actions.LoginAction">
+		<property name="iEmpService" ref="employeeServiceImpl"/>
+		<property name="iShowMenuService" ref="showMenuServiceImpl"/>
+	</bean>
+	
+	
+	
 </beans>

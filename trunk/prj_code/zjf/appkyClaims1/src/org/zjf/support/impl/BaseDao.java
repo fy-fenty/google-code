@@ -74,7 +74,7 @@ public class BaseDao<T,PK extends Serializable> extends SimpleDao<T, PK> impleme
 				query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
 				setPageParameter(query, vo.getStart(), vo.getLimit());
 				List result = query.list();
-				page.setResult(result);
+				page.setResult(result);	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

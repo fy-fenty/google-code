@@ -10,6 +10,11 @@
 	<package name="login" extends="struts-default">
 		<action name="login" class="org.ymm.actions.LoginAction" method="login">
 		</action>
+		<action name="tree" class="org.ymm.actions.LoginAction" method="tree">
+		</action>
+		<action name="select" class="org.ymm.actions.LoginAction" method="selectDispatch_list">
+		</action>
+		
 	</package>
 	
 </struts>
