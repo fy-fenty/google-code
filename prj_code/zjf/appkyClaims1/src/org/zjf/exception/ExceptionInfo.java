@@ -36,5 +36,6 @@ public class ExceptionInfo {
 		map.put("A012", AppConstant.INEQUALITY_ERROR);
 		map.put("A013", AppConstant.OTHER_ERROR);
 		map.put("A014", AppConstant.SELECT_ERROR);
+		map.put("A015", AppConstant.LOGIN_ERROR);
 	}
 }

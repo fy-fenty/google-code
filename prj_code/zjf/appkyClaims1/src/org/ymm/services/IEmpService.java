@@ -1,11 +1,11 @@
 package org.ymm.services;
 
-import org.zjf.entity.LoginUser;
 import org.zjf.entity.SysEmployee;
 import org.zjf.exception.MyException;
 import org.zjf.vo.BaseVo;
 import org.zjf.vo.DispatchDetailVo;
 import org.zjf.vo.DispatchListVo;
+import org.zjf.vo.LoginVo;
 import org.zjf.vo.Page;
 import org.zjf.vo.Result;
 
@@ -124,5 +124,5 @@ public interface IEmpService {
 	 * @throws MyException 
 	 * 			
 	 */
-	public LoginUser loginUser(final String username,final String pwd) throws MyException;
+	public Result loginUser(LoginVo lv) throws MyException;
 }

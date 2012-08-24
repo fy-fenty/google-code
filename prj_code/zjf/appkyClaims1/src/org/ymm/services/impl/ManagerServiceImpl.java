@@ -1,5 +1,6 @@
 package org.ymm.services.impl;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.springframework.context.ApplicationContext;
@@ -186,7 +187,7 @@ public class ManagerServiceImpl implements IManagerService {
 		DispatchList dispatchList=new DispatchList();
 		dispatchList.setDlId(dispatchListVo.getDlId());
 		dispatchList.setESn(dispatchListVo.getESn());
-		dispatchList.setCreateTime(dispatchListVo.getCreateTime());
+		dispatchList.setCreateTime(new Timestamp(new Date().getTime()));
 		dispatchList.setEventExplain(dispatchListVo.getEventExplain());
 		dispatchList.setFlag(dispatchListVo.getFlag());
 		return dispatchList;

@@ -24,7 +24,19 @@ public class Page
      */
     protected int pageSize = 1;
 
-    /**
+    public Page() {
+		super();
+	}
+
+	public Page(int pageNo, int pageSize, List result, long totalCount) {
+		super();
+		this.pageNo = pageNo;
+		this.pageSize = pageSize;
+		this.result = result;
+		this.totalCount = totalCount;
+	}
+
+	/**
      * 查询返回的结果集
      */
     @SuppressWarnings("rawtypes")
