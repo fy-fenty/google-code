@@ -2,9 +2,7 @@ function reloadcode(){//刷新验证码函数
  		var verify = document.getElementById('safecode');
  		verify.setAttribute('src', '../MyJsp.jsp?' + Math.random());
 	}
-function getCook(){
-	
-}
+
 Ext.onReady(function(){
 	Ext.QuickTips.init();
 	var myform=new Ext.FormPanel({
@@ -54,13 +52,19 @@ Ext.onReady(function(){
           	var pwd=fo.findField('loginPwd').getValue();
           	var code=fo.findField('randCode').getValue();
           	
-          	alert(esn+' '+' '+pwd+' '+code);
+//          	alert(esn+' '+' '+pwd+' '+code);
             	Ext.Ajax.request({
             		url:'/EmpCheck/login.action',  
             		params:{'uv.esn':esn,'uv.pwd':pwd,'uv.code':code},
             		method:'POST',  
-            		success:function(){
-            		 	alert(1);
+            		success:function(rs){
+            			var l=Ext.util.JSON.decode(rs.responseText);
+            		 	if(l['success']==true){
+            		 		window.location.href='/EmpCheck/index.jsp';
+            		 	}else{
+//            		 		alert(l['msg']);
+            		 		Ext.Msg.alert("提示",l['msg']);
+            		 	}
             		}
             	});
           }
