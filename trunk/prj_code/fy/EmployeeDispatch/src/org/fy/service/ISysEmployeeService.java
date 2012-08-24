@@ -84,5 +84,5 @@ public interface ISysEmployeeService {
 	 * @param sn去32
 	 * @return LoginUser
 	 */
-	public LoginUser login_user(final UserVO uvo) throws MyExecption,NoSuchAlgorithmException;
+	public Result login_user(final UserVO uvo);
 }

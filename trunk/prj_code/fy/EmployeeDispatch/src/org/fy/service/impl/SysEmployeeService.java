@@ -5,28 +5,38 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
 import org.fy.constant.AppConstant;
 import org.fy.constant.MyConstant;
+import org.fy.dao.IDetailItemDao;
 import org.fy.dao.IDispatchDetailDao;
 import org.fy.dao.IDispatchListDao;
 import org.fy.dao.IDispatchResultDao;
+import org.fy.dao.ILoginLogDao;
 import org.fy.dao.ILoginUserDao;
+import org.fy.dao.ISysConfigDao;
 import org.fy.dao.ISysDepartmentDao;
 import org.fy.dao.ISysEmployeeDao;
 import org.fy.entity.DispatchDetail;
 import org.fy.entity.DispatchList;
 import org.fy.entity.DispatchResult;
+import org.fy.entity.LoginLog;
 import org.fy.entity.LoginUser;
+import org.fy.entity.SysConfig;
 import org.fy.entity.SysDepartment;
 import org.fy.entity.SysEmployee;
 import org.fy.entity.SysPositions;
 import org.fy.exception.MyExecption;
 import org.fy.service.ISysEmployeeService;
 import org.fy.service.ISystemService;
+import org.fy.util.MD5;
 import org.fy.util.MyMatcher;
 import org.fy.utils.AppUtils;
 import org.fy.utils.SessionListener;
 import org.fy.vo.BaseVO;
+import org.fy.vo.CurrentUserVO;
 import org.fy.vo.DispatchDetailVO;
 import org.fy.vo.DispatchListVO;
 import org.fy.vo.Page;
@@ -48,62 +58,58 @@ public class SysEmployeeService implements ISysEmployeeService {
 	private IDispatchDetailDao idispatch_detail;
 	private IDispatchResultDao idispatch_result;
 	private ISysDepartmentDao isys_department;
-	private ILoginUserDao ilog_userDao;
+	private ISysConfigDao isys_config;
+	private ILoginLogDao ilog_log;
 	
 	public ISysEmployeeDao getIsys_employeeDao() {
 		return isys_employeeDao;
 	}
-
 	public void setIsys_employeeDao(ISysEmployeeDao isys_employeeDao) {
 		this.isys_employeeDao = isys_employeeDao;
 	}
-
 	public ISystemService getIsystem_service() {
 		return isystem_service;
 	}
-
 	public void setIsystem_service(ISystemService isystem_service) {
 		this.isystem_service = isystem_service;
 	}
-
 	public IDispatchListDao getIdispatch_list() {
 		return idispatch_list;
 	}
-
 	public void setIdispatch_list(IDispatchListDao idispatch_list) {
 		this.idispatch_list = idispatch_list;
 	}
-
 	public IDispatchDetailDao getIdispatch_detail() {
 		return idispatch_detail;
 	}
-
 	public void setIdispatch_detail(IDispatchDetailDao idispatch_detail) {
 		this.idispatch_detail = idispatch_detail;
 	}
-
 	public IDispatchResultDao getIdispatch_result() {
 		return idispatch_result;
 	}
-
 	public void setIdispatch_result(IDispatchResultDao idispatch_result) {
 		this.idispatch_result = idispatch_result;
 	}
-
 	public ISysDepartmentDao getIsys_department() {
 		return isys_department;
 	}
-
 	public void setIsys_department(ISysDepartmentDao isys_department) {
 		this.isys_department = isys_department;
 	}
-	public ILoginUserDao getIlog_userDao() {
-		return ilog_userDao;
+	public ISysConfigDao getIsys_config() {
+		return isys_config;
 	}
-	public void setIlog_userDao(ILoginUserDao ilog_userDao) {
-		this.ilog_userDao = ilog_userDao;
+	public void setIsys_config(ISysConfigDao isys_config) {
+		this.isys_config = isys_config;
 	}
-
+	public ILoginLogDao getIlog_log() {
+		return ilog_log;
+	}
+	public void setIlog_log(ILoginLogDao ilog_log) {
+		this.ilog_log = ilog_log;
+	}
+	
 	public Result saveDispathList(String sn,DispatchList dlist){
 		Result rs=null;
 		if(dlist==null||MyMatcher.isEmpty(sn)){
@@ -119,6 +125,7 @@ public class SysEmployeeService implements ISysEmployeeService {
 			return new Result(false,AppConstant.SYS_ERROR,"A005");
 //			throw new MyExecption("A005");
 		}
+		dlist.setCreateTime(new Date());
 		dlist.setESn(sn);
 		dlist.setFlag(true);
 		idispatch_list.save(dlist);
@@ -290,8 +297,6 @@ public class SysEmployeeService implements ISysEmployeeService {
 			return rs;
 		}
 		String sql="update hzy.dispatch_detail set flag=0 where ds_id=?";
-//		DispatchDetail dis_detail=idispatch_detail.get(detailvo.getDsId());
-//		list.setFlag(false);
 		if(MyMatcher.isEmpty(detailvo.getDsId())){
 			return new Result(false, AppConstant.PARAM_ERROR, "A002");
 		}
@@ -304,22 +309,80 @@ public class SysEmployeeService implements ISysEmployeeService {
 		return rs;
 	}
 
-	public LoginUser login_user(UserVO uvo) throws MyExecption, NoSuchAlgorithmException {
+	public Result login_user(UserVO uvo){
 		if(uvo==null||MyMatcher.isEmpty(uvo.getEsn())){
-			throw new MyExecption("A002");
+			return new Result(false, AppConstant.PARAM_ERROR, "A002");
 		}
-		LoginUser lu=(LoginUser) ilog_userDao.createQuery("From LoginUser lu where lu.ESn=?", uvo.getEsn());
-//		
-//		if(lu==null){
-//			throw new MyExecption("A003");
+		HttpSession se=ServletActionContext.getRequest().getSession();
+		String code = (String)se.getAttribute("rand");
+		System.out.println(code+" "+uvo.getCode());
+		if(MyMatcher.isEmpty(code)||!uvo.getCode().equals(code)){
+			return new Result(false,AppConstant.CODE_ERROR,"A013");
+		}
+		
+		
+		LoginUser lu=isystem_service.findUserBySn(uvo.getEsn());		
+		if(lu==null){
+			return new Result(false,AppConstant.PWD_ERROR,"A012");
+		}		
+		if(!lu.getUPwd().equals(MD5.getMD5(uvo.getPwd()))){
+			return new Result(false,AppConstant.PWD_ERROR,"A012");
+		}	
+		SysEmployee emp=isystem_service.findEmployeeBySn(lu.getESn());
+		if(emp==null){
+			return new Result(false,AppConstant.NULL_ERROR,"A003");
+		}
+//		SysConfig sc=isys_config.findUnique("From SysConfig where UserId=1 and begintime<? and endtime>?",lu.getUId(),new Date(),new Date());
+//		if(sc==null){
+//			return new Result(false,AppConstant.CURRENT_USER_ERROR,"A014");
 //		}
-/*		if(!lu.getUPwd().equals(AppUtils.encodeByMD5(uvo.getPwd()))){
-			throw new MyExecption("A012");
-		}*/
-		if(uvo.getPwd().equals("123")){
-			return lu;
+//		ServletActionContext.getRequest().setAttribute(AppConstant.CURRENT_ESN, uvo.getEsn());
+
+		String ip=ServletActionContext.getRequest().getRemoteAddr();
+		System.out.println(ip);
+		if(AppUtils.isIpAddress(ip)==false){
+			return new Result(false,AppConstant.IP_ERROR,"A011");
 		}
-		return lu;
+		String mac=AppUtils.getMacAddress(ip);
+		
+		se.setAttribute(AppConstant.CURRENT_USER, null);
+		SessionListener.removeSession(se.getId());
+		
+		Map<String , HttpSession> map=SessionListener.getSessionMaps();
+		for (String str : map.keySet()){
+			HttpSession se1=map.get(str);
+			CurrentUserVO cv=(CurrentUserVO) se1.getAttribute(AppConstant.CURRENT_USER);			
+			if(str.equals(se.getId())){
+				continue;
+			}
+			if(cv!=null){
+				if(cv.getESn().equals(lu.getESn())){
+					se1.setAttribute(AppConstant.CURRENT_USER, null);
+					SessionListener.removeSession(se1.getId());
+					break;
+				}
+			}
+		}		
+		//打日志
+/*		LoginLog log=new LoginLog();
+		log.setUserSn(lu.getESn());
+		log.setUserId(lu.getUId());
+		log.setSessionId(se.getId());
+		log.setPosition(emp.getPId());
+		log.setLogDate(new Date());
+		log.setIpAddr(ip);
+		log.setMacAddr(mac);
+		ilog_log.save(log);*/
+		
+		CurrentUserVO cu=new CurrentUserVO();
+		cu.setESn(lu.getESn());
+		cu.setPId(emp.getPId());
+		
+		se.setAttribute(AppConstant.CURRENT_USER, cu);
+		SessionListener.addSession(se.getId(),se);
+		
+		
+		return new Result(true,AppConstant.DEFAULT_ERROR,"A001");
 	}
 	
 	private Result checkingDispatch(Result rs,String sn,Long Dispatch_id){

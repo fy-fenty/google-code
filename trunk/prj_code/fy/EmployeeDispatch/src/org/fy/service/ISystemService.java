@@ -9,6 +9,8 @@ import org.fy.entity.DispatchResult;
 import org.fy.entity.LoginUser;
 import org.fy.entity.SysEmployee;
 import org.fy.entity.SysPositions;
+import org.fy.vo.BaseVO;
+import org.fy.vo.Page;
 /**
  * @author hzy
  * @date 2012-8-15
@@ -22,7 +24,7 @@ public interface ISystemService {
 	 * @param pwd
 	 * @return 加密后的字符串
 	 */
-	public String getMd5(final String pwd) throws NoSuchAlgorithmException;
+	public String getMd5(final String pwd);
 	
 	/**
 	 * 查询指定报销单
@@ -80,4 +82,10 @@ public interface ISystemService {
 	 * @return boolean
 	 */
 	public boolean checkDlist(final Long id,final String sn);
+	
+	/**
+	 * 查询报销单明细选项
+	 * @return page
+	 */
+	public Page findDetailItem(final BaseVO bv);
 }

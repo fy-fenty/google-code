@@ -3,6 +3,7 @@ package org.fy.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import org.fy.dao.IDetailItemDao;
 import org.fy.dao.IDispatchDetailDao;
 import org.fy.dao.IDispatchListDao;
 import org.fy.dao.IDispatchResultDao;
@@ -15,7 +16,10 @@ import org.fy.entity.LoginUser;
 import org.fy.entity.SysEmployee;
 import org.fy.entity.SysPositions;
 import org.fy.service.ISystemService;
+import org.fy.util.MD5;
 import org.fy.utils.AppUtils;
+import org.fy.vo.BaseVO;
+import org.fy.vo.Page;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
 
@@ -33,59 +37,54 @@ public class SystemService implements ISystemService{
 	private ISysPositionsDao isys_position;
 	private ILoginUserDao ilogin_user;
 	private ISysEmployeeDao isys_employee;
-	
+	private IDetailItemDao idetail_item;
 	
 
 	public IDispatchListDao getIdispatch_list() {
 		return idispatch_list;
 	}
-
 	public void setIdispatch_list(IDispatchListDao idispatch_list) {
 		this.idispatch_list = idispatch_list;
 	}
-
 	public IDispatchResultDao getIdispatch_result() {
 		return idispatch_result;
 	}
-
 	public void setIdispatch_result(IDispatchResultDao idispatch_result) {
 		this.idispatch_result = idispatch_result;
 	}
-
 	public IDispatchDetailDao getIdispatch_detail() {
 		return idispatch_detail;
 	}
-
 	public void setIdispatch_detail(IDispatchDetailDao idispatch_detail) {
 		this.idispatch_detail = idispatch_detail;
 	}
-
 	public ISysPositionsDao getIsys_position() {
 		return isys_position;
 	}
-
 	public void setIsys_position(ISysPositionsDao isys_position) {
 		this.isys_position = isys_position;
 	}
-
 	public ILoginUserDao getIlogin_user() {
 		return ilogin_user;
 	}
-
 	public void setIlogin_user(ILoginUserDao ilogin_user) {
 		this.ilogin_user = ilogin_user;
 	}
-
 	public ISysEmployeeDao getIsys_employee() {
 		return isys_employee;
 	}
-
 	public void setIsys_employee(ISysEmployeeDao isys_employee) {
 		this.isys_employee = isys_employee;
 	}
-
-	public String getMd5(final String pwd) throws NoSuchAlgorithmException {
-		return AppUtils.encodeByMD5(pwd);
+	public IDetailItemDao getIdetail_item() {
+		return idetail_item;
+	}
+	public void setIdetail_item(IDetailItemDao idetail_item) {
+		this.idetail_item = idetail_item;
+	}
+	
+	public String getMd5(final String pwd){
+		return MD5.getMD5(pwd);
 	}
 
 	public DispatchList findByDlistId(final Long id) {
@@ -131,6 +130,11 @@ public class SystemService implements ISystemService{
 			return true;
 		};
 		return false;
+	}
+
+	public Page findDetailItem(BaseVO bv) {
+		String sql="select * from hzy.detail_item";
+		return idetail_item.findPageBySQL(bv, sql);
 	}
 
 }
