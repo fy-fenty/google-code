@@ -22,13 +22,15 @@ Ext.onReady(function(){
             fieldLabel:"用户名",  
             //name:'userName',  
             id:'userName',
-            allowBlank:false,  
+            allowBlank:false,
+            value:'xxxx1001',
             blankText:'用户名不能为空'  
         }),{  
             fieldLabel:"密码",  
             name:'password',  
             allowBlank:false,  
-            inputType:'password',  
+            inputType:'password',
+            value:'123456',
             blankText:'密码不能为空'  
         },{  
             name: 'vcode',  
@@ -73,10 +75,18 @@ Ext.onReady(function(){
     		method: 'GET',
     		params: {'uname':uname ,'passwprd':password,'vcode':vcode},
     		callback: function(op,success,resp){
-				Ext.MessageBox.alert("提示",'save success',function(){
-					alert('xxx');
-				});
-			}
+    				if(success){
+    					var s= eval(resp.responseText);
+    					if(s[0].success==true){
+    						document.location.href = "/appkyClaims1/index.jsp";
+    					}
+    				}else{
+    						alert("登录失败...");
+    						document.location.href = "/appkyClaims1/login.html";
+    					}
+					
+				}
+				
     	});
     }  
     
