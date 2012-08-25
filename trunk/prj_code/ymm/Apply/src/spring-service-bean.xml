@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans  
+                        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+                        http://www.springframework.org/schema/context  
+                        http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+                        http://www.springframework.org/schema/aop  
+                        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd  
+                        http://www.springframework.org/schema/tx  
+                        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<import resource="beans.xml" />
+
+	<bean name="SysMenuService" class="org.zjf.services.impl.SysMenuServiceImpl">
+		<property name="menudao" ref="SysMenuDao"></property>
+		<property name="roledao" ref="SysRoleDao"></property>
+	</bean>
+	<bean name="SysConfigService" class="org.zjf.services.impl.SysConfigServiceImpl">
+		<property name="configdao" ref="SysConfigDao"></property>
+	</bean>
+	<bean name="SystemService" class="org.zjf.services.impl.SystemServiceImpl">
+		<property name="listdao" ref="DispatchListDao"></property>
+		<property name="resultdao" ref="DispatchResultDao"></property>
+		<property name="detaildao" ref="DispatchDetailDao"></property>
+		<property name="posdao" ref="SysPositionsDao"></property>
+		<property name="userdao" ref="LoginUserDao"></property>
+	</bean>
+	<bean name="EmpService" class="org.zjf.services.impl.EmpServiceImpl">
+		<property name="empdao" ref="SysEmployeeDao"></property>
+		<property name="listdao" ref="DispatchListDao"></property>
+		<property name="resultdao" ref="DispatchResultDao"></property>
+		<property name="system" ref="SystemService"></property>
+		<property name="detaildao" ref="DispatchDetailDao"></property>
+		<property name="statusdao" ref="DispatchStatusDao"></property>
+		<property name="departdao" ref="SysDepartmentDao"></property>
+		<property name="configservice" ref="SysConfigService"></property>
+		<property name="menuservice" ref="SysMenuService"></property>
+	</bean>
+	<bean name="FinancialService" class="org.zjf.services.impl.FinancialServiceImpl">
+		<property name="empdao" ref="SysEmployeeDao"></property>
+		<property name="listdao" ref="DispatchListDao"></property>
+		<property name="resultdao" ref="DispatchResultDao"></property>
+		<property name="system" ref="SystemService"></property>
+		<property name="departdao" ref="SysDepartmentDao"></property>
+		<property name="statusdao" ref="DispatchStatusDao"></property>
+
+	</bean>
+	<bean name="ManagerService" class="org.zjf.services.impl.ManagerServiceImpl">
+		<property name="empdao" ref="SysEmployeeDao"></property>
+		<property name="listdao" ref="DispatchListDao"></property>
+		<property name="resultdao" ref="DispatchResultDao"></property>
+		<property name="system" ref="SystemService"></property>
+		<property name="logindao" ref="LoginUserDao"></property>
+		<property name="statusdao" ref="DispatchStatusDao"></property>
+	</bean>
+	<bean name="GeneralManagerService" class="org.zjf.services.impl.GeneralManagerServiceImpl">
+		<property name="empdao" ref="SysEmployeeDao"></property>
+		<property name="listdao" ref="DispatchListDao"></property>
+		<property name="resultdao" ref="DispatchResultDao"></property>
+		<property name="system" ref="SystemService"></property>
+		<property name="statusdao" ref="DispatchStatusDao"></property>
+	</bean>
+
+</beans>
