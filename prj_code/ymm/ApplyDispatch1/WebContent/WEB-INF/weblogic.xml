@@ -12,7 +12,7 @@
 		<wls:cookie-http-only>false</wls:cookie-http-only>
 		<wls:url-rewriting-enabled>false</wls:url-rewriting-enabled>
 	</wls:session-descriptor>
-	<wls:context-root>WebContent</wls:context-root>
+	<wls:context-root>Apply</wls:context-root>
 	<wls:charset-params>
         <wls:input-charset>
             <wls:resource-path>/*</wls:resource-path>
