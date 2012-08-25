@@ -1,6 +1,7 @@
 Ext.onReady(function(){
 	//以下创建主界面
 	var item = new Ext.tree.TreePanel({
+		title: '员工',
 	    useArrows: true,
 	    autoScroll: true,
 	    animate: true,
