@@ -3,14 +3,14 @@
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	id="WebApp_ID" version="2.5">
-	<listener>
+	 <listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:spring-actions-bean.xml</param-value>
 	</context-param>
-	<listener>
+	 <listener>
 		<listener-class>org.ymm.util.SessionListener</listener-class>
 	</listener>
 	<filter>
@@ -28,6 +28,14 @@
 	<filter-mapping>
 		<filter-name>encoding</filter-name>
 		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	 <filter>
+		<filter-name>session</filter-name>
+		<filter-class>org.zjf.filters.SessionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>session</filter-name>
+		<url-pattern>*.action</url-pattern>
 	</filter-mapping>
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>

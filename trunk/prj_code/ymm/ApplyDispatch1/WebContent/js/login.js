@@ -17,6 +17,7 @@ Ext.onReady(function() {
 								labelWidth : 55,
 								labelPad : 0,
 								frame : true,
+								height : 170,
 								defaults : {
 									allowBlank : false,
 									width : 158
@@ -25,7 +26,7 @@ Ext.onReady(function() {
 											cls : 'user',
 											id : 'username',
 											name : 'uservo.ESn',
-											fieldLabel : '帐号',
+											fieldLabel : '用户编号',
 											blankText : '帐号不能为空',
 											allowBlank : false
 										}, {
@@ -49,20 +50,30 @@ Ext.onReady(function() {
 				},
 				login : function() {
 					Ext.Ajax.request({
-								url : '/ApplyDispatch1/login.action',
-								success : function(response){
-									alert(response.responseText);
+								url : '/Apply/login.action',
+								success : function(response) {
+									var jsonobject = Ext.util.JSON
+											.decode(response.responseText);
+									if (jsonobject["success"] == false) {
+										reloadcode();
+										Ext.Msg.alert("提示", jsonobject["msg"]);
+									}else{
+										window.location.href="/Apply/"+jsonobject["msg"]+"/index.jsp";
+									}
 								},
-								failure : function(){
-								
+								failure : function() {
+									this.fp.form.reset();
 								},
 								headers : {
 									'my-header' : 'foo'
 								},
 								params : {
-									"uservo.ESn": Ext.get('username').getValue(),
-									"uservo.UPwd":Ext.get('userpwd').getValue(),
-									"uservo.core":Ext.get('randCode').getValue()
+									"uservo.ESn" : Ext.get('username')
+											.getValue(),
+									"uservo.UPwd" : Ext.get('userpwd')
+											.getValue(),
+									"uservo.core" : Ext.get('randCode')
+											.getValue()
 								}
 							});
 				},
