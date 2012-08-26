@@ -65,7 +65,7 @@ public class BaseDaoImpl<T,PK extends Serializable> extends SimpleDaoImpl<T, PK>
 			//按分页查询结果集
 			SQLQuery query=createSQLQuery(sql, values);
 			query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-			setPageParameter(query, vo.getStart(), vo.getLimit());
+			System.out.println(vo.getStart()+" "+vo.getLimit());
 			List result=query.list();
 			
 			page.setResult(result);
