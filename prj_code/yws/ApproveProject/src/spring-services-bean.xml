@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+	<bean id="sysBiz" class="org.han.services.impl.SystemServiceImpl">
+		<property name="disListDao" ref="dispatchlistdao" />
+		<property name="disResultDao" ref="dispatchresultdao" />
+		<property name="disDetail" ref="dispatchDetailDao" />
+		<property name="logUserDao" ref="loginuserdao" />
+		<property name="positionsDao" ref="syspositionsdao" />
+		<property name="roleDao" ref="roleDao"></property>
+		<property name="menuDao" ref="menuDao"></property>
+		<property name="detailItemDao"  ref="detailItemdao"/>
+	</bean>
+
+	<bean id="empBiz" class="org.han.services.impl.EmpServiceImpl">
+		<property name="empDao" ref="empdao" />
+		<property name="disListDao" ref="dispatchlistdao" />
+		<property name="disResultDao" ref="dispatchresultdao" />
+		<property name="disDetailDao" ref="dispatchDetailDao" />
+		<property name="systemBiz" ref="sysBiz" />
+	</bean>
+
+	<bean id="dmBiz" class="org.han.services.impl.DManagerServiceImpl">
+		<property name="disListDao" ref="dispatchlistdao" />
+		<property name="empDao" ref="empdao" />
+		<property name="disResultDao" ref="dispatchresultdao" />
+		<property name="sysBiz" ref="sysBiz" />
+	</bean>
+
+	<bean id="gmBiz" class="org.han.services.impl.GManagerServiceImpl">
+		<property name="disListDao" ref="dispatchlistdao" />
+		<property name="disResultDao" ref="dispatchresultdao" />
+		<property name="deptDao" ref="sysdepartmentdao" />
+		<property name="sysBiz" ref="sysBiz" />
+	</bean>
+
+	<bean id="finaBiz" class="org.han.services.impl.FinancialServiceImpl">
+		<property name="disResultDao" ref="dispatchresultdao" />
+		<property name="disListDao" ref="dispatchlistdao" />
+		<property name="empDao" ref="empdao" />
+	</bean>
+
+	<bean id="empAction" class="org.han.actions.EmpAction">
+		<property name="empBiz" ref="empBiz" />
+		<property name="sysBiz" ref="sysBiz" />
+	</bean>
+	<bean id="loginAction" class="org.han.actions.LoginAction">
+		<property name="empBiz" ref="empBiz" />
+		<property name="sysBiz" ref="sysBiz" />
+	</bean>
+</beans>
