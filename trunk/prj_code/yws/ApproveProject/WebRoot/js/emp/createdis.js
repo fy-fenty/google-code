@@ -3,12 +3,7 @@ Emp.factory.saveDispatct = function() {
 	var App = new Ext.App({});
 
 	var proxy = new Ext.data.HttpProxy({
-				api : {
-					read : '/ApproveProject/emp/savedis.action',
-					create : '/ApproveProject/emp/savedis.action',
-					update : '/ApproveProject/emp/savedis.action',
-					destroy : '/ApproveProject/emp/savedis.action'
-				}
+				url : '/ApproveProject/emp/a.action'
 			});
 
 	var reader = new Ext.data.JsonReader({
@@ -20,13 +15,12 @@ Emp.factory.saveDispatct = function() {
 			}, [{
 						name : 'id'
 					}, {
-						name : 'email',
+						name : 'money',
 						allowBlank : false
 					}, {
-						name : 'first',
-						allowBlank : false
+						name : 'costExplain'
 					}, {
-						name : 'last',
+						name : 'itemId',
 						allowBlank : false
 					}]);
 
@@ -40,57 +34,68 @@ Emp.factory.saveDispatct = function() {
 				restful : true,
 				proxy : proxy,
 				reader : reader,
-				writer : writer,
+				// writer : writer,
 				autoSave : true
 			});
 
+	var comboBox = Emp.factory.creComboBox({});
 	var userColumns = [{
 				header : '金额',
 				width : 70,
 				renderer : 'usMoney',
-				dataIndex : "MONEY",
+				dataIndex : "money",
 				editor : new Ext.form.NumberField({
-						// allowBlank : false
+							allowBlank : false
 						})
 			}, {
 				header : '明細选项',
 				width : 130,
-				dataIndex : "ITEM_NAME",
+				dataIndex : "itemId",
 				allowBlank : false,
-				editor : Emp.factory.creComboBox()
+				editor : comboBox,
+				allowBlank : false,
+				renderer : function(value, metadata, record) {
+					var index = comboBox.getStore().find('deId', value);
+					if (index != -1) {
+						return comboBox.getStore().getAt(index).data.itemName;
+					}
+					return value;
+				}
 			}, {
 				header : '明細說明',
 				width : 70,
-				dataIndex : "COST_EXPLAIN",
+				dataIndex : "costExplain",
 				editor : new Ext.form.TextField({})
 			}];
 	// use RowEditor for editing
-	var editor = new Ext.ux.grid.RowEditor({
-				saveText : 'Update'
-			});
+	var editor = new Ext.ux.grid.RowEditor({});
 
 	var rightMenu = new Ext.ux.grid.RightMenu({
 				items : [{
-							text : '增加',
+							text : '增加明细',
 							recHandler : onAdd
 						}, {
-							text : '删除',
+							text : '删除明细',
 							recHandler : function(record, rowIndex, grid) {
 							}
 						}]
 			});
 
 	var userGrid = new Ext.grid.GridPanel({
+				selModel : new Ext.grid.RowSelectionModel({
+							singleSelect : true
+						}),
 				frame : true,
 				iconCls : 'icon-grid',
 				height : 160,
 				store : store,
-				plugins : [editor, rightMenu],
+				plugins : [rightMenu, editor],
 				columns : userColumns,
 				viewConfig : {
 					forceFit : true
 				}
 			});
+
 	var creFrom = new Ext.form.FormPanel({
 				labelAlign : 'right',
 				labelWidth : 80,
@@ -98,13 +103,13 @@ Emp.factory.saveDispatct = function() {
 				buttonAlign : "center",
 				items : [{
 							xtype : 'fieldset',
-							height : 200,
+							height : 230,
 							title : '报销单',
 							autoHeight : true,
-							defaultType : "textfield",
 							items : [{
 										width : 300,
 										height : 60,
+										id : "eventExplain",
 										xtype : 'textarea',
 										fieldLabel : '事件说明',
 										name : "eventExplain"
@@ -115,15 +120,52 @@ Emp.factory.saveDispatct = function() {
 							items : [userGrid]
 						}],
 				buttons : [{
-							text : "保存",
-							handler : function() {
-								store.save();
-							}
-						}, {
-							text : "取消"
-						}]
+					text : "保存",
+					xtype : 'button',
+					handler : function() {
+						alert(storeToJson(store));
+						Ext.Ajax.request({
+									url : '/ApproveProject/emp/savedis.action',
+									success : function() {
+										store.commitChanges();
+									},
+									failure : function() {
+									},
+									params : {
+										data : storeToJson(store),
+										eventExplain : Ext.get("eventExplain")
+												.getValue()
+									}
+								});
 
+					}
+				}, {
+					xtype : 'button',
+					text : "取消",
+					handler : function() {
+						win.close();
+					}
+				}]
 			});
+
+	/**
+	 * store转json字符串
+	 */
+	function storeToJson(jsondata) {
+		var listRecord;
+		if (jsondata instanceof Ext.data.Store) {
+			listRecord = new Array();
+			jsondata.each(function(record) {
+						listRecord.push(record.data);
+					});
+		} else if (jsondata instanceof Array) {
+			listRecord = new Array();
+			Ext.each(jsondata, function(record) {
+						listRecord.push(record.data);
+					});
+		}
+		return Ext.encode(listRecord);
+	}
 	var win = Emp.factory.createWin(Ext.apply({
 				resizable : false,
 				width : 500,
@@ -141,9 +183,9 @@ Emp.factory.saveDispatct = function() {
 	 */
 	function onAdd(btn, ev) {
 		var u = new userGrid.store.recordType({
-					first : '',
-					last : '',
-					email : ''
+					money : '',
+					costExplain : '',
+					itemId : ''
 				});
 		editor.stopEditing();
 		userGrid.store.insert(0, u);

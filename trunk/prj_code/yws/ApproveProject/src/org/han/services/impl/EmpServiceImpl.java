@@ -259,6 +259,7 @@ public class EmpServiceImpl implements IEmpService {
 		if (!havePurview(disDetail.getSheetId(), empSN)) {// 是否有权限操作
 			throw new MyException("A007");
 		}
+		disDetail.setFlag(true);
 		disDetailDao.save(disDetail);
 		return new Result(true, AppConstant.A000);
 	}
@@ -322,5 +323,19 @@ public class EmpServiceImpl implements IEmpService {
 			return user;
 		}
 		return null;
+	}
+
+	@Override
+	public Long saveDispatch(DispatchList dis, String empNo) throws Exception {
+		// TODO Auto-generated method stub
+		if (null == dis || StringUtil.isEmpty(empNo)) {
+			throw new MyException("A003");
+		}
+		if (!isEmployee(empNo)) {// 如果如果不是雇员
+			throw new MyException("A004");
+		}
+		Long result = disListDao.saveDispatch(dis);
+		System.out.println(result);
+		return result;
 	}
 }
