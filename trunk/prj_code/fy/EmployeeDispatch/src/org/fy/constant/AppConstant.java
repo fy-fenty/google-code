@@ -12,5 +12,13 @@ public interface AppConstant {
 	public final String LIST_ERROR="集合为空";
 	public final String FLAG_ERROR="记录无效";
 	public final String IP_ERROR="ip地址无效";
-	public final String PWD_ERROR="密码无效";
+	public final String PWD_ERROR="用户名或密码错误";
+	
+	public final String CODE_ERROR="验证码无效";
+	public final String CURRENT_USER_ERROR="该用户登录不在时间范围内";
+	
+	public final String CURRENT_ESN="当前用户名";
+	public final String CURRENT_USER="当前用户";
+	
+	
 }
