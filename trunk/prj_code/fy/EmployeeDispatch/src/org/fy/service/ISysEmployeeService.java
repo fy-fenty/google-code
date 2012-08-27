@@ -85,4 +85,14 @@ public interface ISysEmployeeService {
 	 * @return LoginUser
 	 */
 	public Result login_user(final UserVO uvo);
+	
+	/**
+	 * 保存报销单返回Id
+	 * @param dlist
+	 * @return 报销单号
+	 */
+	public Long saveReturnId(final String sn,final DispatchList dlist) throws MyExecption;
+	
+/*	public Long aa(String sn,DispatchList dlist) throws MyExecption;
+	public void bb(Long sheetId) throws MyExecption;*/
 }

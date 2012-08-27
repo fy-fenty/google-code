@@ -51,7 +51,6 @@ import org.hibernate.SQLQuery;
  * @description  员工业务接口实现类
  */
 public class SysEmployeeService implements ISysEmployeeService {
-
 	private ISysEmployeeDao isys_employeeDao;
 	private ISystemService isystem_service;	
 	private IDispatchListDao idispatch_list;
@@ -144,7 +143,7 @@ public class SysEmployeeService implements ISysEmployeeService {
 			return rs;
 		}
 		detail.setFlag(true);
-		idispatch_detail.save(detail);
+		idispatch_detail.saveNew(detail);
 		rs=new Result(true,AppConstant.DEFAULT_ERROR,"A001");
 		return rs;
 	}
@@ -215,7 +214,7 @@ public class SysEmployeeService implements ISysEmployeeService {
 		}
 		List list=isystem_service.findDetailById(dlistvo.getDlId());
 		if(list==null||list.size()==0){
-			return new Result(false,AppConstant.LIST_ERROR,"A005");
+			return new Result(false,AppConstant.LIST_ERROR,"A010");
 //			throw new MyExecption("A010");
 		}	
 		DispatchResult dis_result=new DispatchResult();
@@ -267,9 +266,9 @@ public class SysEmployeeService implements ISysEmployeeService {
 		}*/
 		String sql="update hzy.dispatch_detail set flag=0 where sheet_id=?";
 		int u=idispatch_detail.createSQLQuery(sql, id).executeUpdate();
-		if(u<1){
+/*		if(u<1){
 			return new Result(false,AppConstant.UPDATE_ERROR,"A009");
-		}
+		}*/
 		String sql1="update hzy.dispatch_list set flag=0 where dl_id=?";
 		int u2=idispatch_list.createSQLQuery(sql1, id).executeUpdate();
 		if(u2!=1){
@@ -411,4 +410,51 @@ public class SysEmployeeService implements ISysEmployeeService {
 		}
 		return rs;
 	}
+	public Long saveReturnId(String sn,DispatchList dlist) throws MyExecption {
+		Result rs=null;
+		if(dlist==null||MyMatcher.isEmpty(sn)){
+			throw new MyExecption("A002");
+		}
+		SysPositions sys_postion=isystem_service.findPositionBySn(sn);
+		if(sys_postion==null||MyMatcher.isEmpty(sys_postion.getPId())){
+			throw new MyExecption("A002");
+		}
+		if(sys_postion.getPId()!=3){
+			throw new MyExecption("A005");
+		}
+		dlist.setCreateTime(new Date());
+		dlist.setESn(sn);
+		dlist.setFlag(true);
+		Long Id=idispatch_list.saveReturnId(dlist);
+		return Id;
+	}
+	
+/*	public Long aa(String sn,DispatchList dlist) throws MyExecption{
+		System.out.println("session:"+idispatch_list.getSession().hashCode());
+		System.out.println("transaction:"+idispatch_list.getSession().getTransaction().hashCode());
+		Result rs=null;
+		if(dlist==null||MyMatcher.isEmpty(sn)){
+			throw new MyExecption("A002");
+		}
+		SysPositions sys_postion=isystem_service.findPositionBySn(sn);
+		if(sys_postion==null||MyMatcher.isEmpty(sys_postion.getPId())){
+			throw new MyExecption("A002");
+		}
+		if(sys_postion.getPId()!=3){
+			throw new MyExecption("A005");
+		}
+		dlist.setCreateTime(new Date());
+		dlist.setESn(sn);
+		dlist.setFlag(true);
+		Long Id=idispatch_list.saveReturnId(dlist);
+		return Id;
+	}
+	
+	public void bb(Long sheetId) throws MyExecption{
+		System.out.println("session:"+idispatch_list.getSession().hashCode());
+		System.out.println("transaction:"+idispatch_list.getSession().getTransaction().hashCode());
+		String sql1="update hzy.dispatch_list set flag=0 where dl_id=?";
+		int u2=idispatch_list.createSQLQuery(sql1, sheetId).executeUpdate();
+		throw new MyExecption("aaaaaaa");
+	}*/
 }
