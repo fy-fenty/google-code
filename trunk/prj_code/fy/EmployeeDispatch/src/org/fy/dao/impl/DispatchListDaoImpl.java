@@ -13,4 +13,9 @@ import org.fy.support.BaseDAO;
  */
 public class DispatchListDaoImpl extends BaseDAO<DispatchList, Long> implements IDispatchListDao{
 
+	public Long saveReturnId(DispatchList dlist) {
+		Long id=(Long) super.getSession().save(dlist);
+		return id;
+	}
+
 }
