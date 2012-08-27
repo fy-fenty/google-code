@@ -26,7 +26,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 
 	<script type="text/javascript" src="js/base-extjs/ext-base.js"></script>
 	<script type="text/javascript" src="js/base-extjs/ext-all-debug.js"></script>
-	<script type="text/javascript" src="js/own/index.js"></script>
+	<script type="text/javascript" src="js/base-extjs/ProgressBarPager.js"></script>
+	<script type="text/javascript" src="js/t_own1/base.js"></script>
+	<script type="text/javascript" src="js/t_own1/lookup_dis.js"></script>
+	<script type="text/javascript" src="js/t_own1/1.js"></script>
 
   </head>
 
@@ -34,7 +37,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   		if(session.getAttribute(MyConstant.CURRENT_USER)==null){
   			/* alert("已经被登录,请重新登陆"); */
   			/* window.location.href="/appkyClaims1/login.html"; */
-  			
+  				
   			response.sendRedirect("/appkyClaims1/login.html");
   		}
 	%>

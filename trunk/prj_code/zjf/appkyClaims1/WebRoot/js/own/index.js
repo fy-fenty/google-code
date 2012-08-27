@@ -4,15 +4,16 @@ Ext.onReady(function() {
     	autoDestroy: true,
     	url: 'appkyClaims1/select.action',
         storeId: 'myStore',
-        root:"result",
+        root:"result", 
+        totalProperty:"totalCount",//配置分页
         fields: [
         	{name: 'DL_ID', type: 'float'},
         	{name: 'E_SN', type: 'string'}, 
         	{name: 'MONEY', type: 'string'}, 
-        	{name: 'STATUS', type: 'string'}, 
-        	{name: 'CREATE_TIME', mapping: 'CREATE_TIME', type: 'date', dateFormat:'Y-m-d'}
+        	{name: 'CREATE_TIME', mapping: 'CREATE_TIME', type: 'date', dateFormat:'Y-m-d'},
+        	{name: 'STATUS', type: 'string'}
         	]
-    });
+     });
 	
 		
 		function formatDate(value){
@@ -22,8 +23,9 @@ Ext.onReady(function() {
 	    var grid = new Ext.grid.GridPanel({
 	    	//renderTo:"x",
 	    	store: store1,
-	    	height:800,
-	    	
+	    	height:400,
+	    	width:505,
+	    	loadMask: true,//加载画面
     	 	columns :
     	 			[{
 						name : 'DL_ID',
@@ -51,9 +53,72 @@ Ext.onReady(function() {
 						mapping : 'STATUS',
 						header:"STATUS",
 						type : 'string'
-				}]
+				}], 
+				bbar: new Ext.PagingToolbar({
+	           		pageSize: 3,
+	            	store: store1,
+	            	width:505,
+	            	height:30,
+	            	displayInfo: true,
+	            	plugins: new Ext.ux.ProgressBarPager()
+	        	})
 	    });
 	
+	   
+	    var top = new Ext.FormPanel({
+        labelAlign: 'top',
+        frame:true,
+        title: 'Multi Column, Nested Layouts and Anchoring',
+        bodyStyle:'padding:5px 5px 0',
+        width: 600,
+        items: [{
+            layout:'column',
+            items:[{
+                columnWidth:.5,
+                layout: 'form',
+                items: [{
+                    xtype:'textfield',
+                    fieldLabel: 'E_SN',
+                    name: 'first',
+                    anchor:'95%'
+                }, {
+                    xtype:'textfield',
+                    fieldLabel: 'Company',
+                    name: 'company',
+                    anchor:'95%'
+                }]
+            },{
+                columnWidth:.5,
+                layout: 'form',
+                items: [{
+                    xtype:'textfield',
+                    fieldLabel: 'Last Name',
+                    name: 'last',
+                    anchor:'95%'
+                },{
+                    xtype:'textfield',
+                    fieldLabel: 'Email',
+                    name: 'email',
+                    vtype:'email',
+                    anchor:'95%'
+                }]
+            }]
+        },{
+            xtype:'htmleditor',
+            id:'bio',
+            fieldLabel:'EVENT_EXPLAIN',
+            height:200,
+            anchor:'98%'
+        }],
+
+        buttons: [{
+            text: 'Save'
+        },{
+            text: 'Cancel'
+        }]
+    });
+
+	    
 
 		var tree = new Ext.tree.TreePanel({
 					//renderTo:'tree-div',
@@ -70,14 +135,14 @@ Ext.onReady(function() {
 					root : {
 						nodeType : 'async'
 					},
-					dataUrl : 'tree.action',
+					dataUrl : 'appkyClaims1/tree.action',
 					listeners : {
-						"click" : show
+						"click" : show //click事件
 					}
 				});
 
 		function show(node, e) {
-			eval(node.attributes.url)();
+			eval(node.attributes.url)();//转换成函数
 		}
 
 		var center1 = new Ext.TabPanel({
@@ -116,14 +181,19 @@ Ext.onReady(function() {
 						title : 'look emp',
 						iconCls : 'tabs',
 						closable : true,
-						itemId:'gridId',
+						itemId:'lookId',
 						items :grid
 					}).show();
 		}
 
 		function sendClaims() {
-			alert('sendClaims');
+			center1.add({title : 'sendClaims',
+						iconCls : 'tabs',
+						closable : true,
+						itemId:'sendClaimsId',
+						items :top}).show();
 		}
 		
-	 store1.load({params:{uname:'yyyy'}});
+	store1.load({params:{start:0, limit:3}});	
+	
 	});
