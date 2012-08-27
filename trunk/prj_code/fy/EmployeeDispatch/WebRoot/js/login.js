@@ -1,3 +1,4 @@
+var path = '/EmpCheck';
 function reloadcode(){//刷新验证码函数
  		var verify = document.getElementById('safecode');
  		verify.setAttribute('src', '../MyJsp.jsp?' + Math.random());
@@ -25,12 +26,14 @@ Ext.onReady(function(){
 	            fieldLabel: '用户编号',
 	            vtype: "alphanum",
 				name: 'loginUser',
+				value:'10000000',
 				allowBlank:false,
 				blankText : '用户编号不能为空'
             },{
 	            fieldLabel: '密码',
 				name: 'loginPwd',
 				inputType : 'password',
+				value:'000000',
 				allowBlank:false,
 				blankText : '密码不能为空'
             },{
@@ -54,13 +57,13 @@ Ext.onReady(function(){
           	
 //          	alert(esn+' '+' '+pwd+' '+code);
             	Ext.Ajax.request({
-            		url:'/EmpCheck/login.action',  
+            		url:path+'/login.action',  
             		params:{'uv.esn':esn,'uv.pwd':pwd,'uv.code':code},
             		method:'POST',  
             		success:function(rs){
             			var l=Ext.util.JSON.decode(rs.responseText);
             		 	if(l['success']==true){
-            		 		window.location.href='/EmpCheck/index.jsp';
+            		 		window.location.href=path+'/show.jsp';
             		 	}else{
 //            		 		alert(l['msg']);
             		 		Ext.Msg.alert("提示",l['msg']);
