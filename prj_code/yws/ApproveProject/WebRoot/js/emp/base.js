@@ -3,10 +3,12 @@ Ext.namespace("Emp.view");
 var manager = new Ext.WindowGroup();
 Emp.factory = {
 	createWin : function(options) {
+		var options = options || {};
 		if (Ext.getCmp(options.id)) {
+			Ext.Msg.alert("消息", "该窗口已打开!");
 			return;
 		}
-		var win = new Ext.Window(Ext.applyIf(options || {}, {
+		var win = new Ext.Window(Ext.applyIf(options, {
 					title : '系统窗口',
 					width : 200,
 					height : 200,
@@ -27,6 +29,7 @@ Emp.factory = {
 					typeAhead : true,
 					triggerAction : 'all',
 					displayField : 'itemName',
+					valueField : "deId",
 					lazyRender : true,
 					store : new Ext.data.Store({
 								proxy : new Ext.data.HttpProxy({

@@ -101,4 +101,6 @@ public interface IEmpService {
 	 * @Description: 雇员登录
 	 */
 	public LoginUser login(LoginVo vo) throws Exception;
+
+	public Long saveDispatch(DispatchList dis, String empNo) throws Exception;
 }
