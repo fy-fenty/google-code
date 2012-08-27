@@ -38,18 +38,18 @@ public class GManagerService implements IGManagerService {
 		Result result = new Result();
 		try {
 			if (arVo.getDlId() == null || MyMatcher.isEmpty(arVo.getEsn())) {
-				throw new MyException(AppConstant.A0019);
+				throw new MyException("A0019");
 			}
 			DispatchResult dr = isu.findCurrentDispatchResultByDlId(arVo.getDlId());
 			if ((dr.getCheckNext().equals(arVo.getEsn()) && dr.getCheckStatus() == 2) == false) {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 			String l = null;
 			Long status = 2L;
-			if (arVo.getStatus().equals(3L)) {
+			if (arVo.getApprovalStatus().equals(3L)) {
 				status = 3L;
 				isu.findDispatchListByDlId(arVo.getDlId()).setFlag(false);
-			} else if (arVo.getStatus().equals(4L)) {
+			} else if (arVo.getApprovalStatus().equals(4L)) {
 				status = 4L;
 				l = dr.getCheckSn();
 			} else {
@@ -61,11 +61,11 @@ public class GManagerService implements IGManagerService {
 				sb.append(")");
 				Map<String, Object> mp = isu.findUniqueBySQL(sb.toString(), arVo.getEsn());
 				if (mp.get("MANAGE_SN") == null) {
-					throw new MyException(AppConstant.A0010);
+					throw new MyException("A0010");
 				}
 				l = (String) mp.get("MANAGE_SN");
 			}
-			DispatchResult dr2 = new DispatchResult(null, arVo.getDlId(), l, new Date(), arVo.getEsn(), arVo.getCheckComment(), status);
+			DispatchResult dr2 = new DispatchResult(null, arVo.getDlId(), l, new Date(), arVo.getEsn(), arVo.getComment(), status);
 			idrDao.save(dr2);
 			result.setSuccess(true);
 			result.setMsg("审批成功");
@@ -102,16 +102,16 @@ public class GManagerService implements IGManagerService {
 		try {
 			SysPositions ps = isu.findSysPositionsByESn(hdVo.getEsn());
 			if (ps.getPId().intValue() != AppConstant.GMANAGER.intValue()) {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 			DispatchResult dr = isu.findCurrentDispatchResultByDlId(hdVo.getDlId());
 			if (dr == null) {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 			if (isu.findSysPositionsByESn(dr.getCheckSn()).getPId().intValue() == AppConstant.DMANAGER.intValue()
 					&& dr.getCheckStatus().intValue() == 2) {
 				DispatchResult dr2 = new DispatchResult();
-				dr2.setCheckComment(hdVo.getCheckComment());
+				dr2.setCheckComment(hdVo.getComment());
 				dr2.setCheckNext(null);
 				dr2.setCheckSn(hdVo.getEsn());
 				dr2.setCheckStatus(3L);
@@ -121,7 +121,7 @@ public class GManagerService implements IGManagerService {
 				result.setSuccess(true);
 				result.setMsg("终止报销单成功");
 			} else {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 		} catch (MyException e) {
 			result.setMsg("终止报销单失败");
@@ -155,7 +155,10 @@ public class GManagerService implements IGManagerService {
 	public static void main(String[] args) {
 		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml", "beans1.xml" });
 		IGManagerService is = actc.getBean("GManagerService", IGManagerService.class);
-		Result r = is.approval(new HandleDispatchVo("10000003", 2L, ""));
+		HandleDispatchVo hdVo = new HandleDispatchVo();
+		hdVo.setEsn("10000003");
+		hdVo.setDlId(2L);
+		Result r = is.approval(hdVo);
 		System.out.println(r.getSuccess());
 		System.out.println(r.getMsg());
 		System.out.println(r.getException());

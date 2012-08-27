@@ -116,7 +116,6 @@ public class SimpleDAO<T, PK extends Serializable> implements ISimpleDAO<T, PK> 
 	}
 
 	public SQLQuery createSQLQuery(final String sql, final Object... values) {
-		System.out.println("数组");
 		SQLQuery query = getSession().createSQLQuery(sql);
 		if (values != null) {
 			for (int i = 0; i < values.length; i++) {
@@ -127,7 +126,6 @@ public class SimpleDAO<T, PK extends Serializable> implements ISimpleDAO<T, PK> 
 	}
 
 	public SQLQuery createSQLQuery(final String sql, final Map<String, Object> values) {
-		System.out.println("map");
 		SQLQuery query = getSession().createSQLQuery(sql);
 		if (values != null) {
 			query.setProperties(values);
@@ -135,4 +133,11 @@ public class SimpleDAO<T, PK extends Serializable> implements ISimpleDAO<T, PK> 
 		return query;
 	}
 
+	public Serializable saveForGetId(final T t) {
+		return getSession().save(t);
+	}
+
+	public <X> Serializable saveForGetId(final Class<X> klass, final X x) {
+		return getSession().save(klass.getName(), x);
+	}
 }

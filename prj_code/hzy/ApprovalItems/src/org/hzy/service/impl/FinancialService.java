@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
-import org.hzy.constant.AppConstant;
 import org.hzy.dao.IDispatchResultDao;
 import org.hzy.entity.DispatchResult;
 import org.hzy.exception.MyException;
@@ -36,11 +35,11 @@ public class FinancialService implements IFinancialService {
 		Result result = new Result();
 		try {
 			if (hdVo.getDlId() == null || MyMatcher.isEmpty(hdVo.getEsn())) {
-				throw new MyException(AppConstant.A0019);
+				throw new MyException("A0019");
 			}
 			DispatchResult dr = isu.findCurrentDispatchResultByDlId(hdVo.getDlId());
 			if ((dr.getCheckStatus() == 5) == false) {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 			result.setSuccess(true);
 			result.setMsg("付款成功");
@@ -57,22 +56,22 @@ public class FinancialService implements IFinancialService {
 		Result result = new Result();
 		try {
 			if (hdVo.getDlId() == null || MyMatcher.isEmpty(hdVo.getEsn())) {
-				throw new MyException(AppConstant.A0019);
+				throw new MyException("A0019");
 			}
 			DispatchResult dr = isu.findCurrentDispatchResultByDlId(hdVo.getDlId());
 			if ((dr.getCheckNext().equals(hdVo.getEsn()) && dr.getCheckStatus() == 2) == false) {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 			String l = null;
 			Long status = 2L;
-			if (hdVo.getStatus().equals(4L)) {
+			if (hdVo.getApprovalStatus().equals(4L)) {
 				status = 4L;
 				l = dr.getCheckSn();
 			} else {
 				status = 5L;
 			}
 			DispatchResult dr2 = new DispatchResult();
-			dr2.setCheckComment(hdVo.getCheckComment());
+			dr2.setCheckComment(hdVo.getComment());
 			dr2.setCheckNext(null);
 			dr2.setCheckSn(l);
 			dr2.setCheckStatus(status);
@@ -112,10 +111,10 @@ public class FinancialService implements IFinancialService {
 		Result result = new Result();
 		try {
 			if (MyMatcher.isEmpty(eSn)) {
-				throw new MyException(AppConstant.A0019);
+				throw new MyException("A0019");
 			}
 			if (isu.findSysEmployeeByESn(eSn).getDepartmentId() == 3L) {
-				throw new MyException(AppConstant.A0010);
+				throw new MyException("A0010");
 			}
 			result.setSuccess(true);
 			result.setMsg("生成报表成功");

@@ -1,86 +1,44 @@
 package org.hzy.vo;
 
+import org.apache.struts2.ServletActionContext;
+import org.hzy.constant.AppConstant;
+import org.hzy.entity.DispatchDetail;
+
 public class HandleDispatchVo extends BaseVo {
 
 	private static final long serialVersionUID = 1L;
+	/**
+	 * 操作报销单的员工编号
+	 */
 	private String esn;
+	/**
+	 * 操作报销单编号
+	 */
 	private Long dlId;
-	private String checkComment;
-	private Long status;
-	private Double dispatchMoney;
+	/**
+	 * 操作备注
+	 */
+	private String comment;
+	/**
+	 * 审批结果
+	 */
+	private Long approvalStatus;
+	/**
+	 * 操作报销单明细
+	 */
+	private DispatchDetail dd;
 
 	public HandleDispatchVo() {
 		super();
 	}
 
 	/**
-	 * @param dsn
-	 *            雇员编号
-	 * @param dlId
-	 *            订单 ID
+	 * 获取操作人，若当前为空时，返回当前会话中的用户名
+	 * 
+	 * @return
 	 */
-	public HandleDispatchVo(String esn, Long dlId) {
-		super();
-		this.esn = esn;
-		this.dlId = dlId;
-	}
-
-	/**
-	 * @param esn
-	 *            雇员编号
-	 * @param dlId
-	 *            订单 ID
-	 * @param checkComment
-	 *            审批注释
-	 */
-	public HandleDispatchVo(String esn, Long dlId, String checkComment) {
-		super();
-		this.esn = esn;
-		this.dlId = dlId;
-		this.checkComment = checkComment;
-	}
-
-	/**
-	 * @param esn
-	 *            雇员编号
-	 * @param dlId
-	 *            订单 ID
-	 * @param checkComment
-	 *            审批注释
-	 * @param status
-	 *            审批状态
-	 */
-	public HandleDispatchVo(String esn, Long dlId, String checkComment, Long status) {
-		super();
-		this.esn = esn;
-		this.dlId = dlId;
-		this.checkComment = checkComment;
-		this.status = status;
-	}
-
-	/**
-	 * @param esn
-	 *            雇员编号
-	 * @param dlId
-	 *            订单 ID
-	 * @param checkComment
-	 *            审批注释
-	 * @param status
-	 *            审批状态
-	 * @param dispatchMoney
-	 *            报销单明细总金额
-	 */
-	public HandleDispatchVo(String esn, Long dlId, String checkComment, Long status, Double dispatchMoney) {
-		super();
-		this.esn = esn;
-		this.dlId = dlId;
-		this.checkComment = checkComment;
-		this.status = status;
-		this.dispatchMoney = dispatchMoney;
-	}
-
 	public String getEsn() {
-		return esn;
+		return esn == null ? (String) ServletActionContext.getRequest().getSession().getAttribute(AppConstant.CURRENT_UNAME) : esn;
 	}
 
 	public void setEsn(String esn) {
@@ -95,28 +53,28 @@ public class HandleDispatchVo extends BaseVo {
 		this.dlId = dlId;
 	}
 
-	public String getCheckComment() {
-		return checkComment;
+	public String getComment() {
+		return comment;
 	}
 
-	public void setCheckComment(String checkComment) {
-		this.checkComment = checkComment;
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
-	public Long getStatus() {
-		return status;
+	public Long getApprovalStatus() {
+		return approvalStatus;
 	}
 
-	public void setStatus(Long status) {
-		this.status = status;
+	public void setApprovalStatus(Long approvalStatus) {
+		this.approvalStatus = approvalStatus;
 	}
 
-	public Double getDispatchMoney() {
-		return dispatchMoney;
+	public DispatchDetail getDd() {
+		return dd;
 	}
 
-	public void setDispatchMoney(Double dispatchMoney) {
-		this.dispatchMoney = dispatchMoney;
+	public void setDd(DispatchDetail dd) {
+		this.dd = dd;
 	}
 
 }
