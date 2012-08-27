@@ -79,6 +79,7 @@
 	<bean name="org.ymm.actions.LoginAction" class="org.ymm.actions.LoginAction">
 		<property name="iEmpService" ref="employeeServiceImpl"/>
 		<property name="iShowMenuService" ref="showMenuServiceImpl"/>
+		<property name="iSystemService" ref="systemServiceImpl"/>
 	</bean>
 	
 	

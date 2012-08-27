@@ -5,6 +5,7 @@ import org.zjf.entity.DispatchResult;
 import org.zjf.entity.LoginUser;
 import org.zjf.entity.SysPositions;
 import org.zjf.exception.MyException;
+import org.zjf.vo.BaseVo;
 import org.zjf.vo.Page;
 import org.zjf.vo.Result;
 
@@ -58,7 +59,7 @@ public interface ISystemService {
 	 * @throws MyException
 	 * 			A005 
 	 */
-	public Page findDetailById(final long id,final int start,final int limit) throws MyException;
+	public Page findDetailById(final long id,BaseVo vo) throws MyException;
 	
 	/**
 	 * 查询指定报销单流程

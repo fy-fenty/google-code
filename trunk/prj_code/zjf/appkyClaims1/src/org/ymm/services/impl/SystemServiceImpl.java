@@ -116,9 +116,8 @@ public class SystemServiceImpl implements ISystemService {
 	
 
 	
-	public Page findDetailById(final long sheet_id,final int start,final int limit) {
+	public Page findDetailById(final long sheet_id,BaseVo vo) {
 		String sql="select * from dispatch_detail where sheet_id=?";
-		BaseVo vo=new BaseVo(start,limit);
 		Page page= iDispatchDetailDao.findPageBySql(vo, sql,sheet_id);
 		return page;
 	}

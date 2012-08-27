@@ -113,14 +113,14 @@ public class EmployeeServiceImpl implements IEmpService {
 			throws MyException {
 		Page page = null;
 		if (emp != null && StringUtil.isEmpty(emp.getESn()) == true) {
-			String sql = "select t1.*,t2.money,t3.cs as status from "
-					+ " (select dl.dl_id,dl.e_sn,se.e_name,dl.create_time,dl.flag from dispatch_list dl left join sys_employee se on dl.e_sn=se.e_sn) t1 "
+			String sql = "select t1.*,(case when t2.money is null then 0 else t2.money  end ) as money  ,(case when t3.cs is null then '未提交' else t3.cs end ) as status from "
+					+ " (select dl.dl_id,dl.e_sn,se.e_name,dl.create_time,dl.flag,dl.event_explain from dispatch_list dl left join sys_employee se on dl.e_sn=se.e_sn) t1 "
 					+ " left join "
 					+ " (select dd.sheet_id, sum(money) as money from dispatch_detail dd group by dd.sheet_id) t2 "
 					+ "  on t1.dl_id=t2.sheet_id "
 					+ " left join "
 					+ " (select d1.sheet_id,(select ds1.da_status from dispatch_status ds1 where ds1.da_id=d1.check_status) as cs from dispatch_result d1 where check_time =(select max(check_time) from dispatch_result d where d.sheet_id=d1.sheet_id)) t3 "
-					+ "  on t3.sheet_id=t2.sheet_id where t1.e_sn=?";
+					+ "  on t3.sheet_id=t2.sheet_id where t1.e_sn=? and t1.flag=1";
 			page = baseDao.findPageBySql(vo, sql, emp.getESn());
 		}
 		return page;// cs ok
@@ -234,6 +234,11 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (dispatchList.getFlag() == false) {
 			return new Result(false, AppConstant.DELETE_ERROR, "A013");
 		}
+		
+		if (this.getDispatchResultEnd(dispatchList.getDlId()).getSuccess() == false) {
+			return this.getDispatchResultEnd(dispatchList.getDlId());
+		}
+		
 		String sql = "update dispatch_detail set flag=0 where sheet_id=?";
 		SQLQuery sq = iDispatchDetailDao.createSQLQuery(sql,
 				dispatchList.getDlId());
@@ -390,8 +395,8 @@ public class EmployeeServiceImpl implements IEmpService {
 		if (this.getDispatchResultEnd(dl.getDlId()).getSuccess() == false) {
 			return this.getDispatchResultEnd(dl.getDlId());
 		}
-
-		Page page = iSystemService.findDetailById(dl.getDlId(), 0, 100);
+		BaseVo vo=new BaseVo();
+		Page page = iSystemService.findDetailById(dl.getDlId(),vo);
 		if (page == null) {
 			return new Result(false, AppConstant.SAVE_ERROR, "A003");
 		}

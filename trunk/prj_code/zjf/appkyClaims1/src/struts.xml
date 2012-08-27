@@ -14,7 +14,12 @@
 		</action>
 		<action name="select" class="org.ymm.actions.LoginAction" method="selectDispatch_list">
 		</action>
-		
+		<action name="del" class="org.ymm.actions.LoginAction" method="delDis">
+		</action>
+		<action name="seldetail" class="org.ymm.actions.LoginAction" method="selectDetailById">
+		</action>
+		<action name="upClaim" class="org.ymm.actions.LoginAction" method="updateClaims">
+		</action>
 	</package>
 	
 </struts>
