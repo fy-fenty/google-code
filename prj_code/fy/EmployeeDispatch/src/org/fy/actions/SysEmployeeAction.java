@@ -84,11 +84,10 @@ public class SysEmployeeAction {
 	public String getMenuTree() throws IOException{
 		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!getMenu");
 		ServletActionContext.getResponse().setCharacterEncoding("UTF-8");
-/*		CurrentUserVO cv=(CurrentUserVO)ServletActionContext.getRequest().getSession().getAttribute(AppConstant.CURRENT_USER);
-		System.out.println(cv);
+		CurrentUserVO cv=(CurrentUserVO)ServletActionContext.getRequest().getSession().getAttribute(AppConstant.CURRENT_USER);
 		if(cv==null){
-			ServletActionContext.getResponse().sendRedirect("/html/login.html");
-		}*/
+			return null;
+		}
 		PrintWriter out=ServletActionContext.getResponse().getWriter();
 		try {
 			String str=isysmenu_service.findMenu(3L);
@@ -119,11 +118,11 @@ public class SysEmployeeAction {
 	@Action(value="showEmpDList",className="sys_employee_action")
 	public String empFindDispathList() throws IOException{
 		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!dispiatchlist");
-/*		CurrentUserVO cv=(CurrentUserVO)ServletActionContext.getRequest().getSession().getAttribute(AppConstant.CURRENT_USER);
+		CurrentUserVO cv=(CurrentUserVO)ServletActionContext.getRequest().getSession().getAttribute(AppConstant.CURRENT_USER);
 		System.out.println(cv);
 		if(cv==null){
-			
-		}*/
+			return null;
+		}
 		PrintWriter out=ServletActionContext.getResponse().getWriter();
 		String start=ServletActionContext.getRequest().getParameter("start");
 		String limit=ServletActionContext.getRequest().getParameter("limit");
@@ -132,11 +131,10 @@ public class SysEmployeeAction {
 		bv.setStart(Integer.valueOf(start));
 		bv.setLimit(Integer.valueOf(limit));
 		try {
-			Page page=isysemp_service.findDispathList(bv, "10000000");
+			Page page=isysemp_service.findDispathList(bv,cv.getESn());
 			System.out.println(JsonUtil.PageJson(page));
 			out.print(JsonUtil.PageJson(page));			
 		} catch (MyExecption e) {
-			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 		}
 //		JsonUtil.PageJson(page);
