@@ -30,6 +30,10 @@
 	<bean id="DispatchListDao" class="org.fy.dao.impl.DispatchListDaoImpl" parent="base_dao"/>
 	<bean id="DispatchResultDao" class="org.fy.dao.impl.DispatchResultDaoImpl" parent="base_dao"/>
 	<bean id="DispatchStatusDao" class="org.fy.dao.impl.DispatchStatusDaoImpl" parent="base_dao"/>
+	
+	<bean id="SysConfigDao" class="org.fy.dao.impl.SysConfigDaoImpl" parent="base_dao"/>
+	<bean id="SysRoleDao" class="org.fy.dao.impl.SysRoleDaoImpl" parent="base_dao"/>
+	<bean id="SysMenuDao" class="org.fy.dao.impl.SysMenuDaoImpl" parent="base_dao"/>
 	<!-- DAO Beans -->
 
 
@@ -41,6 +45,7 @@
 		<property name="isys_position" ref="SysPositionsDao" />
 		<property name="ilogin_user" ref="LoginUser" />
 		<property name="isys_employee" ref="sys_employee_dao" />
+		<property name="idetail_item" ref="DetailItemDao" />
 	</bean>
 	
 	<bean id="sys_employee_service" class="org.fy.service.impl.SysEmployeeService">
@@ -50,6 +55,8 @@
 		<property name="idispatch_detail" ref="DispatchDetailDao" />
 		<property name="idispatch_result" ref="DispatchResultDao" />
 		<property name="isys_department" ref="SysDepartmentDao" />
+		<property name="isys_config" ref="SysConfigDao" />
+		<property name="ilog_log" ref="LoginLogDao" />
 	</bean>
 	
 	<bean id="sys_departManage_service" class="org.fy.service.impl.SysDepartManagerService">
@@ -67,17 +74,29 @@
 	<bean id="sys_Finance_service" class="org.fy.service.impl.SysFinanceService">
 		<property name="idispatch_result" ref="DispatchResultDao" />
 	</bean>
+	
+	<bean id="sys_menu_service" class="org.fy.service.impl.SysMenuService">
+		<property name="isys_menudao" ref="SysMenuDao" />
+		<property name="isys_roledao" ref="SysRoleDao" />
+	</bean>
 	<!-- Service Beans -->
 	
 	<!-- Action Beans -->
 	<bean id="sys_employee_action" class="org.fy.actions.SysEmployeeAction">
 		<property name="isysemp_service" ref="sys_employee_service" />
+		<property name="isysmenu_service" ref="sys_menu_service" />
+		<property name="isys_service" ref="system_service" />
+	</bean>
+	
+	<bean id="sys_modifydispatch_action" class="org.fy.actions.ModifyDispatchAction">
+		<property name="isysemp_service" ref="sys_employee_service" />
+		<property name="isys_service" ref="system_service" />
 	</bean>
 	<!-- Action Beans -->
 	
 	<!-- AOP Beans -->
- 	<aop:config>
-		<aop:advisor id="find_dispat_advice" advice-ref="tx_advice" pointcut="execution(* org.fy.service.impl.*.*(..))" />
- 	</aop:config>
+<!--  	<aop:config>
+		<aop:advisor advice-ref="tx_advice" pointcut="execution(* org.fy.service.impl.*.*(..))" />
+ 	</aop:config> -->
 	<!-- AOP Beans -->
 </beans>
