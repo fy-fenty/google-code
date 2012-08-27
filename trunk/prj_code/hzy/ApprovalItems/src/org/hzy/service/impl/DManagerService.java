@@ -8,6 +8,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;
 import org.hzy.constant.AppConstant;
 import org.hzy.dao.IDispatchResultDao;
+import org.hzy.entity.DispatchDetail;
 import org.hzy.entity.DispatchResult;
 import org.hzy.exception.MyException;
 import org.hzy.service.IDManagerService;
@@ -29,21 +30,26 @@ public class DManagerService implements IDManagerService {
 		Result result = new Result();
 		try {
 			if (arVo.getDlId() == null || MyMatcher.isEmpty(arVo.getEsn())) {
-				throw new MyException(AppConstant.A0019);
+				throw new MyException("A0019");
 			}
 			DispatchResult dr = isu.findCurrentDispatchResultByDlId(arVo.getDlId());
+			List<DispatchDetail> dds = isu.findDispatchDetailByDlId(arVo.getDlId());
+			Double mons = 0D;
+			for (DispatchDetail dispatchDetail : dds) {
+				mons += dispatchDetail.getMoney();
+			}
 			if (dr.getCheckNext().equals(arVo.getEsn()) && dr.getCheckStatus() == 2) {
 				String l = null;
 				Long status = 2L;
-				if (arVo.getStatus().equals(3L)) {
+				if (arVo.getApprovalStatus().equals(3L)) {
 					status = 3L;
 					isu.findDispatchListByDlId(arVo.getDlId()).setFlag(false);
-				} else if (arVo.getStatus().equals(4L)) {
+				} else if (arVo.getApprovalStatus().equals(4L)) {
 					status = 4L;
 					l = dr.getCheckSn();
 				} else {
 					StringBuilder sb = new StringBuilder();
-					if (arVo.getDispatchMoney() > 5000) {
+					if (mons > 5000D) {
 						sb.append("select se.e_sn from hzy.sys_employee se where se.department_id in (");
 						sb.append("  select dp.manage_sn from hzy.sys_department dp where dp.d_id = 3 and dp.area_id = (");
 						sb.append("    select dp.area_id from hzy.sys_department dp where dp.d_id = (");
@@ -53,7 +59,7 @@ public class DManagerService implements IDManagerService {
 						sb.append(") and se.p_id = 1");
 						Map<String, Object> mp = isu.findUniqueBySQL(sb.toString(), arVo.getEsn());
 						if (mp.get("MANAGE_SN") == null) {
-							throw new MyException(AppConstant.A0010);
+							throw new MyException("A0010");
 						}
 						l = (String) mp.get("MANAGE_SN");
 					} else {
@@ -64,12 +70,12 @@ public class DManagerService implements IDManagerService {
 						sb.append(")");
 						Map<String, Object> mp = isu.findUniqueBySQL(sb.toString(), arVo.getEsn());
 						if (mp.get("MANAGE_SN") == null) {
-							throw new MyException(AppConstant.A0010);
+							throw new MyException("A0010");
 						}
 						l = (String) mp.get("MANAGE_SN");
 					}
 				}
-				DispatchResult dr2 = new DispatchResult(null, arVo.getDlId(), l, new Date(), arVo.getEsn(), arVo.getCheckComment(), status);
+				DispatchResult dr2 = new DispatchResult(null, arVo.getDlId(), l, new Date(), arVo.getEsn(), arVo.getComment(), status);
 				idrDao.save(dr2);
 				result.setSuccess(true);
 				result.setMsg("审批成功");
@@ -87,7 +93,7 @@ public class DManagerService implements IDManagerService {
 		Result rs = new Result();
 		try {
 			if (MyMatcher.isEmpty(rpVo.getDsn())) {
-				throw new MyException(AppConstant.A0019);
+				throw new MyException("A0019");
 			}
 			String npwd = "pwd" + Math.round(Math.random() * 1000000) + "xx";
 			String md5pwd = isu.getMD5(npwd);

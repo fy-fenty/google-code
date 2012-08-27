@@ -13,6 +13,8 @@ import org.hzy.exception.MyException;
 import org.hzy.support.ISystemUtil;
 import org.hzy.util.MD5;
 import org.hzy.util.MyMatcher;
+import org.hzy.vo.BaseVo;
+import org.hzy.vo.Page;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -115,20 +117,25 @@ public class SystemUtil extends BaseDAO<Object, Long> implements ISystemUtil {
 		return sp.getPId().intValue() == AppConstant.EMPLOYEE.intValue();
 	}
 
+	public Page getAllDetailItem(BaseVo bsVo) throws MyException {
+		if(bsVo == null){
+			throw new MyException(AppConstant.A0021);
+		}
+		return super.findPageBySQL(bsVo, "select * from hzy.detail_item");
+	}
+
 	public static void main(String[] args) throws MyException {
 		Long dlId = 1L;
-		String eSn = "10000000";
+		// String eSn = "10000000";
 		/* MD5 加密 */
 		// SystemUtil su = new SystemUtil();
 		// System.out.println(su.getMD5("23123"));
-		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml",
-				"beans1.xml" });
+		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml", "beans1.xml" });
 		ISystemUtil is = actc.getBean("SystemUtil", ISystemUtil.class);
-
 		// /* 查找指定报销单 */
-		// System.out.println("查找指定报销单");
-		// DispatchList dl = is.findDispatchListByDlId(dlId);
-		// System.out.println(dl.getDlId());
+		System.out.println("查找指定报销单");
+		DispatchList dl = is.findDispatchListByDlId(dlId);
+		System.out.println(dl.getDlId());
 		//
 		// /* 查询指定报销单当前审批记录 */
 		// System.out.println("查询指定报销单当前审批记录");
@@ -160,9 +167,9 @@ public class SystemUtil extends BaseDAO<Object, Long> implements ISystemUtil {
 		// System.out.println(sp.getPId());
 		//
 		// /* 通过用户 ID 查找用户 */
-		 System.out.println("通过用户 ID 查找用户");
-		 LoginUser lu = is.findLoginUserByESn("aa");
-		 System.out.println(lu);
+		// System.out.println("通过用户 ID 查找用户");
+		// LoginUser lu = is.findLoginUserByESn("aa");
+		// System.out.println(lu);
 		//
 		// /* 通过用户 ID 查询雇员 */
 		// System.out.println("通过用户 ID 查询雇员");

@@ -1,13 +1,14 @@
 package org.hzy.service.impl;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
-import org.hibernate.transform.Transformers;
 import org.hzy.constant.AppConstant;
 import org.hzy.dao.IDispatchDetailDao;
 import org.hzy.dao.IDispatchListDao;
@@ -23,7 +24,11 @@ import org.hzy.exception.MyException;
 import org.hzy.service.IEmployeeService;
 import org.hzy.support.ISystemUtil;
 import org.hzy.util.MyMatcher;
+import org.hzy.util.SessionListener;
+import org.hzy.vo.CurrentUser;
+import org.hzy.vo.HandleDispatchVo;
 import org.hzy.vo.LoginVo;
+import org.hzy.vo.Page;
 import org.hzy.vo.Result;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -36,7 +41,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @implements ISysEmployeeService
  * @description 员工业务的接口实现
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class EmployeeService implements IEmployeeService {
 
 	private ISysEmployeeDao iseDao;
@@ -50,32 +54,50 @@ public class EmployeeService implements IEmployeeService {
 	private ISystemUtil isu;
 
 	@Override
-	public List<Map<String, Object>> findAllDispatchListByESn(String eSn) throws MyException {
-		if (MyMatcher.isEmpty(eSn)) {
-			throw new MyException(AppConstant.A001);
+	public Page findAllDispatchListByESn(HandleDispatchVo hdVo) throws MyException {
+		if (hdVo == null) {
+			throw new MyException(AppConstant.A0021);
 		}
-		String sql = "select d.dl_id dlId,d.e_sn ESn,d.create_time createTime,(select sum(dd.money) from hzy.DISPATCH_DETAIL dd where dd.sheet_id = d.dl_id)  totalMoney,(select d.check_status from hzy.dispatch_result d where d.dr_id = (select max(dr_id) from hzy.dispatch_result where sheet_id = d.dl_id)) currentStatus from hzy.dispatch_list d left join hzy.sys_employee s on d.e_sn = s.e_sn where s.e_sn = ? and d.flag = 1";
-		SQLQuery sqlQuery = iseDao.createSQLQuery(sql, eSn);
-		sqlQuery.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-		return sqlQuery.list();
+		if (MyMatcher.isEmpty(hdVo.getEsn())) {
+			throw new MyException(AppConstant.A004);
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select tt.dlId,tt.Esn,tt.createTime,tt.totalMoney,NVL(ds.da_status,'草稿') currentStatus from (");
+		sb.append("  select d.dl_id dlId,cast(d.e_sn as varchar2(8)) ESn,d.create_time createTime,(");
+		sb.append("    select sum(dd.money) from hzy.DISPATCH_DETAIL dd where dd.sheet_id = d.dl_id");
+		sb.append("  ) totalMoney, (");
+		sb.append("    select d.check_status from hzy.dispatch_result d where d.dr_id = (");
+		sb.append("      select max(dr_id) from hzy.dispatch_result where sheet_id = d.dl_id");
+		sb.append("    )");
+		sb.append("  ) currentStatus ");
+		sb.append("  from hzy.dispatch_list d left join hzy.sys_employee s on d.e_sn = s.e_sn where s.e_sn = ? and d.flag = 1");
+		sb.append(") tt left join hzy.dispatch_status ds on ds.da_id = tt.currentStatus order by tt.dlId asc");
+		return iseDao.findPageBySQL(hdVo, sb.toString(), hdVo.getEsn());
 	}
 
 	@Override
-	public Result saveDispatchList(String eSn, DispatchList dl) {
+	public Result saveDispatchList(HandleDispatchVo hdVo) {
+		System.out.println("saveDispatchList..............");
 		Result rs = new Result();
 		try {
-			if (MyMatcher.isEmpty(eSn)) {
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
 				throw new MyException(AppConstant.A004);
 			}
-			if (dl == null) {
-				throw new MyException(AppConstant.A005);
-			}
-			SysPositions sp = isu.findSysPositionsByESn(eSn);
+			System.out.println("findSysPositionsByESn..............");
+			SysPositions sp = isu.findSysPositionsByESn(hdVo.getEsn());
 			if (sp.getPId().equals(AppConstant.EMPLOYEE) == false) {
 				throw new MyException(AppConstant.A006);
 			}
-			idlDao.save(dl);
+			DispatchList dl = new DispatchList();
+			dl.setCreateTime(new Date());
+			dl.setESn(hdVo.getEsn());
+			dl.setEventExplain(hdVo.getComment());
+			dl.setFlag(true);
+			System.out.println("saveForGetId start..............");
+			Serializable id = idlDao.saveForGetId(dl);
+			System.out.println("saveForGetId end..............");
 			rs.setSuccess(true);
+			rs.setSer(id);
 			rs.setMsg("保存报销单成功！");
 		} catch (MyException e) {
 			rs.setSuccess(false);
@@ -86,48 +108,60 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public Result updateDispatchList(String eSn, Long dlId, String eventExplain) {
+	public Result updateDispatchList(HandleDispatchVo hdVo) {
 		Result rs = new Result();
-		String hql = "update dispatch_list dl set event_explain = :ex where dl.flag = 1 and dl.dl_id = :dlId and dl.e_sn = :eSn and ((select count(1) from dispatch_result dr where dr.sheet_id = :dlId)=0 or (select check_next from dispatch_result where dr_id = (select max(dr_id) from dispatch_result where sheet_id = :dlId) and check_status = 4)= :eSn)";
-		Map map = new HashMap();
-		map.put("dlId", dlId);
-		map.put("ex", eventExplain);
-		map.put("eSn", eSn);
-		SQLQuery query = idlDao.createSQLQuery(hql, map);
-		if (query.executeUpdate() > 0) {
-			rs.setSuccess(false);
-			rs.setMsg("修改报销单失败！");
-		} else {
+		try {
+			if (hdVo == null) {
+				throw new MyException(AppConstant.A0021);
+			}
+			if (hdVo.getDlId() == null) {
+				throw new MyException(AppConstant.A002);
+			}
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
+				throw new MyException(AppConstant.A004);
+			}
+			DispatchList dl = idlDao.get(hdVo.getDlId());
+			dl.setEventExplain(hdVo.getComment());
+			idlDao.save(dl);
 			rs.setSuccess(true);
 			rs.setMsg("修改报销单成功！");
+		} catch (MyException e) {
+			rs.setSuccess(false);
+			rs.setMsg("修改报销单失败！");
+			rs.setException(e.getMessage());
 		}
 		return rs;
 	}
 
 	@Override
-	public Result updateDispatchDetail(String eSn, DispatchDetail dd) {
+	public Result updateDispatchDetail(HandleDispatchVo hdVo) {
 		Result rs = new Result();
 		try {
-			if (MyMatcher.isEmpty(eSn)) {
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
 				throw new MyException(AppConstant.A004);
 			}
-			if (dd == null) {
+			if (hdVo.getDd() == null) {
 				throw new MyException(AppConstant.A0011);
 			}
-			if (dd.getSheetId() == null || dd.getFlag() == false) {
+			if (hdVo.getDd().getSheetId() == null || hdVo.getDd().getFlag() == false) {
 				throw new MyException(AppConstant.A0012);
 			}
-			DispatchList dl = isu.findDispatchListByDlId(dd.getSheetId());
+			DispatchList dl = isu.findDispatchListByDlId(hdVo.getDd().getSheetId());
 			if (dl == null || dl.getFlag() == false) {
 				throw new MyException(AppConstant.A0012);
 			}
-			if (dl.getESn().equals(eSn) == false) {
+			if (dl.getESn().equals(hdVo.getEsn()) == false) {
 				throw new MyException(AppConstant.A008);
 			}
-			if (isu.checkPermissionsByESnAndDlId(eSn, dl.getDlId()) == false) {
+			if (isu.checkPermissionsByESnAndDlId(hdVo.getEsn(), dl.getDlId()) == false) {
 				throw new MyException(AppConstant.A0010);
 			}
-			iddDao.save(dd);
+			DispatchDetail dd = iddDao.get(hdVo.getDd().getDsId());
+			dd.setAccessory(hdVo.getDd().getAccessory());
+			dd.setCostExplain(hdVo.getDd().getCostExplain());
+			dd.setItemId(hdVo.getDd().getItemId());
+			dd.setMoney(hdVo.getDd().getMoney());
+			iddDao.save(hdVo.getDd());
 			rs.setSuccess(true);
 			rs.setMsg("修改报销单明细成功！");
 		} catch (MyException e) {
@@ -139,40 +173,29 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public Result deleteDispatchList(String eSn, DispatchList dl) {
+	public Result deleteDispatchList(HandleDispatchVo hdVo) {
 		Result rs = new Result();
 		try {
-			if (MyMatcher.isEmpty(eSn)) {
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
 				throw new MyException(AppConstant.A004);
 			}
-			if (dl == null) {
-				throw new MyException(AppConstant.A005);
-			}
-			if (dl.getDlId() == null) {
+			if (hdVo.getDlId() == null) {
 				throw new MyException(AppConstant.A009);
 			}
-			if (dl.getFlag() == false) {
-				throw new MyException(AppConstant.A0015);
-			}
-			if (dl.getESn().equals(eSn) == false) {
-				throw new MyException(AppConstant.A008);
-			}
-			if (isu.checkPermissionsByESnAndDlId(eSn, dl.getDlId()) == false) {
+			if (isu.checkPermissionsByESnAndDlId(hdVo.getEsn(), hdVo.getDlId()) == false) {
 				throw new MyException(AppConstant.A0010);
 			}
-			List<DispatchDetail> dds = isu.findDispatchDetailByDlId(dl.getDlId());
+			List<DispatchDetail> dds = isu.findDispatchDetailByDlId(hdVo.getDlId());
 			if (dds.size() > 0) {
 				String hql = "update DispatchDetail set flag = 0 where sheetId = ?";
-				Query query = isu.createQuery(hql, dl.getDlId());
+				Query query = isu.createQuery(hql, hdVo.getDlId());
 				if (query.executeUpdate() < dds.size()) {
 					throw new MyException(AppConstant.A0013);
 				}
 			}
-			String hql = "update DispatchList set flag = 0 where dlId = ?";
-			Query query = isu.createQuery(hql, dl.getDlId());
-			if (query.executeUpdate() == 0) {
-				throw new MyException(AppConstant.A0014);
-			}
+			DispatchList dl = idlDao.get(hdVo.getDlId());
+			dl.setFlag(false);
+			idlDao.save(dl);
 			rs.setSuccess(true);
 			rs.setMsg("删除报销单成功！");
 		} catch (MyException e) {
@@ -184,33 +207,33 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public Result deleteDispatchDetail(String eSn, DispatchDetail dd) {
+	public Result deleteDispatchDetail(HandleDispatchVo hdVo) {
 		Result rs = new Result();
 		try {
-			if (MyMatcher.isEmpty(eSn)) {
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
 				throw new MyException(AppConstant.A004);
 			}
-			if (dd == null) {
+			if (hdVo.getDd() == null) {
 				throw new MyException(AppConstant.A0011);
 			}
-			if (dd.getDsId() == null || dd.getSheetId() == null) {
+			if (hdVo.getDd().getDsId() == null || hdVo.getDd().getSheetId() == null) {
 				throw new MyException(AppConstant.A0012);
 			}
-			if (dd.getFlag() == false) {
+			if (hdVo.getDd().getFlag() == false) {
 				throw new MyException(AppConstant.A0016);
 			}
-			DispatchList dl = idlDao.get(dd.getSheetId());
+			DispatchList dl = idlDao.get(hdVo.getDd().getSheetId());
 			if (dl == null || dl.getFlag() == false) {
 				throw new MyException(AppConstant.A0012);
 			}
-			if (dl.getESn().equals(eSn) == false) {
+			if (dl.getESn().equals(hdVo.getEsn()) == false) {
 				throw new MyException(AppConstant.A008);
 			}
-			if (isu.checkPermissionsByESnAndDlId(eSn, dl.getDlId()) == false) {
+			if (isu.checkPermissionsByESnAndDlId(hdVo.getEsn(), dl.getDlId()) == false) {
 				throw new MyException(AppConstant.A0010);
 			}
 			String hql = "update DispatchDetail set flag = 0 where dsId = ?";
-			Query query = isu.createQuery(hql, dd.getDsId());
+			Query query = isu.createQuery(hql, hdVo.getDd().getDsId());
 			if (query.executeUpdate() == 0) {
 				throw new MyException(AppConstant.A0013);
 			}
@@ -225,32 +248,33 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public Result addDispatchDetail(String eSn, DispatchDetail dd) {
+	public Result addDispatchDetail(HandleDispatchVo hdVo, DispatchDetail[] dds) {
 		Result rs = new Result();
 		try {
-			if (MyMatcher.isEmpty(eSn)) {
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
 				throw new MyException(AppConstant.A004);
 			}
-			if (dd == null) {
+			if (dds == null || dds.length == 0) {
 				throw new MyException(AppConstant.A0011);
 			}
-			if (dd.getSheetId() == null) {
+			if (hdVo.getDlId() == null) {
 				throw new MyException(AppConstant.A0012);
 			}
-			if (dd.getFlag() == false) {
-				throw new MyException(AppConstant.A0016);
-			}
-			DispatchList dl = idlDao.get(dd.getSheetId());
+			DispatchList dl = isu.findDispatchListByDlId(hdVo.getDlId());
 			if (dl == null || dl.getFlag() == false) {
 				throw new MyException(AppConstant.A0012);
 			}
-			if (dl.getESn().equals(eSn) == false) {
+			if (dl.getESn().equals(hdVo.getEsn()) == false) {
 				throw new MyException(AppConstant.A008);
 			}
-			if (isu.checkPermissionsByESnAndDlId(eSn, dl.getDlId()) == false) {
+			if (isu.checkPermissionsByESnAndDlId(hdVo.getEsn(), dl.getDlId()) == false) {
 				throw new MyException(AppConstant.A0010);
 			}
-			iddDao.save(dd);
+			for (DispatchDetail dd : dds) {
+				dd.setSheetId(hdVo.getDlId());
+				dd.setFlag(true);
+				iddDao.save(dd);
+			}
 			rs.setSuccess(true);
 			rs.setMsg("增加报销单明细成功！");
 		} catch (MyException e) {
@@ -262,34 +286,36 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public Result submitDispatchList(String eSn, DispatchList dl, DispatchResult dr) {
+	public Result submitDispatchList(HandleDispatchVo hdVo) {
 		Result rs = new Result();
 		try {
-			if (MyMatcher.isEmpty(eSn)) {
+			if (hdVo == null) {
+				throw new MyException(AppConstant.A0021);
+			}
+			if (MyMatcher.isEmpty(hdVo.getEsn())) {
 				throw new MyException(AppConstant.A004);
 			}
-			if (dl == null || dl.getDlId() == null) {
+			if (hdVo.getDlId() == null) {
 				throw new MyException(AppConstant.A005);
 			}
-			if (dl.getFlag() == false) {
+			if (isu.findDispatchListByDlId(hdVo.getDlId()).getFlag() == false) {
 				throw new MyException(AppConstant.A009);
 			}
-			if (isu.checkPermissionsByESnAndDlId(eSn, dl.getDlId()) == false) {
+			if (isu.checkPermissionsByESnAndDlId(hdVo.getEsn(), hdVo.getDlId()) == false) {
 				throw new MyException(AppConstant.A0010);
 			}
-			List<DispatchDetail> dds = isu.findDispatchDetailByDlId(dl.getDlId());
-			if (dds == null || dds.size() == 0) {
-				throw new MyException(AppConstant.A0017);
-			}
-			dr.setCheckSn(eSn);
+			DispatchResult dr = new DispatchResult();
+			dr.setCheckStatus(AppConstant.待审批);
+			dr.setCheckSn(hdVo.getEsn());
+			dr.setSheetId(hdVo.getDlId());
 			dr.setCheckTime(new Date());
+			dr.setCheckComment(hdVo.getComment());
 			String hql = "from SysEmployee where departmentId = (select departmentId from SysEmployee where ESn = ?) and PId = ?";
-			SysEmployee se = iseDao.findUnique(hql, eSn, AppConstant.DMANAGER);
+			SysEmployee se = iseDao.findUnique(hql, hdVo.getEsn(), AppConstant.DMANAGER);
 			if (se == null) {
 				throw new MyException(AppConstant.A0018);
 			}
 			dr.setCheckNext(se.getESn());
-			dr.setSheetId(dl.getDlId());
 			rs.setSuccess(true);
 			idrDao.save(dr);
 			rs.setMsg("提交报销单成功！");
@@ -302,27 +328,63 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	@Override
-	public LoginUser login(LoginVo lgVo) throws MyException {
+	public String login(LoginVo lgVo) throws MyException {
+		String rand = (String) ServletActionContext.getRequest().getSession().getAttribute("rand");
+		if (MyMatcher.isEmpty(rand)) {
+			throw new MyException(AppConstant.A0024);
+		}
 		if (lgVo == null) {
 			throw new MyException(AppConstant.A0021);
 		}
+
+		// 清除 session
+		HttpSession se = ServletActionContext.getRequest().getSession();
+		se.setAttribute(AppConstant.CURRENT_UNAME, lgVo.getEsn());
+		se.setAttribute(AppConstant.CURRENT_USER, null);
+		SessionListener.removeSession(se.getId());
+
+		// 验证有效性
 		if (MyMatcher.isEmpty(lgVo.getEsn())) {
 			throw new MyException(AppConstant.A004);
 		}
 		if (MyMatcher.isEmpty(lgVo.getPwd())) {
 			throw new MyException(AppConstant.A0022);
 		}
-		System.out.println(lgVo.getEsn());
-		System.out.println(lgVo.getPwd());
+		if (rand.equals(lgVo.getCheckCode()) == false) {
+			throw new MyException(AppConstant.A0024);
+		}
+
+		// 获取用户
 		LoginUser lgUser = isu.findLoginUserByESn(lgVo.getEsn());
 		if (lgUser == null) {
 			throw new MyException(AppConstant.A0020);
 		}
-		String newPwd = isu.getMD5(lgVo.getPwd());
-		if (newPwd.equals(lgUser.getUPwd()) == false) {
+		if (lgUser.getUPwd().equals(isu.getMD5(lgVo.getPwd())) == false) {
 			throw new MyException(AppConstant.A0023);
-		} 
-		return lgUser;
+		}
+
+		// 剔除已在线用户
+		Map<String, HttpSession> map = SessionListener.getSessionMaps();
+		for (String s : map.keySet()) {
+			HttpSession se1 = map.get(s);
+			CurrentUser cu = (CurrentUser) se1.getAttribute(AppConstant.CURRENT_USER);
+			if (s.equals(se.getId())) {
+				continue;
+			}
+			if (lgUser.getUId().equals(cu.getUid())) {
+				se1.setAttribute(AppConstant.CURRENT_USER, null);
+				SessionListener.removeSession(se1.getId());
+				break;
+			}
+		}
+
+		CurrentUser cu = new CurrentUser();
+		cu.setUid(lgUser.getUId());
+		cu.setUname(lgVo.getEsn());
+
+		se.setAttribute(AppConstant.CURRENT_USER, cu);
+		SessionListener.addSession(se.getId(), se);
+		return cu.getUname();
 	}
 
 	public ISysEmployeeDao getIseDao() {
@@ -366,22 +428,22 @@ public class EmployeeService implements IEmployeeService {
 	}
 
 	public static void main(String[] args) throws MyException {
-		String eSn = "10000000";
-		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml",
-				"beans1.xml" });
+		// String eSn = "10000000";
+		ApplicationContext actc = new ClassPathXmlApplicationContext(new String[] { "hibernate-spring.xml", "beans1.xml" });
 		IEmployeeService is = actc.getBean("EmployeeService", IEmployeeService.class);
-		ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
+		// ISystemUtil isu = actc.getBean("SystemUtil", ISystemUtil.class);
 		// IDispatchDetailDao idd = actc.getBean("DispatchDetailDao",
 		// IDispatchDetailDao.class);
 		/* 雇员查找所有当前状态的全部报销单 */
 		// System.out.println("雇员查找所有当前状态的全部报销单");
-		// System.out.println(is.findAllDispatchListByESn("10000000"));
+		// HandleDispatchVo hdVo = new HandleDispatchVo();
+		// hdVo.setEsn("10000000");
+		// System.out.println(StringUtil.parseToJsonFromObject(is.findAllDispatchListByESn(hdVo)));
 
 		/* 用户保存报销单 */
 		// System.out.println("用户保存报销单");
-		// DispatchList dl = new DispatchList(null, eSn, new Date(),
-		// "aasldhfkjashfkj", true);
-		// Result rs = is.saveDispatchList(eSn, dl);
+		// HandleDispatchVo hdVo = new HandleDispatchVo();
+		// Result rs = is.saveDispatchList(hdVo);
 		// System.out.println(rs.getSuccess());
 		// System.out.println(rs.getMsg());
 
@@ -456,7 +518,13 @@ public class EmployeeService implements IEmployeeService {
 		// System.out.println(rs.getSuccess());
 		// System.out.println(rs.getMsg());
 		// System.out.println(rs.getException());
-		LoginVo lg = new LoginVo("10000000", "000000");
-		is.login(lg);
+		// LoginVo lg = new LoginVo("10000000", "000000");
+		// is.login(lg);
+		HandleDispatchVo hdVo = new HandleDispatchVo();
+		hdVo.setEsn("10000000");
+		hdVo.setDlId(1L);
+		hdVo.setComment("aaaaaaaaaaaaaaa");
+		Result rs = is.updateDispatchList(hdVo);
+		System.out.println(rs.getMsg());
 	}
 }

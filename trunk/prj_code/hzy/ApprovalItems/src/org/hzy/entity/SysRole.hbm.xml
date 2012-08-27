@@ -12,7 +12,7 @@
             		<param name="sequence">HZY.SEQ_SYS_ROLE</param>
            	 	</generator>
         </id>
-        <property class="SysPositions" type="java.lang.Long">
+        <property name="SysPositions" type="java.lang.Long">
             <column name="MENU" length="20" />
         </property>
         <property name="menu" type="java.lang.String">

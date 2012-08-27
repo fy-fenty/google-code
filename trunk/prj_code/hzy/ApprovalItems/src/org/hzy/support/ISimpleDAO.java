@@ -125,4 +125,21 @@ public interface ISimpleDAO<T, PK extends Serializable> {
 	 *            命名参数,按名称绑定
 	 */
 	public abstract SQLQuery createSQLQuery(final String sql, final Map<String, Object> values);
+
+	/**
+	 * 保存对象并返回对象ID
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public Serializable saveForGetId(final T t);
+
+	/**
+	 * 保存对象并返回对象ID
+	 * 
+	 * @param klass
+	 * @param x
+	 * @return
+	 */
+	public <X> Serializable saveForGetId(final Class<X> klass, final X x);
 }

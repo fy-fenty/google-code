@@ -2,6 +2,7 @@ package org.hzy.support;
 
 import java.util.List;
 
+import org.hzy.entity.DetailItem;
 import org.hzy.entity.DispatchDetail;
 import org.hzy.entity.DispatchList;
 import org.hzy.entity.DispatchResult;
@@ -9,6 +10,8 @@ import org.hzy.entity.LoginUser;
 import org.hzy.entity.SysEmployee;
 import org.hzy.entity.SysPositions;
 import org.hzy.exception.MyException;
+import org.hzy.vo.BaseVo;
+import org.hzy.vo.Page;
 
 /**
  * @author fy
@@ -100,4 +103,11 @@ public interface ISystemUtil extends IBaseDAO<Object, Long> {
 	 * @return
 	 */
 	public abstract Boolean checkPermissionsByESnAndDlId(String eSn, Long dlId) throws MyException;
+
+	/**
+	 * 查看所有报销单类别
+	 * 
+	 * @return {@link List}<{@link DetailItem}>
+	 */
+	public Page getAllDetailItem(BaseVo bsVo) throws MyException;
 }

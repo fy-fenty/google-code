@@ -50,13 +50,13 @@ Ext.onReady(function() {
 		login : function() {
 			this.fp.form.submit({
 						waitMsg : '正在登录......',
-						url : projName+'/login.action',
+						url : myScript.projName+'/login.action',
 						success : function(form, action) {
-							alert('login success');
+							document.location.href='index.jsp';
 						},
 						failure : function(form, action) {
-							form.reset();
-							alert('login fail');
+							var json = eval('('+action.response.responseText+')');
+							Ext.Msg.alert('提示',json.msg);
 						}
 					});
 		},
@@ -95,4 +95,4 @@ Ext.onReady(function() {
 		 * 'Login', handler : login }] }); function login(){ Ext.Ajax.request({
 		 *  }) }; simple.render(Ext.getBody());
 		 */
-})
+});

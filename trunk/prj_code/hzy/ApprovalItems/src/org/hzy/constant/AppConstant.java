@@ -19,7 +19,7 @@ public interface AppConstant {
 	String A008 = "该报销单不属于您";
 	String A009 = "无效的报销单";
 	String A0010 = "您当前无权操作该报销单";
-	String A0011 = "报销单明细不能为空";
+	String A0011 = "空的报销单明细";
 	String A0012 = "无效的报销单明细";
 	String A0013 = "删除报销单明细失败";
 	String A0014 = "删除报销单失败";
@@ -32,7 +32,7 @@ public interface AppConstant {
 	String A0021 = "空的值对象";
 	String A0022 = "用户密码不能为空";
 	String A0023 = "错误的用户密码";
-	String A0024 = "错误码无效";
+	String A0024 = "验证码无效";
 	/*
 	 * 总经理
 	 */
@@ -45,5 +45,16 @@ public interface AppConstant {
 	 * 员工
 	 */
 	Long EMPLOYEE = 3L;
-	
+
+	String CURRENT_UNAME = "currentUname";
+
+	String CURRENT_USER = "currentUser";
+
+	Long 待审批 = 1l;
+	Long 已审批 = 2l;
+	Long 已终止 = 3l;
+	Long 已打回 = 4l;
+	Long 待付款 = 5l;
+	Long 已付款 = 6l;
+
 }

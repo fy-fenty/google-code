@@ -5,10 +5,10 @@ import java.util.Map;
 
 import org.hzy.entity.DispatchDetail;
 import org.hzy.entity.DispatchList;
-import org.hzy.entity.DispatchResult;
-import org.hzy.entity.LoginUser;
 import org.hzy.exception.MyException;
+import org.hzy.vo.HandleDispatchVo;
 import org.hzy.vo.LoginVo;
+import org.hzy.vo.Page;
 import org.hzy.vo.Result;
 
 /**
@@ -33,7 +33,7 @@ public interface IEmployeeService {
 	 *         <li>TOTALMONEY：报销单明细总金额</li>
 	 *         </ul>
 	 */
-	public abstract List<Map<String, Object>> findAllDispatchListByESn(String eSn) throws MyException;
+	public abstract Page findAllDispatchListByESn(HandleDispatchVo hdVo) throws MyException;
 
 	/**
 	 * 用户保存报销单
@@ -45,7 +45,7 @@ public interface IEmployeeService {
 	 * @return {@link Result}
 	 * @throws MyException
 	 */
-	public abstract Result saveDispatchList(String eSn, DispatchList dl);
+	public abstract Result saveDispatchList(HandleDispatchVo hdVo);
 
 	/**
 	 * 用户修改报销单
@@ -54,7 +54,7 @@ public interface IEmployeeService {
 	 *            修改的报销单
 	 * @return Result
 	 */
-	public abstract Result updateDispatchList(String eSn, Long dlId, String eventExplain);
+	public abstract Result updateDispatchList(HandleDispatchVo hdVo);
 
 	/**
 	 * 用户修改报销单明细
@@ -66,7 +66,7 @@ public interface IEmployeeService {
 	 * @return Result
 	 * @throws MyException
 	 */
-	public abstract Result updateDispatchDetail(String eSn, DispatchDetail dd);
+	public abstract Result updateDispatchDetail(HandleDispatchVo hdVo);
 
 	/**
 	 * 删除报销单
@@ -77,7 +77,7 @@ public interface IEmployeeService {
 	 *            删除的报销单
 	 * @return Result
 	 */
-	public abstract Result deleteDispatchList(String eSn, DispatchList dl);
+	public abstract Result deleteDispatchList(HandleDispatchVo hdVo);
 
 	/**
 	 * 删除报销单明细
@@ -88,7 +88,7 @@ public interface IEmployeeService {
 	 *            删除的报销单明细
 	 * @return Result
 	 */
-	public abstract Result deleteDispatchDetail(String eSn, DispatchDetail dd);
+	public abstract Result deleteDispatchDetail(HandleDispatchVo hdVo);
 
 	/**
 	 * 添加报销单明细
@@ -99,7 +99,7 @@ public interface IEmployeeService {
 	 *            添加的报销单明细
 	 * @return Result
 	 */
-	public abstract Result addDispatchDetail(String eSn, DispatchDetail dd);
+	public abstract Result addDispatchDetail(HandleDispatchVo hdVo, DispatchDetail[] dds);
 
 	/**
 	 * 提交报销单
@@ -110,7 +110,7 @@ public interface IEmployeeService {
 	 *            提交的报销单
 	 * @return Result
 	 */
-	public abstract Result submitDispatchList(String eSn, DispatchList dl, DispatchResult dr);
+	public abstract Result submitDispatchList(HandleDispatchVo hdVo);
 
 	/**
 	 * 用户登录
@@ -119,5 +119,5 @@ public interface IEmployeeService {
 	 *            用户
 	 * @return Result
 	 */
-	public abstract LoginUser login(LoginVo lgVo) throws MyException;
+	public abstract String login(LoginVo lgVo) throws MyException;
 }
