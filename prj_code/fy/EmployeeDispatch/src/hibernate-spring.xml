@@ -12,7 +12,7 @@
 	
 	<bean id="data_source" class="org.logicalcobwebs.proxool.ProxoolDataSource">
 		<property name="driver" value="oracle.jdbc.OracleDriver" />
-		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.101:1522:orcl" />
+		<property name="driverUrl" value="jdbc:oracle:thin:@192.168.0.103:1522:orcl" />
 		<property name="user" value="hzy" />
 		<property name="password" value="accp" />
 	</bean>
@@ -50,6 +50,9 @@
 				<value>org/fy/entity/SysDepartment.hbm.xml</value>
 				<value>org/fy/entity/SysEmployee.hbm.xml</value>
 				<value>org/fy/entity/SysPositions.hbm.xml</value>
+				<value>org/fy/entity/SysMenu.hbm.xml</value>
+				<value>org/fy/entity/SysRole.hbm.xml</value>
+				<value>org/fy/entity/SysConfig.hbm.xml</value>
 			</list>
 		</property>
 	</bean>
@@ -69,8 +72,8 @@
 		</tx:attributes>
 	</tx:advice>
 	
-	<aop:config>
-    	<aop:pointcut id="target" expression="execution(* org.fy.service.impl.SysEmployeeService.*())"/>
+ 	 <aop:config>
+    	<aop:pointcut id="target" expression="execution(* org.fy.service.impl.*.*(..))"/>
     	<aop:advisor advice-ref="tx_advice" pointcut-ref="target"/>
     </aop:config>
 	<!-- TransactionAdvice -->
