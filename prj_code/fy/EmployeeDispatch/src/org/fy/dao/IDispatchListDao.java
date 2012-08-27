@@ -11,5 +11,5 @@ import org.fy.support.IBaseDAO;
  * @description 报销单接口
  */
 public interface IDispatchListDao extends IBaseDAO<DispatchList, Long>{
-
+	public Long saveReturnId(final DispatchList dlist);
 }
