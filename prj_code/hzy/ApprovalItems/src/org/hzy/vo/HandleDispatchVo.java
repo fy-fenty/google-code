@@ -27,6 +27,10 @@ public class HandleDispatchVo extends BaseVo {
 	 * 操作报销单明细
 	 */
 	private DispatchDetail dd;
+	/**
+	 * 保存报销单的时候是否直接提交
+	 */
+	private Boolean isCommit;
 
 	public HandleDispatchVo() {
 		super();
@@ -75,6 +79,14 @@ public class HandleDispatchVo extends BaseVo {
 
 	public void setDd(DispatchDetail dd) {
 		this.dd = dd;
+	}
+
+	public Boolean getIsCommit() {
+		return isCommit;
+	}
+
+	public void setIsCommit(Boolean isCommit) {
+		this.isCommit = isCommit;
 	}
 
 }
