@@ -52,7 +52,7 @@ public class EmployeeAction {
 		return null;
 	}
 
-	public String commitDispatch() {
+	public String saveDispatch() {
 		if (hdVo.getEsn() == null) {
 			return null;
 		}
@@ -86,12 +86,19 @@ public class EmployeeAction {
 			StringUtil.printObjectFromObject(rs_dd);
 			return null;
 		}
-		Result rs_sub_dl = ieService.submitDispatchList(hdVo);
-		if (rs_sub_dl.getSuccess() == false) {
-			StringUtil.printObjectFromObject(rs_sub_dl);
+		if (hdVo.getIsCommit()) {
+			commitDispatch();
+		}
+		return null;
+	}
+
+	public String commitDispatch() {
+		Result rs = ieService.submitDispatchList(hdVo);
+		if (rs.getSuccess() == false) {
+			StringUtil.printObjectFromObject(rs);
 			return null;
 		}
-		StringUtil.printObjectFromObject(rs_sub_dl);
+		StringUtil.printObjectFromObject(rs);
 		return null;
 	}
 
