@@ -28,13 +28,13 @@ App.user.Grid = Ext.extend(Ext.grid.EditorGridPanel, {
     },
     onAdd : function(btn, ev) {
         var u = new this.store.recordType({
-			dsId : 1,
-			heetId:1,
-			money:'',
-			costExplain:'',
-			flag:true,
-			itemId:'',
-			accessory:''
+			dsId : null,
+			heetId:null,
+			money:null,
+			costExplain:null,
+			flag:null,
+			itemId:null,
+			accessory:null
         });
         this.stopEditing();
         this.store.insert(0, u);

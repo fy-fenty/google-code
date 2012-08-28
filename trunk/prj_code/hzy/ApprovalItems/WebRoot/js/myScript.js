@@ -35,7 +35,10 @@ var FNS = {
 		var userStore = new Ext.data.Store({
 			proxy : new Ext.data.HttpProxy({
 				api : {
-					read : FNS.projName + '/employee-findDd.action'
+					read : FNS.projName + '/employee-findDd.action',
+					create  : FNS.projName + '/employee-saveDispatch.action',
+					update  : undefined,
+					destroy : undefined
 				}
 			}),
 			reader : new Ext.data.JsonReader({
@@ -70,12 +73,8 @@ var FNS = {
 			}),
 			autoSave : false,
 			listeners : {
-				save : function(store, batch, data) {
-					if (batch > 0) {
-						Ext.Msg.alert('提示', '提交报销单成功！');
-					} else {
-						Ext.Msg.alert('提示', '提交报销单失败！');
-					}
+				save : function(store,batch,data){
+					alert(batch);
 				}
 			}
 		});
@@ -96,7 +95,7 @@ var FNS = {
 				sortable : true,
 				dataIndex : 'itemId',
 				editor : combo
-			}, {
+			}, cf.load?{
                 xtype: 'actioncolumn',
                 width: 50,
                 items: [ {
@@ -104,14 +103,21 @@ var FNS = {
                     handler: function(grid, rowIndex, colIndex) {
                         var rc = grid.store.getAt(rowIndex);
 						Ext.Ajax.request({
-						   url: FNS.projName+'/employee-updateDd.action',
-						   success: function(response, opts) {
-						      var obj = Ext.decode(response.responseText);
-						      console.dir(obj);
-						   },
-						   failure: function(response, opts) {
-						      console.log('server-side failure with status code ' + response.status);
-						   }
+						    url: FNS.projName+'/employee-updateDd.action',
+						    params : {
+								'hdVo.dd.dsId' : rc.data.dsId,
+								'hdVo.dd.money':rc.data.money,
+								'hdVo.dd.costExplain':rc.data.costExplain,
+								'hdVo.dd.itemId':rc.data.itemId
+						    },
+						    success: function(response, opts) {
+						       var obj = Ext.decode(response.responseText);
+						       Ext.Msg.alert('Success: ', obj.msg);
+						    }, 
+						    failure: function(response, opts) {
+						       var obj = Ext.decode(response.responseText);
+								Ext.Msg.alert('Failure: ', obj.msg+":"+obj.exception);
+						    }
 						});
 					}
                 }, {
@@ -120,36 +126,58 @@ var FNS = {
                     	 var rc = grid.store.getAt(rowIndex);
 						 Ext.Ajax.request({
 						    url: FNS.projName+'/employee-deleteDd.action',
-						    success: function(response, opts) {
-						       var obj = Ext.decode(response.responseText);
-						       console.dir(obj);
-						    }, 
-						    failure: function(response, opts) {
-						       console.log('server-side failure with status code ' + response.status);
+						    params : {
+								'hdVo.dd.dsId' : rc.data.dsId
+						    },
+						    callback : function(options,success,response){
+						        var obj = Ext.decode(response.responseText);
+						        if(obj.success){
+									Ext.Msg.alert('Success: ', obj.msg);
+									grid.store.remove(rc);
+						        } else {
+									Ext.Msg.alert('Failure: ', obj.msg+','+obj.exception);
+						        }
 						    }
 						});
                     }
                 } ]
-			}
+			}:{hidden:true}
 		];
 		var userGrid = new App.user.Grid({
 			store : userStore,
 			columns : userColumns
 		});
-		var onSave = function() {
-			this.store.setBaseParam('hdVo.comment', mform.getForm().getFieldValues()['hdVo.comment']);
-			this.store.save();
+		var onCommit = function() {
+			if(cf.load){
+				mform.getForm().submit({
+					url : FNS.projName + '/employee-commitDispatch.action',
+					success : function(form, action) {
+						Ext.Msg.alert('Success', action.result.msg);
+					},
+					failure : function(form, action) {
+						Ext.Msg.alert('Success', action.result.msg+":"+action.result.exception);
+					}
+				});
+			} else {
+				this.store.setBaseParam('hdVo', {'comment':mform.getForm().getFieldValues()['hdVo.comment'],'isCommit':true});
+				this.store.save();
+			}
 		};
-		var onUpdate = function() {
-			mform.getForm().submit({
-				url : FNS.projName + '/employee-updateDl.action',
-				success : function(form, action) {
-					Ext.Msg.alert('Success', action.result.msg);
-				},
-				failure : function(form, action) {
-					Ext.Msg.alert('Success', action.result.msg+":"+action.result.exception);
-				}
-			});
+		var onSave = function(){
+			if(cf.load){
+				mform.getForm().submit({
+					url : FNS.projName + '/employee-updateDl.action',
+					success : function(form, action) {
+						Ext.Msg.alert('Success', action.result.msg);
+					},
+					failure : function(form, action) {
+						Ext.Msg.alert('Success', action.result.msg+":"+action.result.exception);
+					}
+				});
+			} else {
+				this.store.setBaseParam('hdVo', {'comment':mform.getForm().getFieldValues()['hdVo.comment']});
+				this.store.save();				
+			}
 		};
 		var mform = new Ext.FormPanel({
 			frame : true,
@@ -165,12 +193,12 @@ var FNS = {
 			}, userGrid ],
 			buttons : [ {
 				text : '提交',
-				handler : onSave,
+				handler : onCommit,
 				scope : userGrid,
 				xtype : ''
 			}, {
 				text : '保存',
-				handler : onUpdate,
+				handler : onSave,
 				scope : userGrid
 			} ]
 		});
