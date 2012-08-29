@@ -57,7 +57,7 @@ public class MenuTree extends HttpServlet {
 		    "'text': '我的第一个win',"+
 		    "'leaf': true,"+
 		    "'cls': 'file',"+
-		    "'myfn_name': 'testWin'"+
+		    "'myfn_name': 'lookup_dis'"+
 //		    "'listeners': {" +
 //		    	"'click': function(){" +
 //		    		"creatWin()"+
