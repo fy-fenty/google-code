@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="today" default="all" basedir=".">
+	<property name="base" value=".."></property>
+	<property name="jsFolder" value="${base}/teach_left_main"></property>
+	<property name="cfolder" value="mypress"></property>
+	<property name="mjs" value="${jsFolder}/${cfolder}/megre.js"></property>
+	<property name="cjs" value="${jsFolder}/${cfolder}/c.js"></property>
+	
+	<target name="all" depends="createF,CompressJs"></target>
+	<target name="createF">
+		<echo message="start createF" />
+			<mkdir dir="${jsFolder}/${cfolder}" />
+		<echo message="end createF" />
+	</target>
+	<!--
+	<target name="megerJS">
+			<echo message="start" />
+			<concat destfile="${mk}" encoding="UTF-8">
+				<fileset file="${sourcepath}/util/AIRPrint.js"></fileset>
+			</concat>
+			</echo>
+	</target>
+	-->
+	<target name="CompressJs">
+		<echo message="start CompressJs" />
+			<java jar="compiler.jar" fork="true">
+				<arg value="--js=${jsFolder}/base.js" />
+				<arg value="--js=${jsFolder}/lookup_dis.js" />
+				<arg value="--js=${jsFolder}/1.js" />
+				<arg value="--js_output_file=${cjs}"/>
+			</java>
+		<echo message="end CompressJs" />
+	</target>
+</project>
